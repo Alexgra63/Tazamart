@@ -1,17 +1,16 @@
-
 import React, { useState, useReducer, useEffect, useCallback } from 'react';
-import { Header } from './components/Header';
-import { BottomNav } from './components/BottomNav';
-import { HomeView } from './components/HomeView';
-import { CartView } from './components/CartView';
-import { CheckoutView } from './components/CheckoutView';
-import { OrderConfirmationView } from './components/OrderConfirmationView';
-import { OrderHistoryView } from './components/OrderHistoryView';
-import { AdminView } from './components/AdminView';
-import { AdminLoginView } from './components/AdminLoginView';
-import { ProductDetailView } from './components/ProductDetailView';
-import { Product, CartItem, Order, OrderStatus, View } from './types';
-import { initialProducts } from './data';
+import { Header } from './components/Header.tsx';
+import { BottomNav } from './components/BottomNav.tsx';
+import { HomeView } from './components/HomeView.tsx';
+import { CartView } from './components/CartView.tsx';
+import { CheckoutView } from './components/CheckoutView.tsx';
+import { OrderConfirmationView } from './components/OrderConfirmationView.tsx';
+import { OrderHistoryView } from './components/OrderHistoryView.tsx';
+import { AdminView } from './components/AdminView.tsx';
+import { AdminLoginView } from './components/AdminLoginView.tsx';
+import { ProductDetailView } from './components/ProductDetailView.tsx';
+import { Product, CartItem, Order, OrderStatus, View } from './types.ts';
+import { initialProducts } from './data.ts';
 
 type AppState = {
     products: Product[];
@@ -101,9 +100,8 @@ const appReducer = (state: AppState, action: Action): AppState => {
             return state;
     }
 
-    // Persist only products and orders to local storage "DB"
-    localStorage.setItem('tazamart_products', JSON.stringify(newState.products));
-    localStorage.setItem('tazamart_orders', JSON.stringify(newState.orders));
+    localStorage.setItem('vegelo_products', JSON.stringify(newState.products));
+    localStorage.setItem('vegelo_orders', JSON.stringify(newState.orders));
     return newState;
 };
 
@@ -121,14 +119,13 @@ const App: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-    // Initial Load from "Database"
     useEffect(() => {
-        const storedProducts = localStorage.getItem('tazamart_products');
-        const storedOrders = localStorage.getItem('tazamart_orders');
+        const storedProducts = localStorage.getItem('vegelo_products');
+        const storedOrders = localStorage.getItem('vegelo_orders');
         
         const initialState: AppState = {
             products: storedProducts ? JSON.parse(storedProducts) : initialProducts,
-            cart: [], // Cart is usually session-based
+            cart: [],
             orders: storedOrders ? JSON.parse(storedOrders).map((o: any) => ({...o, orderDate: new Date(o.orderDate)})) : [],
         };
         

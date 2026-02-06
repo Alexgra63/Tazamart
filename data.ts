@@ -1,5 +1,4 @@
-
-import { Product, ProductCategory } from './types';
+import { Product, ProductCategory } from './types.ts';
 
 export const initialProducts: Product[] = [
     { 
@@ -44,7 +43,7 @@ export const initialProducts: Product[] = [
         price: 150, 
         image: 'https://picsum.photos/id/219/400/300', 
         category: ProductCategory.Fruits, 
-        unit: 'dozen' as any,
+        unit: 'bundle' as any,
         description: 'Energy-rich ripe bananas, naturally sweet and perfect for smoothies or snacks.' 
     },
     { 
