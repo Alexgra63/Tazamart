@@ -22,48 +22,82 @@ export const CartView: React.FC<CartViewProps> = ({ cart, updateQuantity, remove
     };
 
     return (
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <h2 className="text-3xl font-bold text-dark mb-8">Your Shopping Cart</h2>
+        <div className="container mx-auto px-4 py-8">
+            <h2 className="text-3xl font-black text-dark mb-8">My Basket</h2>
             {cart.length === 0 ? (
-                <div className="text-center py-16 bg-white rounded-lg shadow">
-                    <p className="text-xl text-gray-500">Your cart is empty.</p>
-                    <button onClick={() => setView(View.Home)} className="mt-4 bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary-dark transition-colors">
-                        Continue Shopping
+                <div className="text-center py-24 bg-white rounded-3xl shadow-soft border border-gray-100">
+                    <div className="text-6xl mb-6">🧺</div>
+                    <p className="text-xl font-bold text-gray-400">Your basket is empty</p>
+                    <button onClick={() => setView(View.Home)} className="mt-8 bg-gradient-to-r from-primary to-primary-dark text-white px-8 py-3 rounded-2xl font-bold shadow-premium transform active:scale-95 transition">
+                        Start Shopping
                     </button>
                 </div>
             ) : (
                 <div className="flex flex-col lg:flex-row gap-8">
-                    <div className="flex-grow bg-white p-6 rounded-lg shadow-lg">
+                    <div className="flex-grow space-y-4">
                         {cart.map(item => (
-                            <div key={item.id} className="flex items-center justify-between border-b py-4 last:border-b-0">
-                                <div className="flex items-center gap-4">
-                                    <img src={item.image} alt={item.name} className="w-20 h-20 rounded-md object-cover"/>
-                                    <div>
-                                        <p className="font-semibold text-lg text-dark">{item.name}</p>
-                                        <p className="text-gray-500">Rs. {item.price} / {item.unit}</p>
+                            <div key={item.id} className="bg-white p-4 rounded-2xl shadow-soft border border-gray-100 flex items-center gap-4">
+                                <img src={item.image} alt={item.name} className="w-24 h-24 rounded-2xl object-cover shrink-0"/>
+                                <div className="flex-grow">
+                                    <h3 className="font-bold text-dark">{item.name}</h3>
+                                    <p className="text-sm text-gray-500">Rs. {item.price} / {item.unit}</p>
+                                    
+                                    <div className="mt-4 flex items-center justify-between">
+                                        <div className="flex items-center bg-gray-100 rounded-xl p-1">
+                                            <button 
+                                                onClick={() => handleQuantityChange(item, -1)} 
+                                                className="p-1.5 text-gray-500 hover:text-dark disabled:opacity-30" 
+                                                disabled={item.quantity <= (item.unit === 'kg' ? 0.25 : 1)}
+                                            >
+                                                <MinusIcon className="h-4 w-4"/>
+                                            </button>
+                                            <span className="px-3 font-bold text-sm min-w-[80px] text-center">
+                                                {item.quantity} {item.unit}
+                                            </span>
+                                            <button 
+                                                onClick={() => handleQuantityChange(item, 1)} 
+                                                className="p-1.5 text-gray-500 hover:text-dark"
+                                            >
+                                                <PlusIcon className="h-4 w-4"/>
+                                            </button>
+                                        </div>
+                                        <span className="font-black text-primary">Rs. {(item.price * item.quantity).toFixed(2)}</span>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-4">
-                                    <div className="flex items-center border rounded-md">
-                                        <button 
-                                            onClick={() => handleQuantityChange(item, -1)} 
-                                            className="p-2 disabled:opacity-50" 
-                                            disabled={item.quantity <= (item.unit === 'kg' ? 0.25 : 1)}
-                                        >
-                                            <MinusIcon className="h-5 w-5"/>
-                                        </button>
-                                        <span className="px-4 font-semibold w-20 text-center">{item.quantity} {item.unit}</span>
-                                        <button 
-                                            onClick={() => handleQuantityChange(item, 1)} 
-                                            className="p-2"
-                                        >
-                                            <PlusIcon className="h-5 w-5"/>
-                                        </button>
-                                    </div>
-                                    <p className="w-24 text-right font-semibold">Rs. {(item.price * item.quantity).toFixed(2)}</p>
-                                    <button onClick={() => removeFromCart(item.id)} className="text-red-500 hover:text-red-700 p-2"><TrashIcon className="h-6 w-6"/></button>
-                                </div>
+                                <button onClick={() => removeFromCart(item.id)} className="text-gray-300 hover:text-red-500 transition-colors p-2">
+                                    <TrashIcon className="h-6 w-6"/>
+                                </button>
                             </div>
                         ))}
                     </div>
-                    <div className="lg:
+                    
+                    <div className="lg:w-96">
+                        <div className="bg-white p-8 rounded-3xl shadow-premium border border-gray-100 sticky top-24">
+                            <h3 className="text-xl font-black text-dark mb-6">Order Summary</h3>
+                            <div className="space-y-4 mb-8">
+                                <div className="flex justify-between text-gray-500">
+                                    <span>Subtotal</span>
+                                    <span>Rs. {total.toFixed(2)}</span>
+                                </div>
+                                <div className="flex justify-between text-gray-500">
+                                    <span>Delivery</span>
+                                    <span className="text-primary font-bold">FREE</span>
+                                </div>
+                                <div className="pt-4 border-t border-gray-100 flex justify-between items-center">
+                                    <span className="font-black text-dark text-lg">Total</span>
+                                    <span className="font-black text-primary text-2xl">Rs. {total.toFixed(2)}</span>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => setView(View.Checkout)}
+                                className="w-full bg-gradient-to-r from-primary to-primary-dark text-white py-4 rounded-2xl font-bold shadow-premium hover:shadow-lg transform active:scale-[0.98] transition"
+                            >
+                                Checkout Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};

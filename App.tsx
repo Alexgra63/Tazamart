@@ -1,6 +1,7 @@
 
-import React, { useState, useReducer, useCallback } from 'react';
+import React, { useState, useReducer, useEffect, useCallback } from 'react';
 import { Header } from './components/Header';
+import { BottomNav } from './components/BottomNav';
 import { HomeView } from './components/HomeView';
 import { CartView } from './components/CartView';
 import { CheckoutView } from './components/CheckoutView';
@@ -19,6 +20,7 @@ type AppState = {
 };
 
 type Action =
+    | { type: 'SET_INITIAL_STATE'; payload: AppState }
     | { type: 'ADD_TO_CART'; payload: { product: Product; quantity: number } }
     | { type: 'REMOVE_FROM_CART'; payload: number }
     | { type: 'UPDATE_QUANTITY'; payload: { productId: number; quantity: number } }
@@ -29,65 +31,81 @@ type Action =
     | { type: 'UPDATE_PRODUCT'; payload: Product }
     | { type: 'DELETE_PRODUCT'; payload: number };
 
-
 const appReducer = (state: AppState, action: Action): AppState => {
+    let newState: AppState;
     switch (action.type) {
+        case 'SET_INITIAL_STATE':
+            return action.payload;
         case 'ADD_TO_CART': {
             const { product, quantity } = action.payload;
             const existingItem = state.cart.find(item => item.id === product.id);
             if (existingItem) {
-                // Ensure floating point precision doesn't get messy
                 const newQuantity = parseFloat((existingItem.quantity + quantity).toFixed(2));
-                return {
+                newState = {
                     ...state,
                     cart: state.cart.map(item =>
                         item.id === product.id ? { ...item, quantity: newQuantity } : item
                     ),
                 };
+            } else {
+                newState = { ...state, cart: [...state.cart, { ...product, quantity }] };
             }
-            return { ...state, cart: [...state.cart, { ...product, quantity }] };
+            break;
         }
         case 'REMOVE_FROM_CART':
-            return { ...state, cart: state.cart.filter(item => item.id !== action.payload) };
+            newState = { ...state, cart: state.cart.filter(item => item.id !== action.payload) };
+            break;
         case 'UPDATE_QUANTITY': {
             if (action.payload.quantity <= 0) {
-                 return { ...state, cart: state.cart.filter(item => item.id !== action.payload.productId) };
+                 newState = { ...state, cart: state.cart.filter(item => item.id !== action.payload.productId) };
+            } else {
+                newState = {
+                    ...state,
+                    cart: state.cart.map(item =>
+                        item.id === action.payload.productId ? { ...item, quantity: action.payload.quantity } : item
+                    ),
+                };
             }
-            return {
-                ...state,
-                cart: state.cart.map(item =>
-                    item.id === action.payload.productId ? { ...item, quantity: action.payload.quantity } : item
-                ),
-            };
+            break;
         }
         case 'PLACE_ORDER':
-            return { ...state, orders: [...state.orders, action.payload] };
+            newState = { ...state, orders: [...state.orders, action.payload] };
+            break;
         case 'CLEAR_CART':
-            return { ...state, cart: [] };
+            newState = { ...state, cart: [] };
+            break;
         case 'UPDATE_ORDER_STATUS':
-            return {
+            newState = {
                 ...state,
                 orders: state.orders.map(order =>
                     order.id === action.payload.orderId ? { ...order, status: action.payload.status } : order
                 ),
             };
+            break;
         case 'ADD_PRODUCT':
-             return { ...state, products: [...state.products, action.payload] };
+             newState = { ...state, products: [...state.products, action.payload] };
+             break;
         case 'UPDATE_PRODUCT':
-            return {
+            newState = {
                 ...state,
                 products: state.products.map(p => (p.id === action.payload.id ? action.payload : p)),
             };
+            break;
         case 'DELETE_PRODUCT':
-            return {
+            newState = {
                 ...state,
                 products: state.products.filter(p => p.id !== action.payload),
             };
+            break;
         default:
             return state;
     }
-};
 
+    // Persist only products and orders to local storage "DB"
+    localStorage.setItem('tazamart_products', JSON.stringify(newState.products));
+    localStorage.setItem('tazamart_orders', JSON.stringify(newState.orders));
+    return newState;
+};
 
 const App: React.FC = () => {
     const [state, dispatch] = useReducer(appReducer, {
@@ -102,6 +120,20 @@ const App: React.FC = () => {
     const [lastOrder, setLastOrder] = useState<Order | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+    // Initial Load from "Database"
+    useEffect(() => {
+        const storedProducts = localStorage.getItem('tazamart_products');
+        const storedOrders = localStorage.getItem('tazamart_orders');
+        
+        const initialState: AppState = {
+            products: storedProducts ? JSON.parse(storedProducts) : initialProducts,
+            cart: [], // Cart is usually session-based
+            orders: storedOrders ? JSON.parse(storedOrders).map((o: any) => ({...o, orderDate: new Date(o.orderDate)})) : [],
+        };
+        
+        dispatch({ type: 'SET_INITIAL_STATE', payload: initialState });
+    }, []);
 
     const cartItemCount = state.cart.reduce((count, item) => count + item.quantity, 0);
 
@@ -166,23 +198,28 @@ const App: React.FC = () => {
         }
     };
 
+    const handleSetView = (newView: View) => {
+        setIsAdminView(false);
+        setView(newView);
+        window.scrollTo(0, 0);
+    };
+
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen bg-light">
             <Header 
                 cartItemCount={cartItemCount} 
-                isAdminView={isAdminView} 
-                isAuthenticated={isAuthenticated}
-                setView={setView} 
-                setIsAdminView={setIsAdminView} 
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
+                setView={handleSetView} 
             />
-            <main className="flex-grow">
+            <main className="flex-grow pb-24">
                 {renderView()}
             </main>
-            <footer className="bg-dark text-white text-center p-4">
-                <p>&copy; {new Date().getFullYear()} TazaMart. All rights reserved.</p>
-            </footer>
+            <BottomNav 
+                currentView={view} 
+                setView={handleSetView} 
+                isAdminView={isAdminView}
+                setIsAdminView={setIsAdminView}
+                isAuthenticated={isAuthenticated}
+            />
         </div>
     );
 };
