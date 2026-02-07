@@ -1,3 +1,4 @@
+
 import React, { useState, useReducer, useEffect, useCallback } from 'react';
 import { Header } from './components/Header.tsx';
 import { BottomNav } from './components/BottomNav.tsx';
@@ -207,7 +208,7 @@ const App: React.FC = () => {
                 cartItemCount={cartItemCount} 
                 setView={handleSetView} 
             />
-            <main className="flex-grow pb-24">
+            <main className="flex-grow pb-16">
                 {renderView()}
             </main>
             <BottomNav 
