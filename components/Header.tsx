@@ -32,7 +32,7 @@ export const Header: React.FC<HeaderProps> = ({ cartItemCount, setView, onUnlock
                     <div className="bg-gradient-to-br from-primary to-primary-dark p-1.5 rounded-xl shadow-sm">
                         <span className="material-symbols-rounded text-white text-base leading-none">shopping_basket</span>
                     </div>
-                    <span className="text-xl font-black text-dark tracking-tighter">Vegelo</span>
+                    <span className="text-xl font-black text-dark tracking-tighter">TazaMart</span>
                 </div>
 
                 <div className="flex items-center">

@@ -99,16 +99,25 @@ interface AdminViewProps {
     updateOrderStatus: (orderId: string, status: OrderStatus) => void;
     addProduct: (product: Product) => void;
     updateProduct: (product: Product) => void;
-    deleteProduct: (productId: number) => void;
+    deleteProductExplicit: (productId: number) => void;
 }
 
-export const AdminView: React.FC<AdminViewProps> = ({ orders, products, updateOrderStatus, addProduct, updateProduct, deleteProduct }) => {
+export const AdminView: React.FC<AdminViewProps> = ({ 
+    orders, 
+    products, 
+    updateOrderStatus, 
+    addProduct, 
+    updateProduct, 
+    deleteProductExplicit 
+}) => {
     const [tab, setTab] = useState<'dashboard' | 'orders' | 'products'>('dashboard');
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [proofToView, setProofToView] = useState<string | null>(null);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
     const [isSyncing, setIsSyncing] = useState(false);
+    const [syncMessage, setSyncMessage] = useState('');
+    
     const [newProduct, setNewProduct] = useState<Partial<Product>>({
         name: '', price: 0, image: '', category: ProductCategory.Vegetables, unit: 'kg', description: ''
     });
@@ -127,22 +136,41 @@ export const AdminView: React.FC<AdminViewProps> = ({ orders, products, updateOr
     const handleProductSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSyncing(true);
+        setSyncMessage('Updating Catalog...');
+        
         const formattedImage = formatGDriveLink(newProduct.image || '');
-        const productData = { ...newProduct, image: formattedImage } as Product;
+        const productData = { 
+            ...newProduct, 
+            id: editingProduct ? editingProduct.id : Date.now().toString(),
+            image: formattedImage 
+        } as Product;
 
         if (editingProduct) {
-            updateProduct({ ...editingProduct, ...productData });
+            updateProduct(productData);
         } else {
-            addProduct({ ...productData, id: Date.now() });
+            addProduct(productData);
         }
         
-        // Modal closes immediately (Optimistic UI)
         setIsProductModalOpen(false);
         setEditingProduct(null);
         setNewProduct({ name: '', price: 0, image: '', category: ProductCategory.Vegetables, unit: 'kg', description: '' });
         
-        // Simulation of sync completion for UX
-        setTimeout(() => setIsSyncing(false), 2000);
+        setTimeout(() => {
+            setIsSyncing(false);
+            setSyncMessage('');
+        }, 2000);
+    };
+
+    const handleDelete = (id: number) => {
+        if (window.confirm('Are you sure you want to delete this product?')) {
+            setIsSyncing(true);
+            setSyncMessage('Removing Item...');
+            deleteProductExplicit(id);
+            setTimeout(() => {
+                setIsSyncing(false);
+                setSyncMessage('');
+            }, 2000);
+        }
     };
 
     return (
@@ -151,12 +179,12 @@ export const AdminView: React.FC<AdminViewProps> = ({ orders, products, updateOr
                 <div className="flex items-center gap-4">
                     <div>
                         <h2 className="text-4xl font-black text-dark tracking-tight">Admin Console</h2>
-                        <p className="text-gray-400 text-sm mt-1 font-medium">Synced with Vegelo Cloud Sheets</p>
+                        <p className="text-gray-400 text-sm mt-1 font-medium">TazaMart Management</p>
                     </div>
                     {isSyncing && (
                         <div className="flex items-center bg-primary/10 text-primary px-3 py-1 rounded-full animate-pulse">
                             <div className="w-1.5 h-1.5 bg-primary rounded-full mr-2 animate-bounce"></div>
-                            <span className="text-[8px] font-black uppercase tracking-widest">Syncing</span>
+                            <span className="text-[8px] font-black uppercase tracking-widest">{syncMessage}</span>
                         </div>
                     )}
                 </div>
@@ -221,65 +249,72 @@ export const AdminView: React.FC<AdminViewProps> = ({ orders, products, updateOr
             )}
 
             {tab === 'products' && (
-                <div className="space-y-8 animate-in fade-in zoom-in-95 duration-300">
-                    <button 
-                        onClick={() => { setEditingProduct(null); setNewProduct({ name: '', price: 0, image: '', category: ProductCategory.Vegetables, unit: 'kg', description: '' }); setIsProductModalOpen(true); }} 
-                        className="bg-gradient-to-r from-primary to-primary-dark text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest flex items-center shadow-premium hover:shadow-lg transform active:scale-[0.98] transition-all"
-                    >
-                        <PlusIcon className="h-5 w-5 mr-3" /> New Item
-                    </button>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {products.map(p => (
-                            <div key={p.id} className="bg-white p-5 rounded-3xl shadow-soft border border-gray-100 group hover:shadow-premium transition-all">
-                                <div className="relative h-40 w-full mb-4 overflow-hidden rounded-2xl">
-                                    <img src={p.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                                    <div className="absolute top-3 right-3 bg-dark/80 text-white text-[9px] font-black px-2 py-1 rounded-lg backdrop-blur-sm uppercase tracking-tighter">
-                                        {p.category}
-                                    </div>
-                                </div>
-                                <h4 className="font-black text-dark line-clamp-1">{p.name}</h4>
-                                <p className="text-xs text-gray-400 font-bold mt-1">Rs. {p.price} / {p.unit}</p>
-                                <div className="grid grid-cols-2 gap-2 mt-6">
-                                    <button onClick={() => { setEditingProduct(p); setNewProduct(p); setIsProductModalOpen(true); }} className="text-[10px] font-black uppercase tracking-wider text-primary bg-primary/5 py-2.5 rounded-xl hover:bg-primary hover:text-white transition-all">Edit</button>
-                                    <button onClick={() => { deleteProduct(p.id); setIsSyncing(true); setTimeout(() => setIsSyncing(false), 1500); }} className="text-[10px] font-black uppercase tracking-wider text-red-500 bg-red-50 py-2.5 rounded-xl hover:bg-red-500 hover:text-white transition-all">Remove</button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* Proof Viewer Modal */}
-            {proofToView && (
-                <div className="fixed inset-0 bg-dark/80 backdrop-blur-md flex items-center justify-center z-[100] p-4 animate-in fade-in duration-300" onClick={() => setProofToView(null)}>
-                    <div className="bg-white w-full max-w-2xl rounded-3xl p-4 shadow-premium relative animate-in zoom-in-95 duration-300" onClick={e => e.stopPropagation()}>
-                        <button onClick={() => setProofToView(null)} className="absolute -top-12 right-0 text-white font-black uppercase text-xs tracking-widest flex items-center">
-                            Close [×]
+                <div className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
+                    <div className="flex justify-between items-center">
+                        <button 
+                            onClick={() => { setEditingProduct(null); setNewProduct({ name: '', price: 0, image: '', category: ProductCategory.Vegetables, unit: 'kg', description: '' }); setIsProductModalOpen(true); }} 
+                            className="bg-gradient-to-r from-primary to-primary-dark text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest flex items-center shadow-premium hover:shadow-lg transform active:scale-[0.98] transition-all"
+                        >
+                            <PlusIcon className="h-5 w-5 mr-3" /> Add Product
                         </button>
-                        <div className="overflow-hidden rounded-2xl bg-gray-50 border border-gray-100">
-                             <img src={proofToView} className="w-full h-auto max-h-[70vh] object-contain" alt="Payment Proof" />
-                        </div>
-                        <div className="p-6 text-center">
-                            <h3 className="text-xl font-black text-dark">Transaction Proof</h3>
-                            <p className="text-gray-400 text-sm mt-1">Verify payment details carefully before packing.</p>
+                    </div>
+
+                    <div className="bg-white rounded-[2rem] shadow-premium border border-gray-100 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="bg-gray-50 border-b border-gray-100">
+                                        <th className="p-6 font-black text-gray-400 uppercase text-[10px] tracking-widest">Image</th>
+                                        <th className="p-6 font-black text-gray-400 uppercase text-[10px] tracking-widest">Name</th>
+                                        <th className="p-6 font-black text-gray-400 uppercase text-[10px] tracking-widest">Category</th>
+                                        <th className="p-6 font-black text-gray-400 uppercase text-[10px] tracking-widest">Price</th>
+                                        <th className="p-6 font-black text-gray-400 uppercase text-[10px] tracking-widest text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    {products.map(p => (
+                                        <tr key={p.id} className="hover:bg-gray-50/30 transition-colors">
+                                            <td className="p-6">
+                                                <img src={p.image} className="w-12 h-12 rounded-xl object-cover shadow-soft border border-gray-100" alt={p.name} />
+                                            </td>
+                                            <td className="p-6 font-black text-dark text-sm">{p.name}</td>
+                                            <td className="p-6">
+                                                <span className="text-[10px] font-black uppercase bg-gray-100 px-3 py-1 rounded-lg text-gray-500">{p.category}</span>
+                                            </td>
+                                            <td className="p-6 font-black text-dark text-sm">Rs. {p.price} / {p.unit}</td>
+                                            <td className="p-6 text-right">
+                                                <div className="flex justify-end space-x-2">
+                                                    <button onClick={() => { setEditingProduct(p); setNewProduct(p); setIsProductModalOpen(true); }} className="p-2 text-primary bg-primary/5 rounded-xl hover:bg-primary hover:text-white transition-all">
+                                                        <span className="material-symbols-rounded text-lg">edit</span>
+                                                    </button>
+                                                    <button onClick={() => handleDelete(p.id)} className="p-2 text-red-500 bg-red-50 rounded-xl hover:bg-red-500 hover:text-white transition-all">
+                                                        <TrashIcon className="h-5 w-5" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             )}
 
+            {/* Product Modal */}
             {isProductModalOpen && (
                 <div className="fixed inset-0 bg-dark/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-in fade-in duration-300">
                     <div className="bg-white w-full max-w-xl rounded-[2.5rem] p-10 shadow-premium overflow-y-auto max-h-[90vh] no-scrollbar animate-in slide-in-from-bottom-8 duration-300">
                         <div className="flex justify-between items-center mb-8">
-                            <h3 className="text-3xl font-black text-dark">{editingProduct ? 'Edit Item' : 'New Item'}</h3>
+                            <h3 className="text-3xl font-black text-dark">{editingProduct ? 'Edit Product' : 'Add Product'}</h3>
                             <button onClick={() => setIsProductModalOpen(false)} className="text-gray-400 hover:text-dark transition-colors">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                <span className="material-symbols-rounded text-2xl">close</span>
                             </button>
                         </div>
                         <form onSubmit={handleProductSubmit} className="space-y-6">
                             <div>
                                 <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Product Name</label>
-                                <input required className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-transparent outline-none focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 transition-all text-sm font-bold" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} placeholder="e.g. Organic Tomatoes" />
+                                <input required className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-transparent outline-none focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 transition-all text-sm font-bold" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} placeholder="e.g. Red Apples" />
                             </div>
                             <div className="grid grid-cols-2 gap-6">
                                 <div>
@@ -302,37 +337,21 @@ export const AdminView: React.FC<AdminViewProps> = ({ orders, products, updateOr
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Product Image (GDrive URL or Local Upload)</label>
-                                <div className="space-y-4">
-                                    <input className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-transparent outline-none focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 transition-all text-xs font-medium" value={newProduct.image} onChange={e => setNewProduct({...newProduct, image: e.target.value})} placeholder="Paste Image Link or GDrive Link" />
-                                    <div className="flex items-center gap-4">
-                                        <div className="flex-grow h-px bg-gray-100"></div>
-                                        <span className="text-[10px] font-black text-gray-300 uppercase">OR</span>
-                                        <div className="flex-grow h-px bg-gray-100"></div>
+                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Product Image URL</label>
+                                <input className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-transparent outline-none focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 transition-all text-xs font-medium" value={newProduct.image} onChange={e => setNewProduct({...newProduct, image: e.target.value})} placeholder="Paste Image Link" />
+                                {newProduct.image && (
+                                    <div className="mt-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-center">
+                                        <img src={formatGDriveLink(newProduct.image)} className="h-24 w-auto rounded-xl shadow-lg" alt="Preview" onError={(e) => (e.currentTarget.src = 'https://placehold.co/100x100?text=Invalid+Link')} />
                                     </div>
-                                    <label className="flex items-center justify-center w-full px-6 py-10 border-2 border-dashed border-gray-200 rounded-3xl bg-gray-50 cursor-pointer hover:bg-gray-100 transition-all group">
-                                        {newProduct.image && newProduct.image.startsWith('data:') ? (
-                                            <div className="text-center">
-                                                <img src={newProduct.image} className="h-24 w-auto rounded-xl shadow-lg mb-2 mx-auto" />
-                                                <p className="text-[10px] font-black text-primary uppercase">File Loaded!</p>
-                                            </div>
-                                        ) : (
-                                            <div className="text-center group-hover:scale-105 transition-transform">
-                                                <div className="text-2xl mb-2 text-gray-300">📂</div>
-                                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Upload Local File</p>
-                                            </div>
-                                        )}
-                                        <input type="file" className="hidden" accept="image/*" onChange={handleProductImageUpload} />
-                                    </label>
-                                </div>
+                                )}
                             </div>
                             <div>
                                 <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Description</label>
-                                <textarea className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-transparent outline-none focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 transition-all text-sm font-medium h-32 no-scrollbar" value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})} placeholder="Describe the freshness..." />
+                                <textarea className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-transparent outline-none focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 transition-all text-sm font-medium h-24 no-scrollbar" value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})} placeholder="Details..." />
                             </div>
-                            <div className="flex space-x-4 pt-6">
+                            <div className="flex space-x-4 pt-4">
                                 <button type="button" onClick={() => setIsProductModalOpen(false)} className="flex-1 px-8 py-5 rounded-2xl font-black uppercase tracking-widest bg-gray-100 text-gray-400 hover:bg-gray-200 transition-all">Discard</button>
-                                <button type="submit" className="flex-1 px-8 py-5 rounded-2xl font-black uppercase tracking-widest bg-gradient-to-r from-primary to-primary-dark text-white shadow-premium hover:shadow-lg transform active:scale-[0.98] transition-all">Save & Sync</button>
+                                <button type="submit" className="flex-1 px-8 py-5 rounded-2xl font-black uppercase tracking-widest bg-gradient-to-r from-primary to-primary-dark text-white shadow-premium hover:shadow-lg transform active:scale-[0.98] transition-all">Save Changes</button>
                             </div>
                         </form>
                     </div>
@@ -340,6 +359,15 @@ export const AdminView: React.FC<AdminViewProps> = ({ orders, products, updateOr
             )}
 
             {selectedOrder && <Invoice order={selectedOrder} onClose={() => setSelectedOrder(null)} />}
+            
+            {/* Proof Viewer */}
+            {proofToView && (
+                <div className="fixed inset-0 bg-dark/80 backdrop-blur-md flex items-center justify-center z-[100] p-4" onClick={() => setProofToView(null)}>
+                    <div className="bg-white rounded-3xl p-4 shadow-premium max-w-2xl" onClick={e => e.stopPropagation()}>
+                        <img src={proofToView} className="w-full h-auto max-h-[80vh] object-contain rounded-2xl" alt="Payment Proof" />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

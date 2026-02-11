@@ -12,9 +12,9 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onLogin }) => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         // Updated branding check
-        if (password === 'VegeloAdmin2025!') { 
+        if (password === 'TazaAdmin2025!') { 
             onLogin();
-        } else if (password === 'Alex0987@') { // Backwards compat
+        } else if (password === 'VegeloAdmin2025!') { // Legacy compat
             onLogin();
         } else {
             setError('Unauthorized Access');
@@ -27,7 +27,7 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onLogin }) => {
                 <div className="bg-gradient-to-br from-primary to-primary-dark w-16 h-16 rounded-2xl mx-auto flex items-center justify-center shadow-lg mb-8">
                     <span className="material-symbols-rounded text-white text-3xl">lock</span>
                 </div>
-                <h2 className="text-3xl font-black text-dark mb-2 tracking-tight">Vegelo Admin</h2>
+                <h2 className="text-3xl font-black text-dark mb-2 tracking-tight">TazaMart Admin</h2>
                 <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-10">Restricted Area</p>
                 
                 <form onSubmit={handleSubmit} className="text-left">

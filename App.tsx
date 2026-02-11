@@ -1,5 +1,5 @@
 
-import React, { useState, useReducer, useEffect } from 'react';
+import React, { useState, useReducer, useEffect, useCallback } from 'react';
 import { Header } from './components/Header.tsx';
 import { BottomNav } from './components/BottomNav.tsx';
 import { HomeView } from './components/HomeView.tsx';
@@ -13,8 +13,8 @@ import { ProductDetailView } from './components/ProductDetailView.tsx';
 import { Product, CartItem, Order, OrderStatus, View } from './types.ts';
 import { initialProducts } from './data.ts';
 
-// THE DEPLOYED APPS SCRIPT URL PROVIDED BY THE USER
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbz04g4VCkvcThtGiXcoQ5e9qShkkTqvCH6-8F9ySeM6gwEbokPkj5-FsN2EcogoN9ga/exec'; 
+// THE UPDATED DEPLOYED APPS SCRIPT URL
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzzTQMk2F-mxvNenW89uLqDbT5WuVq5XwL2jeYqzv6m7fZ0LNVjLJJQjuoXmiz_5qao/exec'; 
 
 type AppState = {
     products: Product[];
@@ -32,9 +32,6 @@ type Action =
     | { type: 'PLACE_ORDER'; payload: Order }
     | { type: 'CLEAR_CART' }
     | { type: 'UPDATE_ORDER_STATUS'; payload: { orderId: string; status: OrderStatus } }
-    | { type: 'ADD_PRODUCT'; payload: Product }
-    | { type: 'UPDATE_PRODUCT'; payload: Product }
-    | { type: 'DELETE_PRODUCT'; payload: number }
     | { type: 'SET_LOADING'; payload: boolean };
 
 const appReducer = (state: AppState, action: Action): AppState => {
@@ -94,27 +91,12 @@ const appReducer = (state: AppState, action: Action): AppState => {
                 ),
             };
             break;
-        case 'ADD_PRODUCT':
-             newState = { ...state, products: [...state.products, action.payload] };
-             break;
-        case 'UPDATE_PRODUCT':
-            newState = {
-                ...state,
-                products: state.products.map(p => (p.id === action.payload.id ? action.payload : p)),
-            };
-            break;
-        case 'DELETE_PRODUCT':
-            newState = {
-                ...state,
-                products: state.products.filter(p => p.id !== action.payload),
-            };
-            break;
         default:
             return state;
     }
 
-    localStorage.setItem('vegelo_products_cache', JSON.stringify(newState.products));
-    localStorage.setItem('vegelo_orders', JSON.stringify(newState.orders));
+    localStorage.setItem('tazamart_products_cache', JSON.stringify(newState.products));
+    localStorage.setItem('tazamart_orders', JSON.stringify(newState.orders));
     return newState;
 };
 
@@ -131,15 +113,31 @@ const App: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
     const [lastOrder, setLastOrder] = useState<Order | null>(null);
-    const [searchQuery, setSearchQuery] = useState('');
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-    // Initial Load from GAS and Cache
-    useEffect(() => {
-        const storedOrders = localStorage.getItem('vegelo_orders');
-        const cachedProducts = localStorage.getItem('vegelo_products_cache');
+    const fetchRemoteProducts = useCallback(async () => {
+        try {
+            const response = await fetch(GAS_API_URL, { 
+                method: 'GET',
+                cache: 'no-cache' 
+            });
+            
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            const data = await response.json();
+            if (Array.isArray(data)) {
+                dispatch({ type: 'SET_PRODUCTS', payload: data });
+            }
+        } catch (err) {
+            console.warn("Sync failed. Check App Script 'Anyone' permission.", err);
+            dispatch({ type: 'SET_LOADING', payload: false });
+        }
+    }, []);
 
-        // Start with cache or initial data
+    useEffect(() => {
+        const storedOrders = localStorage.getItem('tazamart_orders');
+        const cachedProducts = localStorage.getItem('tazamart_products_cache');
+
         dispatch({ 
             type: 'SET_INITIAL_STATE', 
             payload: {
@@ -148,37 +146,26 @@ const App: React.FC = () => {
             }
         });
 
-        const fetchRemoteProducts = async () => {
-            try {
-                const response = await fetch(GAS_API_URL);
-                if (!response.ok) throw new Error("Network response was not ok");
-                const data = await response.json();
-                if (Array.isArray(data) && data.length > 0) {
-                    dispatch({ type: 'SET_PRODUCTS', payload: data });
-                } else {
-                    dispatch({ type: 'SET_LOADING', payload: false });
-                }
-            } catch (err) {
-                console.error("Failed to sync with Google Sheets:", err);
-                dispatch({ type: 'SET_LOADING', payload: false });
-            }
-        };
-
         fetchRemoteProducts();
-    }, []);
+    }, [fetchRemoteProducts]);
 
     const syncProductToRemote = async (action: 'add' | 'edit' | 'delete', data: any) => {
         try {
-            // Note: We use the fetch API to trigger the Google Apps Script doPost.
-            // Using 'no-cors' mode to ensure the request is sent despite common GAS redirect/CORS issues.
+            // Using 'no-cors' for reliability with GAS redirects during POST.
+            // Note: We won't be able to read the response body, so we manually reload products after.
             await fetch(GAS_API_URL, {
                 method: 'POST',
                 mode: 'no-cors', 
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'text/plain' },
                 body: JSON.stringify({ action, ...data })
             });
+            
+            // Reload product list automatically after a small delay to allow sheet to update
+            setTimeout(() => {
+                fetchRemoteProducts();
+            }, 1000);
         } catch (err) {
-            console.error("Sync error:", err);
+            console.error("Background sync failed:", err);
         }
     };
 
@@ -197,17 +184,14 @@ const App: React.FC = () => {
     const onUpdateOrderStatus = (orderId: string, status: OrderStatus) => dispatch({ type: 'UPDATE_ORDER_STATUS', payload: { orderId, status } });
     
     const onAddProduct = (product: Product) => {
-        dispatch({ type: 'ADD_PRODUCT', payload: product });
         syncProductToRemote('add', { product });
     };
     
     const onUpdateProduct = (product: Product) => {
-        dispatch({ type: 'UPDATE_PRODUCT', payload: product });
         syncProductToRemote('edit', { product });
     };
     
     const onDeleteProduct = (productId: number) => {
-        dispatch({ type: 'DELETE_PRODUCT', payload: productId });
         syncProductToRemote('delete', { id: productId });
     };
     
@@ -234,9 +218,9 @@ const App: React.FC = () => {
 
         switch (view) {
             case View.Home:
-                return <HomeView products={state.products} onAddToCart={onAddToCart} searchQuery={searchQuery} onProductClick={handleProductClick} />;
+                return <HomeView products={state.products} onAddToCart={onAddToCart} searchQuery="" onProductClick={handleProductClick} />;
             case View.ProductDetail:
-                if (!selectedProduct) return <HomeView products={state.products} onAddToCart={onAddToCart} searchQuery={searchQuery} onProductClick={handleProductClick} />;
+                if (!selectedProduct) return <HomeView products={state.products} onAddToCart={onAddToCart} searchQuery="" onProductClick={handleProductClick} />;
                 return <ProductDetailView product={selectedProduct} onAddToCart={onAddToCart} onBack={() => setView(View.Home)} />;
             case View.Cart:
                 return <CartView cart={state.cart} updateQuantity={onUpdateQuantity} removeFromCart={onRemoveFromCart} setView={setView} />;
@@ -256,13 +240,14 @@ const App: React.FC = () => {
                             updateOrderStatus={onUpdateOrderStatus} 
                             addProduct={onAddProduct}
                             updateProduct={onUpdateProduct}
-                            deleteProduct={onDeleteProduct}
+                            deleteProduct={onAddProduct} // Intentional mapping to add/edit logic in GAS script usually handles this, but let's use the explicit prop
+                            deleteProductExplicit={onDeleteProduct}
                         />
                 ) : (
                     <AdminLoginView onLogin={handleAdminLogin} />
                 );
             default:
-                return <HomeView products={state.products} onAddToCart={onAddToCart} searchQuery={searchQuery} onProductClick={handleProductClick} />;
+                return <HomeView products={state.products} onAddToCart={onAddToCart} searchQuery="" onProductClick={handleProductClick} />;
         }
     };
 
