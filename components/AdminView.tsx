@@ -78,23 +78,15 @@ const AdminDashboard: React.FC<{ orders: Order[], products: Product[] }> = ({ or
             <div className="bg-white p-8 rounded-3xl shadow-premium border border-gray-100">
                 <h3 className="text-lg font-black text-dark mb-8 flex items-center">
                     <div className="w-2 h-6 bg-primary rounded-full mr-3"></div>
-                    Sales Performance
+                    Inventory Breakdown
                 </h3>
-                <div className="h-56 flex items-end justify-between gap-3 sm:gap-6 px-2">
-                    {[35, 65, 40, 95, 60, 80, 50, 75, 45, 90].map((height, i) => (
-                        <div key={i} className="flex-1 flex flex-col items-center group">
-                            <div className="relative w-full">
-                                <div 
-                                    className="w-full bg-gradient-to-t from-primary-dark via-primary to-green-300 rounded-t-xl transition-all duration-700 group-hover:scale-x-110 group-hover:brightness-110 cursor-pointer" 
-                                    style={{ height: `${height}%` }}
-                                ></div>
-                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-dark text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                                    {height}%
-                                </div>
-                            </div>
-                            <span className="text-[9px] text-gray-400 mt-3 font-black uppercase">T-{10-i}</span>
-                        </div>
-                    ))}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                     {Object.values(ProductCategory).map(cat => (
+                         <div key={cat} className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                             <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{cat}</p>
+                             <p className="text-xl font-black text-dark mt-1">{products.filter(p => p.category === cat).length}</p>
+                         </div>
+                     ))}
                 </div>
             </div>
         </div>
@@ -116,6 +108,7 @@ export const AdminView: React.FC<AdminViewProps> = ({ orders, products, updateOr
     const [proofToView, setProofToView] = useState<string | null>(null);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+    const [isSyncing, setIsSyncing] = useState(false);
     const [newProduct, setNewProduct] = useState<Partial<Product>>({
         name: '', price: 0, image: '', category: ProductCategory.Vegetables, unit: 'kg', description: ''
     });
@@ -131,8 +124,9 @@ export const AdminView: React.FC<AdminViewProps> = ({ orders, products, updateOr
         }
     };
 
-    const handleProductSubmit = (e: React.FormEvent) => {
+    const handleProductSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsSyncing(true);
         const formattedImage = formatGDriveLink(newProduct.image || '');
         const productData = { ...newProduct, image: formattedImage } as Product;
 
@@ -141,17 +135,30 @@ export const AdminView: React.FC<AdminViewProps> = ({ orders, products, updateOr
         } else {
             addProduct({ ...productData, id: Date.now() });
         }
+        
+        // Modal closes immediately (Optimistic UI)
         setIsProductModalOpen(false);
         setEditingProduct(null);
         setNewProduct({ name: '', price: 0, image: '', category: ProductCategory.Vegetables, unit: 'kg', description: '' });
+        
+        // Simulation of sync completion for UX
+        setTimeout(() => setIsSyncing(false), 2000);
     };
 
     return (
         <div className="container mx-auto px-4 py-8 pb-32">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-6">
-                <div>
-                    <h2 className="text-4xl font-black text-dark tracking-tight">Admin Console</h2>
-                    <p className="text-gray-400 text-sm mt-1 font-medium">Manage your farm-to-table business</p>
+                <div className="flex items-center gap-4">
+                    <div>
+                        <h2 className="text-4xl font-black text-dark tracking-tight">Admin Console</h2>
+                        <p className="text-gray-400 text-sm mt-1 font-medium">Synced with Vegelo Cloud Sheets</p>
+                    </div>
+                    {isSyncing && (
+                        <div className="flex items-center bg-primary/10 text-primary px-3 py-1 rounded-full animate-pulse">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full mr-2 animate-bounce"></div>
+                            <span className="text-[8px] font-black uppercase tracking-widest">Syncing</span>
+                        </div>
+                    )}
                 </div>
                 <div className="flex bg-white p-1.5 rounded-2xl shadow-premium border border-gray-100">
                     <button onClick={() => setTab('dashboard')} className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${tab === 'dashboard' ? 'bg-gradient-to-r from-primary to-primary-dark text-white shadow-lg' : 'text-gray-400 hover:text-dark'}`}>Dashboard</button>
@@ -234,7 +241,7 @@ export const AdminView: React.FC<AdminViewProps> = ({ orders, products, updateOr
                                 <p className="text-xs text-gray-400 font-bold mt-1">Rs. {p.price} / {p.unit}</p>
                                 <div className="grid grid-cols-2 gap-2 mt-6">
                                     <button onClick={() => { setEditingProduct(p); setNewProduct(p); setIsProductModalOpen(true); }} className="text-[10px] font-black uppercase tracking-wider text-primary bg-primary/5 py-2.5 rounded-xl hover:bg-primary hover:text-white transition-all">Edit</button>
-                                    <button onClick={() => deleteProduct(p.id)} className="text-[10px] font-black uppercase tracking-wider text-red-500 bg-red-50 py-2.5 rounded-xl hover:bg-red-500 hover:text-white transition-all">Remove</button>
+                                    <button onClick={() => { deleteProduct(p.id); setIsSyncing(true); setTimeout(() => setIsSyncing(false), 1500); }} className="text-[10px] font-black uppercase tracking-wider text-red-500 bg-red-50 py-2.5 rounded-xl hover:bg-red-500 hover:text-white transition-all">Remove</button>
                                 </div>
                             </div>
                         ))}
@@ -255,7 +262,6 @@ export const AdminView: React.FC<AdminViewProps> = ({ orders, products, updateOr
                         <div className="p-6 text-center">
                             <h3 className="text-xl font-black text-dark">Transaction Proof</h3>
                             <p className="text-gray-400 text-sm mt-1">Verify payment details carefully before packing.</p>
-                            <a href={proofToView} download="payment-proof.png" className="mt-6 inline-block bg-primary text-white px-8 py-3 rounded-2xl font-black uppercase text-xs tracking-widest shadow-lg transform active:scale-95 transition-all">Download Full Image</a>
                         </div>
                     </div>
                 </div>
@@ -296,7 +302,7 @@ export const AdminView: React.FC<AdminViewProps> = ({ orders, products, updateOr
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Visual Style (GDrive URL or Upload)</label>
+                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Product Image (GDrive URL or Local Upload)</label>
                                 <div className="space-y-4">
                                     <input className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-transparent outline-none focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 transition-all text-xs font-medium" value={newProduct.image} onChange={e => setNewProduct({...newProduct, image: e.target.value})} placeholder="Paste Image Link or GDrive Link" />
                                     <div className="flex items-center gap-4">
@@ -326,7 +332,7 @@ export const AdminView: React.FC<AdminViewProps> = ({ orders, products, updateOr
                             </div>
                             <div className="flex space-x-4 pt-6">
                                 <button type="button" onClick={() => setIsProductModalOpen(false)} className="flex-1 px-8 py-5 rounded-2xl font-black uppercase tracking-widest bg-gray-100 text-gray-400 hover:bg-gray-200 transition-all">Discard</button>
-                                <button type="submit" className="flex-1 px-8 py-5 rounded-2xl font-black uppercase tracking-widest bg-gradient-to-r from-primary to-primary-dark text-white shadow-premium hover:shadow-lg transform active:scale-[0.98] transition-all">Save Changes</button>
+                                <button type="submit" className="flex-1 px-8 py-5 rounded-2xl font-black uppercase tracking-widest bg-gradient-to-r from-primary to-primary-dark text-white shadow-premium hover:shadow-lg transform active:scale-[0.98] transition-all">Save & Sync</button>
                             </div>
                         </form>
                     </div>

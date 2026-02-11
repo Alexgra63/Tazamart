@@ -68,35 +68,36 @@ export const ProfileIcon: React.FC<{ className?: string }> = ({ className }) => 
     </svg>
 );
 
-// Category Icons
+// Category Icons (Filled)
+export const StarIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+    </svg>
+);
+
 export const LeafIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17 8C8 10 5.9 16.17 3.82 21.34L2.18 20.66C4.26 15.49 6.1 10.33 15 8c-3.5 3.5-5.5 8.5-5.5 13h2c0-3.5 2.5-10 8-12V7h-2.5z"/>
     </svg>
 );
 
-export const CarrotIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.5 9.5L19 5m-4.5 4.5l-4.5 4.5" />
+export const AppleIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 5c.492 0 .97.067 1.42.192.368-.962 1.09-1.592 1.58-1.592.5 0 .5 1.5 0 2.4-.41.74-.91 1-1.42 1-.363 0-.712-.132-1-.384-.368.647-.58 1.427-.58 2.384 0 3.314 2.686 6 6 6s6-2.686 6-6c0-3.314-2.686-6-6-6-.547 0-1.07.073-1.565.21-.495-.137-1.018-.21-1.565-.21a6 6 0 00-6 6c0 3.314 2.686 6 6 6s6-2.686 6-6c0-3.314-2.686-6-6-6z" transform="translate(-6, -1)"/>
+        <path d="M12 21c-2.761 0-5.5-2.239-5.5-5 0-3.314 2.5-6 5.5-6s5.5 2.686 5.5 6-2.739 5-5.5 5zm0-9c-1.933 0-3.5 1.567-3.5 3.5s1.567 3.5 3.5 3.5 3.5-1.567 3.5-3.5-1.567-3.5-3.5-3.5zm0-8c-.552 0-1-.448-1-1s.448-1 1-1 1 .448 1 1-.448 1-1 1z" transform="translate(0, 1)"/>
+        <path d="M12.5 4c-.2 0-.4 0-.6.1-.2-.5-.1-1.1.2-1.6.4-.7 1.1-1.2 1.9-1.3.1.5.1 1.1-.2 1.6-.4.7-1.1 1.2-1.9 1.3z" transform="translate(-0.5, 0)"/>
+        <path d="M12 22c-3.1 0-5.6-1.9-6.6-4.5-1-2.5-.5-5.4 1.3-7.5 1.9-2.2 4.9-3 7.6-2 2.7 1.1 4.5 3.7 4.5 6.6 0 4.1-3.1 7.4-6.8 7.4z"/>
     </svg>
 );
 
-export const FruitIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 22a9 9 0 100-18 9 9 0 000 18z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3" />
+export const BoxIconFilled: React.FC<{ className?: string }> = ({ className }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12.89 1.45l8 4c.67.33 1.11 1 1.11 1.75v9.6a2 2 0 01-1.11 1.76l-8 4a2 2 0 01-1.78 0l-8-4A2 2 0 012 16.8v-9.6c0-.75.44-1.42 1.11-1.75l8-4a2 2 0 011.78 0z"/>
     </svg>
 );
 
-export const BoxIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-    </svg>
-);
-
-export const SparkleIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+export const SparkleIconFilled: React.FC<{ className?: string }> = ({ className }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2l2.4 7.2L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4L12 2z"/>
     </svg>
 );

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Product, ProductCategory } from '../types.ts';
 import { ProductCard } from './ProductCard.tsx';
-import { SearchIcon, LeafIcon, CarrotIcon, FruitIcon, BoxIcon, SparkleIcon } from './Icons.tsx';
+import { SearchIcon } from './Icons.tsx';
 
 interface HomeViewProps {
     products: Product[];
@@ -16,11 +16,11 @@ export const HomeView: React.FC<HomeViewProps> = ({ products, onAddToCart, onPro
     const [localSearch, setLocalSearch] = useState('');
 
     const categories = [
-        { name: 'All', icon: LeafIcon, color: 'text-gray-400 bg-gray-50', activeColor: 'text-primary bg-primary/10' },
-        { name: ProductCategory.Vegetables, icon: CarrotIcon, color: 'text-green-500 bg-green-50', activeColor: 'text-green-600 bg-green-100' },
-        { name: ProductCategory.Fruits, icon: FruitIcon, color: 'text-red-500 bg-red-50', activeColor: 'text-red-600 bg-red-100' },
-        { name: ProductCategory.Bundles, icon: BoxIcon, color: 'text-blue-500 bg-blue-50', activeColor: 'text-blue-600 bg-blue-100' },
-        { name: ProductCategory.Seasonal, icon: SparkleIcon, color: 'text-purple-500 bg-purple-50', activeColor: 'text-purple-600 bg-purple-100' },
+        { name: 'All', icon: 'stars', color: 'text-gray-300 bg-gray-50', activeColor: 'text-white bg-primary' },
+        { name: ProductCategory.Vegetables, icon: 'eco', color: 'text-green-300 bg-green-50', activeColor: 'text-white bg-green-500' },
+        { name: ProductCategory.Fruits, icon: 'apple', color: 'text-red-300 bg-red-50', activeColor: 'text-white bg-red-500' },
+        { name: ProductCategory.Bundles, icon: 'inventory_2', color: 'text-blue-300 bg-blue-50', activeColor: 'text-white bg-blue-500' },
+        { name: ProductCategory.Seasonal, icon: 'auto_awesome', color: 'text-purple-300 bg-purple-50', activeColor: 'text-white bg-purple-500' },
     ];
 
     const filteredProducts = products.filter(product => {
@@ -31,58 +31,59 @@ export const HomeView: React.FC<HomeViewProps> = ({ products, onAddToCart, onPro
 
     return (
         <div className="bg-white pb-20 animate-in fade-in duration-500">
-            {/* Tighter Hero Banner */}
-            <div className="px-4 mt-4 mb-6">
-                <div className="hero-gradient p-6 rounded-[2rem] shadow-premium text-white relative overflow-hidden flex flex-col justify-between">
+            {/* Ultra Tight Hero Banner */}
+            <div className="px-4 mt-3 mb-4">
+                <div className="hero-gradient p-5 rounded-[1.5rem] shadow-premium text-white relative overflow-hidden">
                     <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
                     
-                    <div className="relative z-10 mb-4">
-                        <span className="bg-white/20 text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-md mb-2 inline-block">
+                    <div className="relative z-10 mb-3">
+                        <span className="bg-white/20 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full backdrop-blur-md mb-1.5 inline-block">
                             Fresh Quality
                         </span>
-                        <h2 className="text-2xl font-black leading-tight tracking-tight">
-                            Delivered to your doorstep <br/> 
+                        <h2 className="text-xl font-black leading-tight tracking-tight">
+                            Freshness delivered <br/> 
                             <span className="text-green-200">at market price</span>
                         </h2>
                     </div>
 
-                    <div className="relative z-10 group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <SearchIcon className="h-4 w-4 text-gray-400" />
+                    <div className="relative z-10">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <SearchIcon className="h-3.5 w-3.5 text-gray-400" />
                         </div>
                         <input 
                             type="text"
-                            placeholder="Search fresh items..."
+                            placeholder="Search items..."
                             value={localSearch}
                             onChange={(e) => setLocalSearch(e.target.value)}
-                            className="block w-full pl-11 pr-4 py-3 bg-white rounded-2xl text-dark font-black placeholder-gray-400 border-none outline-none shadow-premium focus:ring-4 focus:ring-white/10 transition-all text-xs"
+                            className="block w-full pl-9 pr-3 py-2 bg-white rounded-xl text-dark font-bold placeholder-gray-400 border-none outline-none shadow-premium focus:ring-4 focus:ring-white/10 transition-all text-[11px]"
                         />
                     </div>
                 </div>
             </div>
 
-            {/* Smaller Categories */}
-            <div className="mb-6">
-                <h3 className="px-5 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Browse</h3>
-                <div className="flex overflow-x-auto space-x-4 px-5 no-scrollbar pb-1">
+            {/* Smaller Category Icons with Google Material Symbols */}
+            <div className="mb-4">
+                <h3 className="px-5 text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2.5">Categories</h3>
+                <div className="flex overflow-x-auto space-x-3 px-5 no-scrollbar pb-1">
                     {categories.map((cat) => {
-                        const Icon = cat.icon;
                         const isActive = selectedCategory === cat.name || (cat.name === 'All' && !selectedCategory);
                         return (
                             <button 
                                 key={cat.name} 
                                 onClick={() => setSelectedCategory(cat.name)}
-                                className="flex flex-col items-center space-y-2 min-w-[64px] group transition-transform active:scale-90"
+                                className="flex flex-col items-center space-y-1.5 min-w-[54px] group transition-transform active:scale-90"
                             >
                                 <div className={`
-                                    h-14 w-14 rounded-2xl flex items-center justify-center border-2 transition-all duration-300
+                                    h-10 w-10 rounded-xl flex items-center justify-center transition-all duration-300
                                     ${isActive 
-                                        ? `border-primary shadow-soft ${cat.activeColor}` 
-                                        : `border-transparent opacity-90 ${cat.color}`}
+                                        ? `${cat.activeColor} shadow-md scale-105` 
+                                        : `${cat.color} opacity-90 group-hover:opacity-100 group-hover:bg-white`}
                                 `}>
-                                    <Icon className={`h-6 w-6 ${isActive ? 'scale-110' : ''} transition-transform`} />
+                                    <span className="material-symbols-rounded text-xl leading-none">
+                                        {cat.icon}
+                                    </span>
                                 </div>
-                                <span className={`text-[10px] font-black tracking-tight transition-colors ${isActive ? 'text-primary' : 'text-gray-400'}`}>
+                                <span className={`text-[9px] font-black tracking-tight transition-colors ${isActive ? 'text-dark' : 'text-gray-400'}`}>
                                     {cat.name.split(' ')[0]}
                                 </span>
                             </button>
@@ -93,19 +94,19 @@ export const HomeView: React.FC<HomeViewProps> = ({ products, onAddToCart, onPro
 
             {/* Product Section */}
             <div className="px-5">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-3">
                     <div>
-                        <h3 className="text-xl font-black text-dark">
-                            {selectedCategory && selectedCategory !== 'All' ? selectedCategory : 'Fresh Produce'}
+                        <h3 className="text-lg font-black text-dark">
+                            {selectedCategory && selectedCategory !== 'All' ? selectedCategory : 'Fresh Selection'}
                         </h3>
-                        <p className="text-[9px] text-gray-400 font-black uppercase tracking-widest">
-                            {filteredProducts.length} items
+                        <p className="text-[8px] text-gray-400 font-black uppercase tracking-widest leading-none mt-0.5">
+                            {filteredProducts.length} items found
                         </p>
                     </div>
                 </div>
                 
                 {filteredProducts.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-3">
                         {filteredProducts.map(product => (
                             <ProductCard 
                                 key={product.id} 
@@ -116,10 +117,10 @@ export const HomeView: React.FC<HomeViewProps> = ({ products, onAddToCart, onPro
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-16 bg-gray-50 rounded-[2rem] border border-gray-100">
-                        <div className="text-4xl mb-4 text-gray-200">🥗</div>
-                        <h4 className="font-black text-gray-400 uppercase tracking-widest text-[10px]">No items found</h4>
-                        <button onClick={() => {setLocalSearch(''); setSelectedCategory('All');}} className="mt-2 text-primary font-black uppercase text-[9px] tracking-widest">Clear</button>
+                    <div className="text-center py-12 bg-gray-50 rounded-2xl border border-gray-100">
+                        <span className="material-symbols-rounded text-4xl text-gray-200 mb-2">search_off</span>
+                        <h4 className="font-black text-gray-400 uppercase tracking-widest text-[9px]">No items found</h4>
+                        <button onClick={() => {setLocalSearch(''); setSelectedCategory('All');}} className="mt-2 text-primary font-black uppercase text-[8px] tracking-widest">Reset View</button>
                     </div>
                 )}
             </div>

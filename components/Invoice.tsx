@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Order } from '../types';
 
@@ -72,14 +73,6 @@ export const Invoice: React.FC<InvoiceProps> = ({ order, onClose }) => {
 
                     <div className="flex justify-end mt-12">
                         <div className="w-full max-w-xs space-y-4">
-                            <div className="flex justify-between items-center px-4">
-                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Subtotal</span>
-                                <span className="font-bold text-dark text-sm">Rs. {order.total.toLocaleString()}</span>
-                            </div>
-                            <div className="flex justify-between items-center px-4">
-                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Delivery</span>
-                                <span className="font-black text-primary text-[10px] uppercase tracking-widest">Free</span>
-                            </div>
                             <div className="flex justify-between items-center bg-primary/5 p-6 rounded-3xl">
                                 <span className="text-xs font-black text-primary uppercase tracking-widest">Total Amount</span>
                                 <span className="text-3xl font-black text-primary tracking-tighter">Rs. {order.total.toLocaleString()}</span>
@@ -89,7 +82,7 @@ export const Invoice: React.FC<InvoiceProps> = ({ order, onClose }) => {
 
                     <div className="text-center mt-20 pb-4 border-t border-gray-100 pt-10">
                         <p className="text-sm font-black text-dark">Eat Fresh. Live Better.</p>
-                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-2">Vegelo Fresh Delivery • DHA Phase 6, Lahore</p>
+                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-2">Vegelo Fresh Delivery Service</p>
                     </div>
                 </div>
 
