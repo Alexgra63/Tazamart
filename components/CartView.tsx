@@ -1,14 +1,12 @@
 
 import React from 'react';
 import { CartItem, View, Language } from '../types';
-import { TrashIcon, PlusIcon, MinusIcon } from './Icons';
 
 interface CartViewProps {
     cart: CartItem[];
     updateQuantity: (productId: number, quantity: number) => void;
     removeFromCart: (productId: number) => void;
     setView: (view: View) => void;
-    // Added lang prop to fix TypeScript error in App.tsx
     lang: Language;
 }
 
@@ -66,7 +64,7 @@ export const CartView: React.FC<CartViewProps> = ({ cart, updateQuantity, remove
                     <div className="flex-grow space-y-4">
                         {cart.map(item => (
                             <div key={item.id} className="bg-white dark:bg-slate-900 p-4 rounded-[2rem] shadow-soft border border-gray-100 dark:border-slate-800 flex items-center gap-4 transition-all">
-                                <img src={item.image} alt={item.name} className="w-24 h-24 rounded-2xl object-cover shrink-0 shadow-sm"/>
+                                <img src={item.image} alt={item.name} className="w-24 h-24 rounded-2xl object-cover shrink-0 shadow-sm" referrerPolicy="no-referrer" />
                                 <div className="flex-grow">
                                     <h3 className="font-black text-dark dark:text-white text-sm">{item.name}</h3>
                                     <p className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-tighter">Rs. {item.price} / {item.unit}</p>
@@ -78,7 +76,7 @@ export const CartView: React.FC<CartViewProps> = ({ cart, updateQuantity, remove
                                                 className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-dark dark:hover:text-white disabled:opacity-30" 
                                                 disabled={item.quantity <= (item.unit === 'kg' ? 0.25 : 1)}
                                             >
-                                                <MinusIcon className="h-4 w-4"/>
+                                                <span className="material-symbols-rounded text-[18px]">remove</span>
                                             </button>
                                             <span className="px-3 font-black text-[11px] min-w-[70px] text-center dark:text-white">
                                                 {item.quantity} {item.unit}
@@ -87,14 +85,14 @@ export const CartView: React.FC<CartViewProps> = ({ cart, updateQuantity, remove
                                                 onClick={() => handleQuantityChange(item, 1)} 
                                                 className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-dark dark:hover:text-white"
                                             >
-                                                <PlusIcon className="h-4 w-4"/>
+                                                <span className="material-symbols-rounded text-[18px]">add</span>
                                             </button>
                                         </div>
                                         <span className="font-black text-primary text-sm">Rs. {(item.price * item.quantity).toFixed(0)}</span>
                                     </div>
                                 </div>
                                 <button onClick={() => removeFromCart(item.id)} className="text-gray-300 dark:text-slate-700 hover:text-red-500 transition-colors p-2">
-                                    <TrashIcon className="h-5 w-5"/>
+                                    <span className="material-symbols-rounded text-[22px]">delete</span>
                                 </button>
                             </div>
                         ))}

@@ -42,24 +42,6 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
 
                 <div className="flex items-center space-x-2">
-                    {/* Language Toggle */}
-                    <button 
-                        onClick={() => setLanguage(lang === Language.EN ? Language.UR : Language.EN)}
-                        className="text-[10px] font-black uppercase bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-gray-400 px-2 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
-                    >
-                        {lang === Language.EN ? 'Urdu' : 'English'}
-                    </button>
-
-                    {/* Theme Toggle */}
-                    <button 
-                        onClick={() => setTheme(theme === Theme.Light ? Theme.Dark : Theme.Light)}
-                        className="p-2 text-gray-500 dark:text-gray-400 hover:text-primary transition-colors"
-                    >
-                        <span className="material-symbols-rounded">
-                            {theme === Theme.Light ? 'dark_mode' : 'light_mode'}
-                        </span>
-                    </button>
-
                     {/* Cart Button */}
                     <button 
                         onClick={() => setView(View.Cart)} 

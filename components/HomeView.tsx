@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Product, ProductCategory, Language } from '../types.ts';
 import { ProductCard } from './ProductCard.tsx';
-import { SearchIcon, StarIcon, LeafIcon, AppleIcon, BoxIconFilled, SparkleIconFilled } from './Icons.tsx';
 
 interface HomeViewProps {
     products: Product[];
@@ -52,11 +51,11 @@ export const HomeView: React.FC<HomeViewProps> = ({ products, onAddToCart, onPro
     const t = translations[lang];
 
     const categories = [
-        { name: 'All', label: t.all, icon: StarIcon, color: 'text-gray-300 bg-gray-50 dark:bg-slate-800', activeColor: 'text-white bg-primary' },
-        { name: ProductCategory.Vegetables, label: t.veggies, icon: LeafIcon, color: 'text-green-300 bg-green-50 dark:bg-slate-800', activeColor: 'text-white bg-green-500' },
-        { name: ProductCategory.Fruits, label: t.fruits, icon: AppleIcon, color: 'text-red-300 bg-red-50 dark:bg-slate-800', activeColor: 'text-white bg-red-500' },
-        { name: ProductCategory.Bundles, label: t.bundles, icon: BoxIconFilled, color: 'text-blue-300 bg-blue-50 dark:bg-slate-800', activeColor: 'text-white bg-blue-500' },
-        { name: ProductCategory.Seasonal, label: t.seasonal, icon: SparkleIconFilled, color: 'text-purple-300 bg-purple-50 dark:bg-slate-800', activeColor: 'text-white bg-purple-500' },
+        { name: 'All', label: t.all, icon: 'stars', color: 'text-gray-300 bg-gray-50 dark:bg-slate-800', activeColor: 'text-white bg-primary' },
+        { name: ProductCategory.Vegetables, label: t.veggies, icon: 'eco', color: 'text-green-300 bg-green-50 dark:bg-slate-800', activeColor: 'text-white bg-green-500' },
+        { name: ProductCategory.Fruits, label: t.fruits, icon: 'nutrition', color: 'text-red-300 bg-red-50 dark:bg-slate-800', activeColor: 'text-white bg-red-500' },
+        { name: ProductCategory.Bundles, label: t.bundles, icon: 'inventory_2', color: 'text-blue-300 bg-blue-50 dark:bg-slate-800', activeColor: 'text-white bg-blue-500' },
+        { name: ProductCategory.Seasonal, label: t.seasonal, icon: 'auto_awesome', color: 'text-purple-300 bg-purple-50 dark:bg-slate-800', activeColor: 'text-white bg-purple-500' },
     ];
 
     const filteredProducts = products.filter(product => {
@@ -83,7 +82,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ products, onAddToCart, onPro
                     </div>
                     <div className="relative z-10">
                         <div className={`absolute inset-y-0 ${isUrdu ? 'right-0 pr-3' : 'left-0 pl-3'} flex items-center pointer-events-none`}>
-                            <SearchIcon className="h-3.5 w-3.5 text-gray-400" />
+                            <span className="material-symbols-rounded text-gray-400 text-[18px]">search</span>
                         </div>
                         <input 
                             type="text"
@@ -101,7 +100,6 @@ export const HomeView: React.FC<HomeViewProps> = ({ products, onAddToCart, onPro
                 <div className="flex overflow-x-auto space-x-3 px-5 no-scrollbar pb-1">
                     {categories.map((cat) => {
                         const isActive = selectedCategory === cat.name || (cat.name === 'All' && !selectedCategory);
-                        const Icon = cat.icon;
                         return (
                             <button 
                                 key={cat.name} 
@@ -109,7 +107,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ products, onAddToCart, onPro
                                 className={`flex flex-col items-center space-y-1.5 min-w-[64px] group transition-transform active:scale-90`}
                             >
                                 <div className={`h-11 w-11 rounded-xl flex items-center justify-center transition-all duration-300 ${isActive ? `${cat.activeColor} shadow-md scale-105` : `${cat.color} opacity-90 group-hover:opacity-100`}`}>
-                                    <Icon className="w-5 h-5" />
+                                    <span className="material-symbols-rounded text-[22px] leading-none">{cat.icon}</span>
                                 </div>
                                 <span className={`text-[10px] font-black tracking-tight transition-colors ${isActive ? 'text-dark dark:text-white' : 'text-gray-400'}`}>
                                     {cat.label}

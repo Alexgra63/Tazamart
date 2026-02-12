@@ -1,7 +1,6 @@
 
 import React, { useState, ChangeEvent, useMemo, useRef } from 'react';
 import { Order, OrderStatus, Product, ProductCategory } from '../types';
-import { ExternalLinkIcon, PrintIcon, TrashIcon, PlusIcon } from './Icons';
 import { Invoice } from './Invoice';
 
 const AdminDashboard: React.FC<{ orders: Order[], products: Product[] }> = ({ orders, products }) => {
@@ -223,8 +222,12 @@ export const AdminView: React.FC<AdminViewProps> = ({
                                             </select>
                                         </td>
                                         <td className="p-6 text-right space-x-2">
-                                            <button onClick={() => setSelectedOrder(order)} className="p-2.5 bg-gray-50 rounded-xl text-gray-400 hover:text-dark transition-all"><PrintIcon className="h-4 w-4"/></button>
-                                            <button onClick={() => setProofToView(order.paymentProof)} className="p-2.5 bg-primary/5 rounded-xl text-primary hover:bg-primary hover:text-white transition-all"><ExternalLinkIcon className="h-4 w-4"/></button>
+                                            <button onClick={() => setSelectedOrder(order)} className="p-2.5 bg-gray-50 rounded-xl text-gray-400 hover:text-dark transition-all">
+                                                <span className="material-symbols-rounded text-[20px]">print</span>
+                                            </button>
+                                            <button onClick={() => setProofToView(order.paymentProof)} className="p-2.5 bg-primary/5 rounded-xl text-primary hover:bg-primary hover:text-white transition-all">
+                                                <span className="material-symbols-rounded text-[20px]">open_in_new</span>
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
@@ -240,7 +243,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                         onClick={() => { setEditingProduct(null); setNewProduct({ name: '', price: 0, image: '', category: ProductCategory.Vegetables, unit: 'kg', description: '' }); setIsProductModalOpen(true); }} 
                         className="bg-primary text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest flex items-center shadow-premium hover:shadow-lg transition-all"
                     >
-                        <PlusIcon className="h-5 w-5 mr-3" /> Add New Item
+                        <span className="material-symbols-rounded mr-3">add</span> Add New Item
                     </button>
 
                     <div className="bg-white rounded-3xl shadow-premium border border-gray-100 overflow-hidden">
@@ -258,7 +261,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                                     {products.map(p => (
                                         <tr key={p.id} className="hover:bg-gray-50/30 transition-colors text-sm">
                                             <td className="p-6 flex items-center space-x-4">
-                                                <img src={p.image} className="w-12 h-12 rounded-xl object-cover shadow-soft" alt={p.name} onError={(e) => e.currentTarget.src = 'https://placehold.co/100x100?text=No+Img'} />
+                                                <img src={p.image} className="w-12 h-12 rounded-xl object-cover shadow-soft" alt={p.name} referrerPolicy="no-referrer" onError={(e) => e.currentTarget.src = 'https://placehold.co/100x100?text=No+Img'} />
                                                 <span className="font-black text-dark">{p.name}</span>
                                             </td>
                                             <td className="p-6">
@@ -270,7 +273,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                                                     <span className="material-symbols-rounded text-lg">edit</span>
                                                 </button>
                                                 <button onClick={() => handleDelete(p.id)} className="p-2.5 text-red-500 bg-red-50 rounded-xl hover:bg-red-500 hover:text-white transition-all">
-                                                    <TrashIcon className="h-4 w-4" />
+                                                    <span className="material-symbols-rounded text-lg">delete</span>
                                                 </button>
                                             </td>
                                         </tr>
@@ -318,13 +321,12 @@ export const AdminView: React.FC<AdminViewProps> = ({
                                 </select>
                             </div>
                             
-                            {/* NEW: Image Upload Section */}
                             <div>
                                 <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Item Image</label>
                                 <div className="flex flex-col items-center p-8 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 hover:border-primary/40 transition-all cursor-pointer relative" onClick={() => fileInputRef.current?.click()}>
                                     {newProduct.image ? (
                                         <div className="text-center">
-                                            <img src={newProduct.image} className="h-32 w-auto rounded-xl shadow-lg mx-auto object-cover mb-4" alt="Preview" />
+                                            <img src={newProduct.image} className="h-32 w-auto rounded-xl shadow-lg mx-auto object-cover mb-4" alt="Preview" referrerPolicy="no-referrer" />
                                             <p className="text-[10px] font-black text-primary uppercase">Tap to change image</p>
                                         </div>
                                     ) : (

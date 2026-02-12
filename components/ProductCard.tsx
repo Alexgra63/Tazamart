@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Product } from '../types.ts';
-import { PlusIcon } from './Icons.tsx';
 
 interface ProductCardProps {
     product: Product;
@@ -35,7 +34,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
                     }}
                     className="absolute bottom-3 right-3 bg-gradient-to-br from-primary to-primary-dark text-white p-2 rounded-xl shadow-premium hover:shadow-lg transition-all active:scale-90"
                 >
-                    <PlusIcon className="h-4 w-4" />
+                    <span className="material-symbols-rounded text-[18px]">add</span>
                 </button>
             </div>
             <div className="p-3">

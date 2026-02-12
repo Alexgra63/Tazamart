@@ -20,7 +20,8 @@ const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbytQbtCT4JNwAFrI_-7
 type AppState = {
     products: Product[];
     cart: CartItem[];
-    orders: Order[];
+    orders: Order[]; // Customer's local orders
+    remoteOrders: Order[]; // Admin's orders from GSheet
     favorites: number[]; // IDs of favorite products
     profile: UserProfile;
     language: Language;
@@ -29,7 +30,7 @@ type AppState = {
 };
 
 type Action =
-    | { type: 'SET_DATA'; payload: { products: Product[], orders: Order[] } }
+    | { type: 'SET_REMOTE_DATA'; payload: { products: Product[], orders: Order[] } }
     | { type: 'SET_INITIAL_STATE'; payload: Partial<AppState> }
     | { type: 'ADD_TO_CART'; payload: { product: Product; quantity: number } }
     | { type: 'REMOVE_FROM_CART'; payload: number }
@@ -48,8 +49,9 @@ const appReducer = (state: AppState, action: Action): AppState => {
     switch (action.type) {
         case 'SET_LOADING':
             return { ...state, isLoading: action.payload };
-        case 'SET_DATA':
-            newState = { ...state, products: action.payload.products, orders: action.payload.orders, isLoading: false };
+        case 'SET_REMOTE_DATA':
+            // Update products and admin-only remote orders
+            newState = { ...state, products: action.payload.products, remoteOrders: action.payload.orders, isLoading: false };
             break;
         case 'SET_INITIAL_STATE':
             newState = { ...state, ...action.payload };
@@ -102,14 +104,20 @@ const appReducer = (state: AppState, action: Action): AppState => {
             break;
         }
         case 'PLACE_ORDER':
+            // Add strictly to the user's local order list
             newState = { ...state, orders: [...state.orders, action.payload] };
             break;
         case 'CLEAR_CART':
             newState = { ...state, cart: [] };
             break;
         case 'UPDATE_ORDER_STATUS':
+            // Update remote orders list for admin view
             newState = {
                 ...state,
+                remoteOrders: state.remoteOrders.map(order =>
+                    order.id === action.payload.orderId ? { ...order, status: action.payload.status } : order
+                ),
+                // If it's the user's own order, update the local status too
                 orders: state.orders.map(order =>
                     order.id === action.payload.orderId ? { ...order, status: action.payload.status } : order
                 ),
@@ -133,6 +141,7 @@ const App: React.FC = () => {
         products: [],
         cart: [],
         orders: [],
+        remoteOrders: [],
         favorites: [],
         profile: { name: '', address: '', phone: '' },
         language: Language.EN,
@@ -141,7 +150,6 @@ const App: React.FC = () => {
     });
 
     const [view, setView] = useState<View>(View.Home);
-    const [isAdminView, setIsAdminView] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
     const [lastOrder, setLastOrder] = useState<Order | null>(null);
@@ -167,7 +175,8 @@ const App: React.FC = () => {
                     ...o,
                     orderDate: new Date(o.orderDate)
                 }));
-                dispatch({ type: 'SET_DATA', payload: { products, orders } });
+                // Only update products and remoteOrders (admin) - leave user local orders alone
+                dispatch({ type: 'SET_REMOTE_DATA', payload: { products, orders } });
             }
         } catch (err) {
             console.warn("Sync failed.", err);
@@ -198,7 +207,6 @@ const App: React.FC = () => {
         fetchRemoteData();
     }, [fetchRemoteData]);
 
-    // Apply theme to body
     useEffect(() => {
         if (state.theme === Theme.Dark) {
             document.documentElement.classList.add('dark');
@@ -284,16 +292,25 @@ const App: React.FC = () => {
             case View.Confirmation:
                 return <OrderConfirmationView lang={state.language} lastOrder={lastOrder} setView={setView} />;
             case View.OrderHistory:
+                // consumption of strictly local orders
                 return <OrderHistoryView lang={state.language} orders={state.orders} />;
             case View.Favorites:
                 return <FavoritesView lang={state.language} products={state.products.filter(p => state.favorites.includes(p.id))} onAddToCart={onAddToCart} onProductClick={handleProductClick} />;
             case View.Profile:
-                return <ProfileView lang={state.language} profile={state.profile} onSave={updateProfile} />;
+                return <ProfileView 
+                    lang={state.language} 
+                    theme={state.theme}
+                    profile={state.profile} 
+                    onSave={updateProfile} 
+                    setLanguage={setLanguage}
+                    setTheme={setTheme}
+                />;
             case View.AdminLogin:
                 return <AdminLoginView onLogin={() => { setIsAuthenticated(true); setView(View.Admin); }} />;
             case View.Admin:
                 return isAuthenticated ? (
-                    <AdminView orders={state.orders} products={state.products} updateOrderStatus={onUpdateOrderStatus} addProduct={onAddProduct} updateProduct={onUpdateProduct} deleteProductExplicit={onDeleteProduct} />
+                    // consumption of strictly remote orders for admin
+                    <AdminView orders={state.remoteOrders} products={state.products} updateOrderStatus={onUpdateOrderStatus} addProduct={onAddProduct} updateProduct={onUpdateProduct} deleteProductExplicit={onDeleteProduct} />
                 ) : (
                     <AdminLoginView onLogin={() => { setIsAuthenticated(true); setView(View.Admin); }} />
                 );
