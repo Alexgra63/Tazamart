@@ -27,7 +27,7 @@ export const MinusIcon: React.FC<{ className?: string }> = ({ className }) => (
 
 export const PrintIcon: React.FC<{ className?: string }> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 0-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
     </svg>
 );
 
@@ -40,13 +40,6 @@ export const ExternalLinkIcon: React.FC<{ className?: string }> = ({ className }
 export const SearchIcon: React.FC<{ className?: string }> = ({ className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-    </svg>
-);
-
-export const LocationIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
     </svg>
 );
 
@@ -83,10 +76,8 @@ export const LeafIcon: React.FC<{ className?: string }> = ({ className }) => (
 
 export const AppleIcon: React.FC<{ className?: string }> = ({ className }) => (
     <svg viewBox="0 0 24 24" className={className} fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 5c.492 0 .97.067 1.42.192.368-.962 1.09-1.592 1.58-1.592.5 0 .5 1.5 0 2.4-.41.74-.91 1-1.42 1-.363 0-.712-.132-1-.384-.368.647-.58 1.427-.58 2.384 0 3.314 2.686 6 6 6s6-2.686 6-6c0-3.314-2.686-6-6-6-.547 0-1.07.073-1.565.21-.495-.137-1.018-.21-1.565-.21a6 6 0 00-6 6c0 3.314 2.686 6 6 6s6-2.686 6-6c0-3.314-2.686-6-6-6z" transform="translate(-6, -1)"/>
-        <path d="M12 21c-2.761 0-5.5-2.239-5.5-5 0-3.314 2.5-6 5.5-6s5.5 2.686 5.5 6-2.739 5-5.5 5zm0-9c-1.933 0-3.5 1.567-3.5 3.5s1.567 3.5 3.5 3.5 3.5-1.567 3.5-3.5-1.567-3.5-3.5-3.5zm0-8c-.552 0-1-.448-1-1s.448-1 1-1 1 .448 1 1-.448 1-1 1z" transform="translate(0, 1)"/>
-        <path d="M12.5 4c-.2 0-.4 0-.6.1-.2-.5-.1-1.1.2-1.6.4-.7 1.1-1.2 1.9-1.3.1.5.1 1.1-.2 1.6-.4.7-1.1 1.2-1.9 1.3z" transform="translate(-0.5, 0)"/>
-        <path d="M12 22c-3.1 0-5.6-1.9-6.6-4.5-1-2.5-.5-5.4 1.3-7.5 1.9-2.2 4.9-3 7.6-2 2.7 1.1 4.5 3.7 4.5 6.6 0 4.1-3.1 7.4-6.8 7.4z"/>
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V7h2v5zm4 4h-2v-2h2v2zm0-4h-2V7h2v5z" opacity=".2" />
+        <path d="M20 10c0-4.418-3.582-8-8-8s-8 3.582-8 8c0 3.846 2.72 7.054 6.342 7.822L12 22l1.658-4.178C17.28 17.054 20 13.846 20 10zM12 4c1.104 0 2 .896 2 2s-.896 2-2 2-2-.896-2-2 .896-2 2-2zm0 13c-3.866 0-7-3.134-7-7 0-3.35 2.352-6.15 5.485-6.844.755.93 1.88 1.544 3.165 1.636-.5 1.15-.15 2.5 1.05 3.3.43 2.87-1.15 5.4-3.5 6.4 0 1-.5 2-1 2.5-.5.5-1 .5-1.5.5s-1 0-1.5-.5c-.5-.5-1-1.5-1-2.5 2.35-1 3.93-3.53 3.5-6.4-1.2-.8-1.55-2.15-1.05-3.3-1.285-.092-2.41-.706-3.165-1.636-3.133.694-5.485 3.494-5.485 6.844 0 3.866 3.134 7 7 7s7-3.134 7-7c0-.203-.01-.403-.028-.601-1.54-.74-2.43-2.399-2.222-4.149C16.89 9.1 17.65 8.15 18.55 7.6 18.84 8.35 19 9.16 19 10c0 3.866-3.134 7-7 7z" />
     </svg>
 );
 

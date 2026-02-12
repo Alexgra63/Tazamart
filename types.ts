@@ -43,6 +43,18 @@ export interface Order {
     orderDate: Date;
 }
 
+export type UserProfile = Customer;
+
+export enum Language {
+    EN = 'English',
+    UR = 'Urdu'
+}
+
+export enum Theme {
+    Light = 'light',
+    Dark = 'dark'
+}
+
 export enum View {
     Home,
     Cart,
@@ -52,4 +64,6 @@ export enum View {
     Admin,
     AdminLogin,
     ProductDetail,
+    Favorites,
+    Profile
 }

@@ -10,16 +10,21 @@ import { OrderHistoryView } from './components/OrderHistoryView.tsx';
 import { AdminView } from './components/AdminView.tsx';
 import { AdminLoginView } from './components/AdminLoginView.tsx';
 import { ProductDetailView } from './components/ProductDetailView.tsx';
-import { Product, CartItem, Order, OrderStatus, View } from './types.ts';
+import { ProfileView } from './components/ProfileView.tsx';
+import { FavoritesView } from './components/FavoritesView.tsx';
+import { Product, CartItem, Order, OrderStatus, View, Language, Theme, UserProfile } from './types.ts';
 import { initialProducts } from './data.ts';
 
-// THE NEW DEPLOYED APPS SCRIPT URL
 const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbytQbtCT4JNwAFrI_-7aDWoe2Ri1aSHJonO5BOLXRAb0P32DqBeWl9FWpgIuCpe7x0f/exec'; 
 
 type AppState = {
     products: Product[];
     cart: CartItem[];
     orders: Order[];
+    favorites: number[]; // IDs of favorite products
+    profile: UserProfile;
+    language: Language;
+    theme: Theme;
     isLoading: boolean;
 };
 
@@ -29,6 +34,10 @@ type Action =
     | { type: 'ADD_TO_CART'; payload: { product: Product; quantity: number } }
     | { type: 'REMOVE_FROM_CART'; payload: number }
     | { type: 'UPDATE_QUANTITY'; payload: { productId: number; quantity: number } }
+    | { type: 'TOGGLE_FAVORITE'; payload: number }
+    | { type: 'UPDATE_PROFILE'; payload: UserProfile }
+    | { type: 'SET_LANGUAGE'; payload: Language }
+    | { type: 'SET_THEME'; payload: Theme }
     | { type: 'PLACE_ORDER'; payload: Order }
     | { type: 'CLEAR_CART' }
     | { type: 'UPDATE_ORDER_STATUS'; payload: { orderId: string; status: OrderStatus } }
@@ -44,6 +53,21 @@ const appReducer = (state: AppState, action: Action): AppState => {
             break;
         case 'SET_INITIAL_STATE':
             newState = { ...state, ...action.payload };
+            break;
+        case 'TOGGLE_FAVORITE':
+            const favorites = state.favorites.includes(action.payload)
+                ? state.favorites.filter(id => id !== action.payload)
+                : [...state.favorites, action.payload];
+            newState = { ...state, favorites };
+            break;
+        case 'UPDATE_PROFILE':
+            newState = { ...state, profile: action.payload };
+            break;
+        case 'SET_LANGUAGE':
+            newState = { ...state, language: action.payload };
+            break;
+        case 'SET_THEME':
+            newState = { ...state, theme: action.payload };
             break;
         case 'ADD_TO_CART': {
             const { product, quantity } = action.payload;
@@ -97,6 +121,10 @@ const appReducer = (state: AppState, action: Action): AppState => {
 
     localStorage.setItem('tazamart_products_cache', JSON.stringify(newState.products));
     localStorage.setItem('tazamart_orders', JSON.stringify(newState.orders));
+    localStorage.setItem('tazamart_favorites', JSON.stringify(newState.favorites));
+    localStorage.setItem('tazamart_profile', JSON.stringify(newState.profile));
+    localStorage.setItem('tazamart_lang', newState.language);
+    localStorage.setItem('tazamart_theme', newState.theme);
     return newState;
 };
 
@@ -105,6 +133,10 @@ const App: React.FC = () => {
         products: [],
         cart: [],
         orders: [],
+        favorites: [],
+        profile: { name: '', address: '', phone: '' },
+        language: Language.EN,
+        theme: Theme.Light,
         isLoading: true
     });
 
@@ -126,7 +158,6 @@ const App: React.FC = () => {
             
             const data = await response.json();
             if (data.products) {
-                // Ensure image field is used from the returned data
                 const products = data.products.map((p: any) => ({
                     ...p,
                     price: parseFloat(p.price),
@@ -136,37 +167,45 @@ const App: React.FC = () => {
                     ...o,
                     orderDate: new Date(o.orderDate)
                 }));
-                dispatch({ 
-                    type: 'SET_DATA', 
-                    payload: { products, orders } 
-                });
-            } else if (Array.isArray(data)) {
-                 // Fallback if data is just the products array
-                 dispatch({ 
-                    type: 'SET_DATA', 
-                    payload: { products: data, orders: state.orders } 
-                });
+                dispatch({ type: 'SET_DATA', payload: { products, orders } });
             }
         } catch (err) {
-            console.warn("Sync failed. Check App Script 'Anyone' permission.", err);
+            console.warn("Sync failed.", err);
             dispatch({ type: 'SET_LOADING', payload: false });
         }
-    }, [state.orders]);
+    }, []);
 
     useEffect(() => {
         const storedOrders = localStorage.getItem('tazamart_orders');
         const cachedProducts = localStorage.getItem('tazamart_products_cache');
+        const storedFavs = localStorage.getItem('tazamart_favorites');
+        const storedProfile = localStorage.getItem('tazamart_profile');
+        const storedLang = localStorage.getItem('tazamart_lang') as Language;
+        const storedTheme = localStorage.getItem('tazamart_theme') as Theme;
 
         dispatch({ 
             type: 'SET_INITIAL_STATE', 
             payload: {
                 products: cachedProducts ? JSON.parse(cachedProducts) : initialProducts,
                 orders: storedOrders ? JSON.parse(storedOrders).map((o: any) => ({...o, orderDate: new Date(o.orderDate)})) : [],
+                favorites: storedFavs ? JSON.parse(storedFavs) : [],
+                profile: storedProfile ? JSON.parse(storedProfile) : { name: '', address: '', phone: '' },
+                language: storedLang || Language.EN,
+                theme: storedTheme || Theme.Light,
             }
         });
 
         fetchRemoteData();
-    }, []); // Run only on mount
+    }, [fetchRemoteData]);
+
+    // Apply theme to body
+    useEffect(() => {
+        if (state.theme === Theme.Dark) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    }, [state.theme]);
 
     const syncToRemote = async (action: string, data: any) => {
         try {
@@ -176,33 +215,25 @@ const App: React.FC = () => {
                 headers: { 'Content-Type': 'text/plain' },
                 body: JSON.stringify({ action, ...data })
             });
-            
-            // Reload data after a short delay
-            setTimeout(() => {
-                fetchRemoteData();
-            }, 1000);
+            setTimeout(() => { fetchRemoteData(); }, 1000);
         } catch (err) {
             console.error("Remote sync failed:", err);
         }
     };
 
-    const cartItemCount = state.cart.reduce((count, item) => count + item.quantity, 0);
-
     const onAddToCart = (product: Product, quantity: number) => dispatch({ type: 'ADD_TO_CART', payload: { product, quantity } });
     const onRemoveFromCart = (productId: number) => dispatch({ type: 'REMOVE_FROM_CART', payload: productId });
     const onUpdateQuantity = (productId: number, quantity: number) => dispatch({ type: 'UPDATE_QUANTITY', payload: { productId, quantity } });
+    const toggleFavorite = (productId: number) => dispatch({ type: 'TOGGLE_FAVORITE', payload: productId });
+    const updateProfile = (profile: UserProfile) => dispatch({ type: 'UPDATE_PROFILE', payload: profile });
+    const setLanguage = (lang: Language) => dispatch({ type: 'SET_LANGUAGE', payload: lang });
+    const setTheme = (theme: Theme) => dispatch({ type: 'SET_THEME', payload: theme });
     
     const onPlaceOrder = (order: Order) => {
-        // Send order to backend with the specific field name required: paymentProofBase64
-        const orderForBackend = {
-            ...order,
-            paymentProofBase64: order.paymentProof // Use original field as requested
-        };
-        
+        const orderForBackend = { ...order, paymentProofBase64: order.paymentProof };
         dispatch({ type: 'PLACE_ORDER', payload: order });
         setLastOrder(order);
         dispatch({ type: 'CLEAR_CART' });
-        
         syncToRemote('addOrder', { order: orderForBackend });
     };
 
@@ -212,29 +243,12 @@ const App: React.FC = () => {
     };
     
     const onAddProduct = (product: Product) => {
-        // Send product to backend with the specific field name required: imageBase64
-        const productForBackend = {
-            id: product.id.toString(),
-            name: product.name,
-            price: product.price.toString(),
-            category: product.category,
-            unit: product.unit,
-            description: product.description || '',
-            imageBase64: product.image // contains the data:image string
-        };
+        const productForBackend = { ...product, id: product.id.toString(), price: product.price.toString(), imageBase64: product.image };
         syncToRemote('add', { product: productForBackend });
     };
     
     const onUpdateProduct = (product: Product) => {
-        const productForBackend = {
-            id: product.id.toString(),
-            name: product.name,
-            price: product.price.toString(),
-            category: product.category,
-            unit: product.unit,
-            description: product.description || '',
-            imageBase64: product.image.startsWith('data:') ? product.image : undefined // Only send if it's new base64
-        };
+        const productForBackend = { ...product, id: product.id.toString(), price: product.price.toString(), imageBase64: product.image.startsWith('data:') ? product.image : undefined };
         syncToRemote('edit', { product: productForBackend });
     };
     
@@ -244,19 +258,13 @@ const App: React.FC = () => {
     
     const handleProductClick = (product: Product) => {
         setSelectedProduct(product);
-        setIsAdminView(false);
         setView(View.ProductDetail);
-    };
-
-    const handleAdminLogin = () => {
-        setIsAuthenticated(true);
-        setView(View.Admin);
     };
 
     const renderView = () => {
         if (state.isLoading && view === View.Home && state.products.length === 0) {
             return (
-                <div className="flex flex-col items-center justify-center h-[60vh]">
+                <div className="flex flex-col items-center justify-center h-[60vh] dark:text-gray-400">
                     <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
                     <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Syncing with Fresh Stock...</p>
                 </div>
@@ -265,64 +273,52 @@ const App: React.FC = () => {
 
         switch (view) {
             case View.Home:
-                return <HomeView products={state.products} onAddToCart={onAddToCart} searchQuery="" onProductClick={handleProductClick} />;
+                return <HomeView lang={state.language} products={state.products} onAddToCart={onAddToCart} onProductClick={handleProductClick} />;
             case View.ProductDetail:
-                if (!selectedProduct) return <HomeView products={state.products} onAddToCart={onAddToCart} searchQuery="" onProductClick={handleProductClick} />;
-                return <ProductDetailView product={selectedProduct} onAddToCart={onAddToCart} onBack={() => setView(View.Home)} />;
+                if (!selectedProduct) return <HomeView lang={state.language} products={state.products} onAddToCart={onAddToCart} onProductClick={handleProductClick} />;
+                return <ProductDetailView lang={state.language} product={selectedProduct} isFavorite={state.favorites.includes(selectedProduct.id)} toggleFavorite={toggleFavorite} onAddToCart={onAddToCart} onBack={() => setView(View.Home)} />;
             case View.Cart:
-                return <CartView cart={state.cart} updateQuantity={onUpdateQuantity} removeFromCart={onRemoveFromCart} setView={setView} />;
+                return <CartView lang={state.language} cart={state.cart} updateQuantity={onUpdateQuantity} removeFromCart={onRemoveFromCart} setView={setView} />;
             case View.Checkout:
-                return <CheckoutView cart={state.cart} placeOrder={onPlaceOrder} setView={setView} />;
+                return <CheckoutView lang={state.language} profile={state.profile} cart={state.cart} placeOrder={onPlaceOrder} setView={setView} />;
             case View.Confirmation:
-                return <OrderConfirmationView lastOrder={lastOrder} setView={setView} />;
+                return <OrderConfirmationView lang={state.language} lastOrder={lastOrder} setView={setView} />;
             case View.OrderHistory:
-                return <OrderHistoryView orders={state.orders} />;
+                return <OrderHistoryView lang={state.language} orders={state.orders} />;
+            case View.Favorites:
+                return <FavoritesView lang={state.language} products={state.products.filter(p => state.favorites.includes(p.id))} onAddToCart={onAddToCart} onProductClick={handleProductClick} />;
+            case View.Profile:
+                return <ProfileView lang={state.language} profile={state.profile} onSave={updateProfile} />;
             case View.AdminLogin:
-                return <AdminLoginView onLogin={handleAdminLogin} />;
+                return <AdminLoginView onLogin={() => { setIsAuthenticated(true); setView(View.Admin); }} />;
             case View.Admin:
                 return isAuthenticated ? (
-                    <AdminView 
-                            orders={state.orders} 
-                            products={state.products} 
-                            updateOrderStatus={onUpdateOrderStatus} 
-                            addProduct={onAddProduct}
-                            updateProduct={onUpdateProduct}
-                            deleteProductExplicit={onDeleteProduct}
-                        />
+                    <AdminView orders={state.orders} products={state.products} updateOrderStatus={onUpdateOrderStatus} addProduct={onAddProduct} updateProduct={onUpdateProduct} deleteProductExplicit={onDeleteProduct} />
                 ) : (
-                    <AdminLoginView onLogin={handleAdminLogin} />
+                    <AdminLoginView onLogin={() => { setIsAuthenticated(true); setView(View.Admin); }} />
                 );
             default:
-                return <HomeView products={state.products} onAddToCart={onAddToCart} searchQuery="" onProductClick={handleProductClick} />;
+                return <HomeView lang={state.language} products={state.products} onAddToCart={onAddToCart} onProductClick={handleProductClick} />;
         }
     };
 
-    const handleSetView = (newView: View) => {
-        setIsAdminView(newView === View.Admin || newView === View.AdminLogin);
-        setView(newView);
-        window.scrollTo(0, 0);
-    };
-
-    const handleUnlockAdmin = () => {
-        setIsAdminUnlocked(true);
-    };
-
     return (
-        <div className="flex flex-col min-h-screen bg-light">
+        <div className={`flex flex-col min-h-screen transition-colors duration-300 ${state.theme === Theme.Dark ? 'bg-dark' : 'bg-light'}`}>
             <Header 
-                cartItemCount={cartItemCount} 
-                setView={handleSetView} 
-                onUnlockAdmin={handleUnlockAdmin}
+                lang={state.language}
+                theme={state.theme}
+                setLanguage={setLanguage}
+                setTheme={setTheme}
+                cartItemCount={state.cart.reduce((c, i) => c + i.quantity, 0)} 
+                setView={setView} 
+                onUnlockAdmin={() => setIsAdminUnlocked(true)}
             />
             <main className="flex-grow pb-16">
                 {renderView()}
             </main>
             <BottomNav 
                 currentView={view} 
-                setView={handleSetView} 
-                isAdminView={isAdminView}
-                setIsAdminView={setIsAdminView}
-                isAuthenticated={isAuthenticated}
+                setView={setView} 
                 isAdminUnlocked={isAdminUnlocked}
             />
         </div>
