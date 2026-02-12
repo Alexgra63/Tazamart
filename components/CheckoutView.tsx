@@ -32,7 +32,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, placeOrder, se
             reader.onloadend = () => {
                 const base64String = reader.result as string;
                 setPaymentProof(base64String);
-                setPaymentProofPreview(URL.createObjectURL(file));
+                setPaymentProofPreview(base64String);
             };
             reader.readAsDataURL(file);
         }
@@ -48,20 +48,20 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, placeOrder, se
         setIsSubmitting(true);
         try {
             const newOrder: Order = {
-                id: `VG-${Date.now()}`,
+                id: `ORD-${Date.now()}`,
                 customer,
                 items: cart,
                 total,
                 status: OrderStatus.Pending,
                 paymentMethod,
-                paymentProof,
+                paymentProof, // This is already base64
                 orderDate: new Date(),
             };
             placeOrder(newOrder);
             setView(View.Confirmation);
         } catch (error) {
             console.error("Order submission failed:", error);
-            alert("Storage error: The payment proof image might be too large for local storage.");
+            alert("Error placing order.");
         } finally {
             setIsSubmitting(false);
         }
@@ -110,16 +110,13 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, placeOrder, se
                         
                         <div className="grid grid-cols-2 gap-3 mb-6">
                             <button type="button" onClick={() => setPaymentMethod('Easypaisa')} className={`py-3.5 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all transform active:scale-95 border-2 ${paymentMethod === 'Easypaisa' ? 'bg-primary text-white border-primary shadow-lg' : 'bg-white text-gray-400 border-gray-50'}`}>Easypaisa</button>
-                            <button type="button" onClick={() => setPaymentMethod('JazzCash')} className={`py-3.5 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all transform active:scale-95 border-2 ${paymentMethod === 'JazzCash' ? 'bg-[#da291c] text-white border-[#da291c] shadow-lg' : 'bg-white text-gray-400 border-gray-50'}`}>JazzCash</button>
+                            <button type="button" onClick={() => setPaymentMethod('JazzCash')} className={`py-3.5 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all transform active:scale-95 border-2 ${paymentMethod === 'JazzCash' ? 'bg-black text-white border-black shadow-lg' : 'bg-white text-gray-400 border-gray-50'}`}>JazzCash</button>
                         </div>
                         
                         <div className="p-6 rounded-2xl bg-gray-50 text-center mb-6 border border-gray-100">
                             <p className="text-3xl font-black text-dark mb-4 tracking-tighter">Rs. {total.toLocaleString()}</p>
-                            <div className="bg-white p-4 rounded-xl shadow-soft inline-block mb-4 border border-gray-50">
-                                 <img src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${paymentMethod}-Vegelo-03001234567`} alt="QR" className="w-24 h-24"/>
-                            </div>
                             <p className="text-xl font-black text-primary">0300-1234567</p>
-                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-1">Account Title: Vegelo Official</p>
+                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-1">Account Title: TazaMart Fresh</p>
                         </div>
 
                         <div className="relative">
@@ -130,7 +127,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, placeOrder, se
                                 ) : (
                                     <div className="text-center group-hover:scale-110 transition-transform">
                                         <span className="material-symbols-rounded text-4xl text-primary/40 mb-2">add_a_photo</span>
-                                        <p className="text-[10px] font-black text-primary uppercase tracking-widest">Tap to upload proof</p>
+                                        <p className="text-[10px] font-black text-primary uppercase tracking-widest">Upload Payment Screenshot</p>
                                     </div>
                                 )}
                             </label>
@@ -158,7 +155,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, placeOrder, se
                         <button 
                             type="submit" 
                             disabled={isSubmitting}
-                            className="w-full mt-8 bg-gradient-to-r from-primary to-primary-dark text-white py-4 rounded-xl font-black uppercase text-xs tracking-widest shadow-premium hover:shadow-lg transform active:scale-[0.98] transition-all disabled:opacity-50"
+                            className="w-full mt-8 bg-primary text-white py-4 rounded-xl font-black uppercase text-xs tracking-widest shadow-premium hover:shadow-lg transition-all disabled:opacity-50"
                         >
                             {isSubmitting ? 'Placing Order...' : 'Confirm Order'}
                         </button>
