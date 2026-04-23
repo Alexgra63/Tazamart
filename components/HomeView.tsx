@@ -131,7 +131,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ products, onAddToCart, onPro
                 </div>
                 
                 {filteredProducts.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
                         {filteredProducts.map(product => (
                             <ProductCard 
                                 key={product.id} 

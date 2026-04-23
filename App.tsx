@@ -192,10 +192,17 @@ const App: React.FC = () => {
         const storedLang = localStorage.getItem('tazamart_lang') as Language;
         const storedTheme = localStorage.getItem('tazamart_theme') as Theme;
 
+        // Check for admin query param
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('admin')) {
+            setIsAdminUnlocked(true);
+            setView(View.AdminLogin);
+        }
+
         dispatch({ 
             type: 'SET_INITIAL_STATE', 
             payload: {
-                products: cachedProducts ? JSON.parse(cachedProducts) : initialProducts,
+                products: cachedProducts ? JSON.parse(cachedProducts) : [],
                 orders: storedOrders ? JSON.parse(storedOrders).map((o: any) => ({...o, orderDate: new Date(o.orderDate)})) : [],
                 favorites: storedFavs ? JSON.parse(storedFavs) : [],
                 profile: storedProfile ? JSON.parse(storedProfile) : { name: '', address: '', phone: '' },
@@ -330,7 +337,7 @@ const App: React.FC = () => {
                 setView={setView} 
                 onUnlockAdmin={() => setIsAdminUnlocked(true)}
             />
-            <main className="flex-grow pb-16">
+            <main className="flex-grow pb-16 max-w-7xl mx-auto w-full">
                 {renderView()}
             </main>
             <BottomNav 

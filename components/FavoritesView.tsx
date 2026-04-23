@@ -24,7 +24,7 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({ products, onAddToC
             </div>
 
             {products.length > 0 ? (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
                     {products.map(p => (
                         <ProductCard 
                             key={p.id} 
