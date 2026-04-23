@@ -31,6 +31,7 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({ products, onAddToC
                             product={p} 
                             onAddToCart={(prod) => onAddToCart(prod, 1)} 
                             onClick={onProductClick}
+                            lang={lang}
                         />
                     ))}
                 </div>

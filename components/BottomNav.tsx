@@ -1,31 +1,39 @@
 
 import React from 'react';
-import { View } from '../types';
+import { View, Language } from '../types';
 
 interface BottomNavProps {
     currentView: View;
     setView: (view: View) => void;
     isAdminUnlocked: boolean;
+    lang: Language;
 }
 
 export const BottomNav: React.FC<BottomNavProps> = ({ 
     currentView, 
     setView, 
-    isAdminUnlocked
+    isAdminUnlocked,
+    lang
 }) => {
+    const translations = {
+        [Language.EN]: { home: 'Home', orders: 'Orders', liked: 'Liked', account: 'Account', admin: 'Admin' },
+        [Language.UR]: { home: 'ہوم', orders: 'آرڈرز', liked: 'پسندیدہ', account: 'پروفائل', admin: 'ایڈمن' }
+    };
+    const t = translations[lang];
+
     const navItems = [
-        { id: View.Home, label: 'Home', icon: 'home' },
-        { id: View.OrderHistory, label: 'Orders', icon: 'receipt_long' },
-        { id: View.Favorites, label: 'Liked', icon: 'favorite' },
-        { id: View.Profile, label: 'Account', icon: 'person' },
+        { id: View.Home, label: t.home, icon: 'home' },
+        { id: View.OrderHistory, label: t.orders, icon: 'receipt_long' },
+        { id: View.Favorites, label: t.liked, icon: 'favorite' },
+        { id: View.Profile, label: t.account, icon: 'person' },
     ];
 
     if (isAdminUnlocked) {
-        navItems.push({ id: View.Admin, label: 'Admin', icon: 'settings' });
+        navItems.push({ id: View.Admin, label: t.admin, icon: 'settings' });
     }
 
     return (
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-800 px-2 py-3 flex justify-around items-center z-50 shadow-[0_-4px_10px_rgba(0,0,0,0.02)] transition-colors">
+        <nav className={`md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-800 px-2 py-3 flex justify-around items-center z-50 shadow-[0_-4px_10px_rgba(0,0,0,0.02)] transition-colors ${lang === Language.UR ? 'flex-row-reverse' : ''}`}>
             {navItems.map((item) => {
                 const isActive = currentView === item.id;
                 

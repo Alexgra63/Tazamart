@@ -136,6 +136,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ products, onAddToCart, onPro
                                 product={product} 
                                 onAddToCart={(p) => onAddToCart(p, 1)} 
                                 onClick={onProductClick}
+                                lang={lang}
                             />
                         ))}
                     </div>

@@ -21,7 +21,10 @@ const translations = {
         orderId: "Order ID",
         date: "Date",
         total: "Total",
-        items: "Items"
+        items: "Items",
+        pending: "Pending",
+        packed: "Packed",
+        delivered: "Delivered"
     },
     [Language.UR]: {
         title: "میرے آرڈرز",
@@ -29,7 +32,23 @@ const translations = {
         orderId: "آرڈر آئی ڈی",
         date: "تاریخ",
         total: "کل",
-        items: "اشیاء"
+        items: "اشیاء",
+        pending: "انتظار میں",
+        packed: "پیک ہو گیا",
+        delivered: "پہنچ گیا"
+    }
+};
+
+const statusTranslationMap: Record<Language, Record<OrderStatus, string>> = {
+    [Language.EN]: {
+        [OrderStatus.Pending]: "Pending",
+        [OrderStatus.Packed]: "Packed",
+        [OrderStatus.Delivered]: "Delivered"
+    },
+    [Language.UR]: {
+        [OrderStatus.Pending]: "انتظار میں",
+        [OrderStatus.Packed]: "پیک ہو گیا",
+        [OrderStatus.Delivered]: "پہنچ گیا"
     }
 };
 
@@ -49,15 +68,20 @@ export const OrderHistoryView: React.FC<OrderHistoryViewProps> = ({ orders, lang
                 <div className="space-y-6">
                     {orders.slice().reverse().map(order => (
                         <div key={order.id} className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-premium border border-gray-50 dark:border-slate-800 transition-all hover:shadow-lg">
-                            <div className="flex flex-wrap justify-between items-start mb-6 gap-4">
-                                <div>
+                            <div className={`flex flex-wrap justify-between items-start mb-6 gap-4 ${isUrdu ? 'flex-row-reverse' : ''}`}>
+                                <div className={isUrdu ? 'text-right' : 'text-left'}>
                                     <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-1">{t.orderId}</p>
                                     <p className="font-black text-dark dark:text-white text-lg">#{order.id.split('-').pop()}</p>
                                     <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold mt-1 uppercase tracking-tighter">{t.date}: {new Date(order.orderDate).toLocaleDateString()}</p>
                                 </div>
-                                <div className={`${isUrdu ? 'text-left' : 'text-right'}`}>
-                                    <p className="text-2xl font-black text-primary tracking-tighter">Rs. {order.total.toLocaleString()}</p>
-                                    <span className={`inline-block mt-2 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg ${statusColorMap[order.status]}`}>{order.status}</span>
+                                <div className={isUrdu ? 'text-left' : 'text-right'}>
+                                    <div className={`flex items-baseline gap-1 ${isUrdu ? 'flex-row-reverse' : ''}`}>
+                                        <span className="text-[11px] font-black text-primary uppercase">{isUrdu ? 'روپے' : 'Rs.'}</span>
+                                        <span className="text-2xl font-black text-primary tracking-tighter">{order.total.toLocaleString()}</span>
+                                    </div>
+                                    <span className={`inline-block mt-2 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg ${statusColorMap[order.status]}`}>
+                                        {statusTranslationMap[lang][order.status]}
+                                    </span>
                                 </div>
                             </div>
                             <div className="pt-6 border-t border-gray-50 dark:border-slate-800">

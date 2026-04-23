@@ -14,11 +14,14 @@ import { ProfileView } from './components/ProfileView.tsx';
 import { FavoritesView } from './components/FavoritesView.tsx';
 import { Product, CartItem, Order, OrderStatus, View, Language, Theme, UserProfile } from './types.ts';
 import { initialProducts } from './data.ts';
+import { translateProductsToUrdu } from './services/geminiService.ts';
 
 const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbytQbtCT4JNwAFrI_-7aDWoe2Ri1aSHJonO5BOLXRAb0P32DqBeWl9FWpgIuCpe7x0f/exec'; 
 
 type AppState = {
     products: Product[];
+    originalProducts: Product[]; // Store untranslated products
+    translatedProductsUrdu: Product[]; // Cache for Urdu translations
     cart: CartItem[];
     orders: Order[]; // Customer's local orders
     remoteOrders: Order[]; // Admin's orders from GSheet
@@ -32,6 +35,8 @@ type AppState = {
 type Action =
     | { type: 'SET_REMOTE_DATA'; payload: { products: Product[], orders: Order[] } }
     | { type: 'SET_INITIAL_STATE'; payload: Partial<AppState> }
+    | { type: 'SET_TRANSLATED_PRODUCTS'; payload: Product[] }
+    | { type: 'SET_PRODUCTS'; payload: Product[] }
     | { type: 'ADD_TO_CART'; payload: { product: Product; quantity: number } }
     | { type: 'REMOVE_FROM_CART'; payload: number }
     | { type: 'UPDATE_QUANTITY'; payload: { productId: number; quantity: number } }
@@ -51,10 +56,17 @@ const appReducer = (state: AppState, action: Action): AppState => {
             return { ...state, isLoading: action.payload };
         case 'SET_REMOTE_DATA':
             // Update products and admin-only remote orders
-            newState = { ...state, products: action.payload.products, remoteOrders: action.payload.orders, isLoading: false };
+            newState = { ...state, products: action.payload.products, originalProducts: action.payload.products, remoteOrders: action.payload.orders, isLoading: false };
             break;
         case 'SET_INITIAL_STATE':
             newState = { ...state, ...action.payload };
+            if (action.payload.products) newState.originalProducts = action.payload.products;
+            break;
+        case 'SET_TRANSLATED_PRODUCTS':
+            newState = { ...state, translatedProductsUrdu: action.payload, products: action.payload };
+            break;
+        case 'SET_PRODUCTS':
+            newState = { ...state, products: action.payload };
             break;
         case 'TOGGLE_FAVORITE':
             const favorites = state.favorites.includes(action.payload)
@@ -139,6 +151,8 @@ const appReducer = (state: AppState, action: Action): AppState => {
 const App: React.FC = () => {
     const [state, dispatch] = useReducer(appReducer, {
         products: [],
+        originalProducts: [],
+        translatedProductsUrdu: [],
         cart: [],
         orders: [],
         remoteOrders: [],
@@ -154,6 +168,27 @@ const App: React.FC = () => {
     const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
     const [lastOrder, setLastOrder] = useState<Order | null>(null);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+    const translateCurrentProducts = useCallback(async (products: Product[]) => {
+        dispatch({ type: 'SET_LOADING', payload: true });
+        const translated = await translateProductsToUrdu(products);
+        dispatch({ type: 'SET_TRANSLATED_PRODUCTS', payload: translated });
+        dispatch({ type: 'SET_LOADING', payload: false });
+    }, []);
+
+    useEffect(() => {
+        if (state.language === Language.UR) {
+            if (state.translatedProductsUrdu.length > 0) {
+                dispatch({ type: 'SET_PRODUCTS', payload: state.translatedProductsUrdu });
+            } else if (state.originalProducts.length > 0) {
+                translateCurrentProducts(state.originalProducts);
+            }
+        } else {
+            if (state.originalProducts.length > 0) {
+                dispatch({ type: 'SET_PRODUCTS', payload: state.originalProducts });
+            }
+        }
+    }, [state.language, state.originalProducts, state.translatedProductsUrdu, translateCurrentProducts]);
 
     const fetchRemoteData = useCallback(async () => {
         try {
@@ -344,6 +379,7 @@ const App: React.FC = () => {
                 currentView={view} 
                 setView={setView} 
                 isAdminUnlocked={isAdminUnlocked}
+                lang={state.language}
             />
         </div>
     );

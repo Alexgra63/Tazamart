@@ -110,13 +110,16 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, placeOrder, se
                             {t.proof}
                         </h3>
                         
-                        <div className="grid grid-cols-2 gap-3 mb-6">
+                        <div className={`grid grid-cols-2 gap-3 mb-6 ${isUrdu ? 'rtl' : 'ltr'}`}>
                             <button type="button" onClick={() => setPaymentMethod('Easypaisa')} className={`py-3.5 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all ${paymentMethod === 'Easypaisa' ? 'bg-primary text-white shadow-lg' : 'bg-gray-50 dark:bg-slate-800 text-gray-400'}`}>Easypaisa</button>
                             <button type="button" onClick={() => setPaymentMethod('JazzCash')} className={`py-3.5 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all ${paymentMethod === 'JazzCash' ? 'bg-slate-900 dark:bg-slate-700 text-white shadow-lg' : 'bg-gray-50 dark:bg-slate-800 text-gray-400'}`}>JazzCash</button>
                         </div>
                         
                         <div className="p-6 rounded-2xl bg-gray-50 dark:bg-slate-800 text-center mb-6 border border-gray-100 dark:border-slate-800">
-                            <p className="text-3xl font-black text-dark dark:text-white mb-4 tracking-tighter">Rs. {total.toLocaleString()}</p>
+                            <p className={`text-3xl font-black text-dark dark:text-white mb-4 tracking-tighter ${isUrdu ? 'flex flex-row-reverse justify-center gap-1' : ''}`}>
+                                <span>{isUrdu ? 'روپے' : 'Rs.'}</span>
+                                <span>{total.toLocaleString()}</span>
+                            </p>
                             <p className="text-xl font-black text-primary">0300-1234567</p>
                             <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-1">Title: TazaMart Fresh</p>
                         </div>
@@ -129,7 +132,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, placeOrder, se
                                 ) : (
                                     <div className="text-center">
                                         <span className="material-symbols-rounded text-4xl text-primary/40 mb-2">add_a_photo</span>
-                                        <p className="text-[10px] font-black text-primary uppercase tracking-widest">Upload Payment Screenshot</p>
+                                        <p className="text-[10px] font-black text-primary uppercase tracking-widest">{isUrdu ? 'ادائیگی کا ثبوت اپ لوڈ کریں' : 'Upload Payment Screenshot'}</p>
                                     </div>
                                 )}
                             </label>
@@ -139,19 +142,25 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, placeOrder, se
 
                 <div className="lg:w-[380px] shrink-0">
                     <div className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-premium border border-gray-100 dark:border-slate-800 sticky top-24">
-                        <h3 className="text-lg font-black text-dark dark:text-white pb-4 mb-6">{isUrdu ? 'خلاصہ' : 'Summary'}</h3>
+                        <h3 className={`text-lg font-black text-dark dark:text-white pb-4 mb-6 ${isUrdu ? 'text-right' : 'text-left'}`}>{isUrdu ? 'آرڈر کا خلاصہ' : 'Order Summary'}</h3>
                         <div className="space-y-4 max-h-[250px] overflow-y-auto no-scrollbar">
                             {cart.map(item => (
-                                <div key={item.id} className="flex justify-between items-center text-[11px] dark:text-gray-300">
+                                <div key={item.id} className={`flex justify-between items-center text-[11px] dark:text-gray-300 ${isUrdu ? 'flex-row-reverse' : ''}`}>
                                     <span className="font-bold">{item.name} <span className="text-gray-400">× {item.quantity}</span></span>
-                                    <span className="font-black">Rs. {(item.price * item.quantity).toFixed(0)}</span>
+                                    <span className={`font-black ${isUrdu ? 'flex flex-row-reverse gap-1' : ''}`}>
+                                        <span>{isUrdu ? 'روپے' : 'Rs.'}</span>
+                                        <span>{(item.price * item.quantity).toFixed(0)}</span>
+                                    </span>
                                 </div>
                             ))}
                         </div>
                         <div className="mt-6 pt-6 border-t border-gray-50 dark:border-slate-800">
-                            <div className="flex justify-between items-center">
-                                <span className="text-[9px] font-black text-gray-400 uppercase">Total</span>
-                                <span className="text-2xl font-black text-primary tracking-tighter">Rs. {total.toLocaleString()}</span>
+                            <div className={`flex justify-between items-center ${isUrdu ? 'flex-row-reverse' : ''}`}>
+                                <span className="text-[9px] font-black text-gray-400 uppercase">{isUrdu ? 'کل' : 'Total'}</span>
+                                <span className={`text-2xl font-black text-primary tracking-tighter ${isUrdu ? 'flex flex-row-reverse gap-1' : ''}`}>
+                                    <span>{isUrdu ? 'روپے' : 'Rs.'}</span>
+                                    <span>{total.toLocaleString()}</span>
+                                </span>
                             </div>
                         </div>
                         <button 
