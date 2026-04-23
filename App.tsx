@@ -337,7 +337,7 @@ const App: React.FC = () => {
                 setView={setView} 
                 onUnlockAdmin={() => setIsAdminUnlocked(true)}
             />
-            <main className="flex-grow pb-16 max-w-7xl mx-auto w-full">
+            <main className="flex-grow pb-16 max-w-7xl mx-auto w-full px-0 md:px-8">
                 {renderView()}
             </main>
             <BottomNav 

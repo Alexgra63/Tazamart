@@ -42,6 +42,25 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
 
                 <div className="flex items-center space-x-2">
+                    {/* Desktop Navigation */}
+                    <nav className="hidden md:flex items-center space-x-1 mr-4">
+                        {[
+                            { id: View.Home, label: 'Home', icon: 'home' },
+                            { id: View.OrderHistory, label: 'Orders', icon: 'receipt_long' },
+                            { id: View.Favorites, label: 'Liked', icon: 'favorite' },
+                            { id: View.Profile, label: 'Account', icon: 'person' },
+                        ].map((item) => (
+                            <button
+                                key={item.id}
+                                onClick={() => setView(item.id)}
+                                className="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest text-gray-400 hover:text-primary hover:bg-primary/5 transition-all flex items-center space-x-2"
+                            >
+                                <span className="material-symbols-rounded text-[20px]">{item.icon}</span>
+                                <span>{item.label}</span>
+                            </button>
+                        ))}
+                    </nav>
+
                     {/* Cart Button */}
                     <button 
                         onClick={() => setView(View.Cart)} 

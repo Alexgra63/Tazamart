@@ -55,8 +55,8 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
     return (
         <div className={`min-h-screen bg-white dark:bg-slate-950 animate-in slide-in-from-right duration-300 pb-20 ${isUrdu ? 'rtl text-right' : 'ltr text-left'}`} dir={isUrdu ? 'rtl' : 'ltr'}>
             
-            {/* Floating Navigation Buttons - Offset from global Header */}
-            <div className="fixed top-[72px] left-0 right-0 z-[60] flex items-center justify-between p-4 pointer-events-none">
+            {/* Floating Navigation Buttons */}
+            <div className={`fixed top-[72px] left-0 right-0 z-[60] flex items-center justify-between p-4 pointer-events-none max-w-7xl mx-auto`}>
                 <button 
                     onClick={onBack}
                     className="pointer-events-auto w-11 h-11 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-premium flex items-center justify-center text-dark dark:text-white transition-all active:scale-90 border border-white/20 dark:border-slate-700/50"
@@ -71,10 +71,10 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
                 </button>
             </div>
 
-            {/* Main Scrollable Content */}
-            <div className="pb-56 pt-2">
+            {/* Main Content */}
+            <div className="md:flex md:items-start md:gap-12 max-w-7xl mx-auto md:px-8 pt-2 md:pt-12">
                 {/* Hero Image Section */}
-                <div className="relative w-full h-[45vh] sm:h-[55vh] overflow-hidden rounded-b-[2rem] sm:rounded-b-[3.5rem] shadow-soft">
+                <div className="relative w-full md:w-1/2 h-[45vh] md:h-[70vh] overflow-hidden rounded-b-[2rem] md:rounded-[2.5rem] shadow-soft">
                     <img 
                         src={product.image} 
                         alt={product.name} 
@@ -85,8 +85,8 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
                 </div>
 
                 {/* Content Details */}
-                <div className="relative bg-white dark:bg-slate-950 px-6 pt-10">
-                    <div className="max-w-3xl mx-auto">
+                <div className="relative bg-white dark:bg-slate-950 px-6 md:px-0 pt-10 md:pt-0 md:flex-1">
+                    <div className="max-w-3xl mx-auto md:mx-0">
                         {/* Category & Badge */}
                         <div className="flex items-center gap-2 mb-4">
                             <span className="text-[9px] font-black uppercase text-primary bg-primary/10 px-3 py-1 rounded-lg tracking-widest border border-primary/5">
@@ -98,14 +98,14 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
                         </div>
 
                         {/* Title & Price */}
-                        <h1 className="text-3xl sm:text-5xl font-black text-dark dark:text-white tracking-tighter leading-none mb-6">
+                        <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-dark dark:text-white tracking-tighter leading-none mb-6">
                             {product.name}
                         </h1>
                         
                         <div className="flex items-center gap-3 mb-10">
                             <div className="flex items-baseline gap-1">
                                 <span className="text-xs font-black text-primary uppercase">Rs.</span>
-                                <span className="text-4xl font-black text-primary tracking-tighter">{product.price}</span>
+                                <span className="text-4xl md:text-5xl font-black text-primary tracking-tighter">{product.price}</span>
                             </div>
                             <span className="text-gray-400 font-bold text-[11px] tracking-widest uppercase border-l border-gray-100 dark:border-slate-800 pl-3">
                                 {t.per} {product.unit}
@@ -114,7 +114,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
 
                         {/* Quantity Selector */}
                         <div className="bg-gray-50 dark:bg-slate-900 rounded-[2.5rem] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-4 mb-10 border border-gray-100 dark:border-slate-800">
-                            <div className="flex flex-col items-center sm:items-start">
+                            <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
                                 <span className="font-black text-dark dark:text-white uppercase tracking-widest text-[9px] mb-1 opacity-40">{t.quantity}</span>
                                 <p className="text-[11px] font-bold text-gray-400">{isWeightBased ? 'Adjust weight' : 'Select pieces'}</p>
                             </div>
@@ -140,18 +140,36 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
                         </div>
 
                         {/* Description */}
-                        <div className="space-y-4">
+                        <div className="space-y-4 mb-20 md:mb-0">
                             <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest border-b border-gray-50 dark:border-slate-800 pb-2">{t.desc}</h4>
                             <p className="text-gray-600 dark:text-gray-400 text-lg sm:text-xl leading-relaxed font-medium">
                                 {product.description || t.noDesc}
                             </p>
                         </div>
+
+                        {/* Desktop Add to Cart - Visible only on MD+ */}
+                        <div className="hidden md:flex items-center gap-6 mt-12 bg-gray-50 dark:bg-slate-900 shadow-premium p-6 rounded-[2rem] border border-gray-100 dark:border-slate-800">
+                            <div className="flex-grow">
+                                <p className="text-[9px] font-black uppercase text-gray-400 tracking-widest mb-1">{t.total}</p>
+                                <div className="flex items-baseline gap-1">
+                                    <span className="text-[10px] font-black text-dark dark:text-white">Rs.</span>
+                                    <span className="text-3xl font-black text-dark dark:text-white tracking-tighter">{(product.price * quantity).toLocaleString()}</span>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={handleAddToCart}
+                                className="px-12 py-5 bg-gradient-to-r from-primary to-primary-dark text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-premium hover:shadow-lg transition-all active:scale-[0.97] flex items-center gap-3"
+                            >
+                                <span className="material-symbols-rounded text-xl">shopping_basket</span>
+                                {t.addToCart}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Fixed Action Footer - Floating above global BottomNav */}
-            <div className="fixed bottom-[88px] left-0 right-0 px-4 z-50">
+            {/* Fixed Action Footer - Floating for Mobile Only */}
+            <div className="md:hidden fixed bottom-[88px] left-0 right-0 px-4 z-50">
                 <div className="max-w-3xl mx-auto flex items-center gap-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl p-3 rounded-[2rem] shadow-premium border border-gray-100/50 dark:border-slate-800/50">
                     <div className={`${isUrdu ? 'pr-4' : 'pl-4'} flex-1`}>
                         <p className="text-[9px] font-black uppercase text-gray-400 tracking-widest mb-0.5">{t.total}</p>

@@ -37,11 +37,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
                     <span className="material-symbols-rounded text-[18px]">add</span>
                 </button>
             </div>
-            <div className="p-3">
-                <h3 className="text-xs font-black text-dark dark:text-white line-clamp-1 group-hover:text-primary transition-colors">{product.name}</h3>
+            <div className="p-3 md:p-5">
+                <h3 className="text-xs md:text-sm font-black text-dark dark:text-white line-clamp-1 group-hover:text-primary transition-colors">{product.name}</h3>
                 <div className="flex items-center mt-1">
-                    <span className="text-sm font-black text-dark dark:text-white">Rs. {product.price}</span>
-                    <span className="text-[9px] text-gray-400 font-bold ml-1 uppercase tracking-tighter">/ {product.unit}</span>
+                    <span className="text-sm md:text-lg font-black text-dark dark:text-white">Rs. {product.price}</span>
+                    <span className="text-[9px] md:text-[11px] text-gray-400 font-bold ml-1 uppercase tracking-tighter">/ {product.unit}</span>
                 </div>
             </div>
         </div>
