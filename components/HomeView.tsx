@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Product, ProductCategory, Language } from '../types.ts';
 import { ProductCard } from './ProductCard.tsx';
+import { getEnglishKeywords } from '@/lib/searchDictionary.ts';
 
 interface HomeViewProps {
     products: Product[];
@@ -59,9 +60,30 @@ export const HomeView: React.FC<HomeViewProps> = ({ products, onAddToCart, onPro
     ];
 
     const filteredProducts = products.filter(product => {
-        const matchesSearch = product.name.toLowerCase().includes(localSearch.toLowerCase());
         const matchesCategory = !selectedCategory || selectedCategory === 'All' || product.category === selectedCategory;
-        return matchesSearch && matchesCategory;
+        
+        const searchTerm = localSearch.toLowerCase();
+        if (!searchTerm) return matchesCategory;
+
+        // Check for English matches first
+        const matchesEnglish = product.name.toLowerCase().includes(searchTerm) || 
+                             (product.description && product.description.toLowerCase().includes(searchTerm));
+        
+        if (matchesEnglish) return matchesCategory;
+
+        // Verify if the query contains Urdu characters
+        const isUrduQuery = /[\u0600-\u06FF]/.test(searchTerm);
+        if (isUrduQuery) {
+            const englishKeywords = getEnglishKeywords(searchTerm);
+            const matchesUrduDictionary = englishKeywords.some(keyword => 
+                product.name.toLowerCase().includes(keyword.toLowerCase()) || 
+                product.category.toLowerCase().includes(keyword.toLowerCase()) ||
+                (product.description && product.description.toLowerCase().includes(keyword.toLowerCase()))
+            );
+            return matchesCategory && matchesUrduDictionary;
+        }
+
+        return matchesCategory && matchesEnglish;
     });
 
     const isUrdu = lang === Language.UR;
