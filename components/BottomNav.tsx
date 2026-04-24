@@ -5,61 +5,53 @@ import { View, Language } from '../types';
 interface BottomNavProps {
     currentView: View;
     setView: (view: View) => void;
-    isAdminUnlocked: boolean;
+    cartCount: number;
     lang: Language;
 }
 
-export const BottomNav: React.FC<BottomNavProps> = ({ 
-    currentView, 
-    setView, 
-    isAdminUnlocked,
-    lang
-}) => {
-    const translations = {
-        [Language.EN]: { home: 'Home', orders: 'Orders', liked: 'Liked', account: 'Account', admin: 'Admin' },
-        [Language.UR]: { home: 'ہوم', orders: 'آرڈرز', liked: 'پسندیدہ', account: 'پروفائل', admin: 'ایڈمن' }
-    };
-    const t = translations[lang];
+const translations = {
+    home: "Home",
+    cart: "Basket",
+    favorites: "Favs",
+    history: "Orders",
+    profile: "Profile"
+};
+
+export const BottomNav: React.FC<BottomNavProps> = ({ currentView, setView, cartCount, lang }) => {
+    const t = translations;
 
     const navItems = [
-        { id: View.Home, label: t.home, icon: 'home' },
-        { id: View.OrderHistory, label: t.orders, icon: 'receipt_long' },
-        { id: View.Favorites, label: t.liked, icon: 'favorite' },
-        { id: View.Profile, label: t.account, icon: 'person' },
+        { view: View.Home, icon: 'home', label: t.home },
+        { view: View.Cart, icon: 'shopping_basket', label: t.cart, count: cartCount },
+        { view: View.Favorites, icon: 'favorite', label: t.favorites },
+        { view: View.OrderHistory, icon: 'receipt_long', label: t.history },
+        { view: View.Profile, icon: 'person', label: t.profile },
     ];
 
-    if (isAdminUnlocked) {
-        navItems.push({ id: View.Admin, label: t.admin, icon: 'settings' });
-    }
-
     return (
-        <nav className={`md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-800 px-2 py-3 flex justify-around items-center z-50 shadow-[0_-4px_10px_rgba(0,0,0,0.02)] transition-colors ${lang === Language.UR ? 'flex-row-reverse' : ''}`}>
-            {navItems.map((item) => {
-                const isActive = currentView === item.id;
-                
-                return (
-                    <button
-                        key={item.label}
-                        onClick={() => setView(item.id)}
-                        className={`flex flex-col items-center justify-center min-w-[64px] transition-all duration-300 ${
-                            isActive 
-                                ? 'text-primary' 
-                                : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'
-                        }`}
-                    >
-                        <span className={`material-symbols-rounded text-[26px] mb-0.5 transition-all ${isActive ? 'scale-110' : 'scale-100'}`}>
-                            {item.icon}
-                        </span>
-                        {isActive ? (
-                            <span className="text-[9px] font-black uppercase tracking-widest whitespace-nowrap animate-in fade-in slide-in-from-bottom-1 duration-300">
-                                {item.label}
+        <div className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-6 pt-2 pointer-events-none">
+            <div className="max-w-xl mx-auto bg-white/80 dark:bg-slate-900/80 backdrop-blur-3xl rounded-[2.5rem] shadow-premium border border-white/20 dark:border-slate-800/50 flex items-center justify-between p-2 pointer-events-auto">
+                {navItems.map((item) => {
+                    const isActive = currentView === item.view;
+                    return (
+                        <button 
+                            key={item.view}
+                            onClick={() => setView(item.view)}
+                            className={`relative flex flex-col items-center justify-center flex-1 py-2 rounded-2xl transition-all duration-300 ${isActive ? 'bg-primary/10 text-primary' : 'text-gray-400 hover:text-dark dark:hover:text-white'}`}
+                        >
+                            <span className="material-symbols-rounded text-[24px] mb-0.5" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>
+                                {item.icon}
                             </span>
-                        ) : (
-                            <div className="h-[13px]"></div> // Placeholder to prevent jump
-                        )}
-                    </button>
-                );
-            })}
-        </nav>
+                            <span className="text-[9px] font-black uppercase tracking-tight">{item.label}</span>
+                            {item.count !== undefined && item.count > 0 && (
+                                <span className="absolute top-1 right-2 w-4 h-4 bg-primary text-white text-[9px] font-black flex items-center justify-center rounded-full shadow-lg border-2 border-white dark:border-slate-900 animate-in zoom-in">
+                                    {item.count}
+                                </span>
+                            )}
+                        </button>
+                    );
+                })}
+            </div>
+        </div>
     );
 };

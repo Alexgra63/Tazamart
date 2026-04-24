@@ -12,44 +12,26 @@ interface HomeViewProps {
 }
 
 const translations = {
-    [Language.EN]: {
-        heroTitle: "Freshness delivered",
-        heroSub: "at market price",
-        searchPlaceholder: "Search items...",
-        qualityTag: "Fresh Quality",
-        categoriesLabel: "Categories",
-        selectionLabel: "Fresh Selection",
-        itemsFound: "items found",
-        all: "All",
-        veggies: "Vegetables",
-        fruits: "Fruits",
-        bundles: "Bundles",
-        seasonal: "Seasonal",
-        noItems: "No items found",
-        reset: "Reset View"
-    },
-    [Language.UR]: {
-        heroTitle: "تازہ ترین اشیاء",
-        heroSub: "مارکیٹ ریٹ پر",
-        searchPlaceholder: "تلاش کریں...",
-        qualityTag: "بہترین معیار",
-        categoriesLabel: "اقسام",
-        selectionLabel: "تازہ اشیاء",
-        itemsFound: "اشیاء ملی ہیں",
-        all: "سب",
-        veggies: "سبزیاں",
-        fruits: "پھل",
-        bundles: "بنڈلز",
-        seasonal: "موسمی",
-        noItems: "کچھ نہیں ملا",
-        reset: "دوبارہ دیکھیں"
-    }
+    heroTitle: "Freshness delivered",
+    heroSub: "at market price",
+    searchPlaceholder: "Search items (English or Urdu)...",
+    qualityTag: "Fresh Quality",
+    categoriesLabel: "Categories",
+    selectionLabel: "Fresh Selection",
+    itemsFound: "items found",
+    all: "All",
+    veggies: "Vegetables",
+    fruits: "Fruits",
+    bundles: "Bundles",
+    seasonal: "Seasonal",
+    noItems: "No items found",
+    reset: "Reset View"
 };
 
 export const HomeView: React.FC<HomeViewProps> = ({ products, onAddToCart, onProductClick, lang }) => {
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [localSearch, setLocalSearch] = useState('');
-    const t = translations[lang];
+    const t = translations;
 
     const categories = [
         { name: 'All', label: t.all, icon: 'stars', color: 'text-gray-300 bg-gray-50 dark:bg-slate-800', activeColor: 'text-white bg-primary' },
@@ -71,7 +53,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ products, onAddToCart, onPro
         
         if (matchesEnglish) return matchesCategory;
 
-        // Verify if the query contains Urdu characters
+        // Verify if the query contains Urdu characters - Keep Urdu search capability
         const isUrduQuery = /[\u0600-\u06FF]/.test(searchTerm);
         if (isUrduQuery) {
             const englishKeywords = getEnglishKeywords(searchTerm);
@@ -86,10 +68,8 @@ export const HomeView: React.FC<HomeViewProps> = ({ products, onAddToCart, onPro
         return matchesCategory && matchesEnglish;
     });
 
-    const isUrdu = lang === Language.UR;
-
     return (
-        <div className={`pb-20 animate-in fade-in duration-500 ${isUrdu ? 'rtl text-right' : 'ltr'}`} dir={isUrdu ? 'rtl' : 'ltr'}>
+        <div className="pb-20 animate-in fade-in duration-500 ltr" dir="ltr">
             <div className="px-4 mt-3 mb-8">
                 <div className="hero-gradient p-6 md:p-12 md:flex md:items-center md:justify-between rounded-[1.5rem] md:rounded-[2.5rem] shadow-premium text-white relative overflow-hidden">
                     <div className="absolute -top-10 -right-10 w-40 h-40 md:w-80 md:h-80 bg-white/10 rounded-full blur-3xl"></div>
@@ -97,13 +77,13 @@ export const HomeView: React.FC<HomeViewProps> = ({ products, onAddToCart, onPro
                         <span className="bg-white/20 text-[8px] md:text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-md mb-3 inline-block">
                             {t.qualityTag}
                         </span>
-                        <h2 className={`text-2xl md:text-5xl font-black leading-tight tracking-tight ${isUrdu ? 'text-3xl md:text-6xl' : ''}`}>
+                        <h2 className="text-2xl md:text-5xl font-black leading-tight tracking-tight">
                             {t.heroTitle} <br/> 
                             <span className="text-green-200">{t.heroSub}</span>
                         </h2>
                     </div>
                     <div className="relative z-10 w-full md:max-w-md">
-                        <div className={`absolute inset-y-0 ${isUrdu ? 'right-0 pr-4' : 'left-0 pl-4'} flex items-center pointer-events-none`}>
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <span className="material-symbols-rounded text-gray-400 text-[20px] md:text-[24px]">search</span>
                         </div>
                         <input 
@@ -111,7 +91,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ products, onAddToCart, onPro
                             placeholder={t.searchPlaceholder}
                             value={localSearch}
                             onChange={(e) => setLocalSearch(e.target.value)}
-                            className={`block w-full ${isUrdu ? 'pr-12 pl-6' : 'pl-12 pr-6'} py-3 md:py-5 bg-white rounded-2xl text-dark font-bold placeholder-gray-400 border-none outline-none shadow-premium focus:ring-8 focus:ring-white/10 transition-all text-xs md:text-sm`}
+                            className="block w-full pl-12 pr-6 py-3 md:py-5 bg-white rounded-2xl text-dark font-bold placeholder-gray-400 border-none outline-none shadow-premium focus:ring-8 focus:ring-white/10 transition-all text-xs md:text-sm"
                         />
                     </div>
                 </div>

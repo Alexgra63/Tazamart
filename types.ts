@@ -15,13 +15,11 @@ export enum ProductCategory {
 export interface Product {
     id: number;
     name: string;
-    nameUrdu?: string;
     price: number;
     image: string;
     category: ProductCategory;
     unit: 'kg' | 'piece' | 'bundle';
     description?: string;
-    descriptionUrdu?: string;
 }
 
 export interface CartItem extends Product {
@@ -48,8 +46,7 @@ export interface Order {
 export type UserProfile = Customer;
 
 export enum Language {
-    EN = 'English',
-    UR = 'Urdu'
+    EN = 'English'
 }
 
 export enum Theme {

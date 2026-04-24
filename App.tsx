@@ -14,7 +14,6 @@ import { ProfileView } from './components/ProfileView.tsx';
 import { FavoritesView } from './components/FavoritesView.tsx';
 import { Product, CartItem, Order, OrderStatus, View, Language, Theme, UserProfile } from './types.ts';
 import { initialProducts } from './data.ts';
-import { localizeProducts } from './lib/localization.ts';
 
 const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbytQbtCT4JNwAFrI_-7aDWoe2Ri1aSHJonO5BOLXRAb0P32DqBeWl9FWpgIuCpe7x0f/exec'; 
 
@@ -161,10 +160,10 @@ const App: React.FC = () => {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
     useEffect(() => {
-        // Update document language for browser translation detection
-        document.documentElement.lang = state.language === Language.UR ? 'ur' : 'en';
-        document.documentElement.dir = state.language === Language.UR ? 'rtl' : 'ltr';
-    }, [state.language]);
+        // Set document language to English to trigger browser translation for non-English users
+        document.documentElement.lang = 'en';
+        document.documentElement.dir = 'ltr';
+    }, []);
 
     const fetchRemoteData = useCallback(async () => {
         try {
@@ -177,12 +176,11 @@ const App: React.FC = () => {
             
             const data = await response.json();
             if (data.products) {
-                const fetchedProducts = data.products.map((p: any) => ({
+                const products = data.products.map((p: any) => ({
                     ...p,
                     price: parseFloat(p.price),
                     id: isNaN(Number(p.id)) ? p.id : Number(p.id)
                 }));
-                const products = localizeProducts(fetchedProducts);
                 const orders = (data.orders || []).map((o: any) => ({
                     ...o,
                     orderDate: new Date(o.orderDate)
@@ -214,7 +212,7 @@ const App: React.FC = () => {
         dispatch({ 
             type: 'SET_INITIAL_STATE', 
             payload: {
-                products: cachedProducts ? localizeProducts(JSON.parse(cachedProducts)) : localizeProducts(initialProducts),
+                products: cachedProducts ? JSON.parse(cachedProducts) : initialProducts,
                 orders: storedOrders ? JSON.parse(storedOrders).map((o: any) => ({...o, orderDate: new Date(o.orderDate)})) : [],
                 favorites: storedFavs ? JSON.parse(storedFavs) : [],
                 profile: storedProfile ? JSON.parse(storedProfile) : { name: '', address: '', phone: '' },
@@ -314,15 +312,18 @@ const App: React.FC = () => {
                 // consumption of strictly local orders
                 return <OrderHistoryView lang={state.language} orders={state.orders} />;
             case View.Favorites:
-                return <FavoritesView lang={state.language} products={state.products.filter(p => state.favorites.includes(p.id))} onAddToCart={onAddToCart} onProductClick={handleProductClick} />;
+                return <FavoritesView 
+                    lang={state.language} 
+                    favorites={state.products.filter(p => state.favorites.includes(p.id))} 
+                    onAddToCart={onAddToCart} 
+                    onProductClick={handleProductClick} 
+                    setView={setView}
+                />;
             case View.Profile:
                 return <ProfileView 
-                    lang={state.language} 
-                    theme={state.theme}
                     profile={state.profile} 
-                    onSave={updateProfile} 
-                    setLanguage={setLanguage}
-                    setTheme={setTheme}
+                    updateProfile={updateProfile} 
+                    lang={state.language}
                 />;
             case View.AdminLogin:
                 return <AdminLoginView onLogin={() => { setIsAuthenticated(true); setView(View.Admin); }} />;
@@ -355,7 +356,7 @@ const App: React.FC = () => {
             <BottomNav 
                 currentView={view} 
                 setView={setView} 
-                isAdminUnlocked={isAdminUnlocked}
+                cartCount={state.cart.reduce((c, i) => c + i.quantity, 0)}
                 lang={state.language}
             />
         </div>

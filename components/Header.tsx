@@ -28,17 +28,13 @@ export const Header: React.FC<HeaderProps> = ({
         setView(View.Home);
     };
 
-    const translations = {
-        [Language.EN]: { home: 'Home', orders: 'Orders', liked: 'Liked', account: 'Account' },
-        [Language.UR]: { home: 'ہوم', orders: 'آرڈرز', liked: 'پسندیدہ', account: 'پروفائل' }
-    };
-    const t = translations[lang];
+    const t = { home: 'Home', orders: 'Orders', liked: 'Liked', account: 'Account' };
 
     return (
         <header className="bg-white dark:bg-slate-900 sticky top-0 z-50 px-4 py-2 border-b border-gray-100 dark:border-slate-800 shadow-sm transition-colors">
-            <div className={`container mx-auto flex items-center justify-between ${lang === Language.UR ? 'flex-row-reverse' : ''}`}>
+            <div className="container mx-auto flex items-center justify-between ltr">
                 <div 
-                    className={`flex items-center space-x-2 cursor-pointer transition-transform active:scale-95 select-none ${lang === Language.UR ? 'space-x-reverse' : ''}`} 
+                    className="flex items-center space-x-2 cursor-pointer transition-transform active:scale-95 select-none" 
                     onClick={handleLogoClick}
                 >
                     <div className="bg-gradient-to-br from-primary to-primary-dark p-1.5 rounded-xl shadow-sm">
@@ -47,9 +43,9 @@ export const Header: React.FC<HeaderProps> = ({
                     <span className="text-xl font-black text-dark dark:text-white tracking-tighter">TazaMart</span>
                 </div>
 
-                <div className={`flex items-center space-x-2 ${lang === Language.UR ? 'space-x-reverse' : ''}`}>
+                <div className="flex items-center space-x-2">
                     {/* Desktop Navigation */}
-                    <nav className={`hidden md:flex items-center space-x-1 ${lang === Language.UR ? 'mr-0 ml-4 space-x-reverse' : 'mr-4 ml-0'}`}>
+                    <nav className="hidden md:flex items-center space-x-1 mr-4 ml-0">
                         {[
                             { id: View.Home, label: t.home, icon: 'home' },
                             { id: View.OrderHistory, label: t.orders, icon: 'receipt_long' },
@@ -59,7 +55,7 @@ export const Header: React.FC<HeaderProps> = ({
                             <button
                                 key={item.id}
                                 onClick={() => setView(item.id)}
-                                className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest text-gray-400 hover:text-primary hover:bg-primary/5 transition-all flex items-center space-x-2 ${lang === Language.UR ? 'space-x-reverse' : ''}`}
+                                className="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest text-gray-400 hover:text-primary hover:bg-primary/5 transition-all flex items-center space-x-2"
                             >
                                 <span className="material-symbols-rounded text-[20px]">{item.icon}</span>
                                 <span>{item.label}</span>
@@ -78,6 +74,16 @@ export const Header: React.FC<HeaderProps> = ({
                                 {Math.floor(cartItemCount)}
                             </span>
                         )}
+                    </button>
+                    
+                    {/* Theme Toggle Button */}
+                    <button 
+                        onClick={() => setTheme(theme === Theme.Light ? Theme.Dark : Theme.Light)}
+                        className="bg-gray-50 dark:bg-slate-800 p-2 rounded-xl text-gray-400 hover:text-primary transition-colors shadow-soft ml-2"
+                    >
+                        <span className="material-symbols-rounded text-[20px]">
+                            {theme === Theme.Light ? 'dark_mode' : 'light_mode'}
+                        </span>
                     </button>
                 </div>
             </div>

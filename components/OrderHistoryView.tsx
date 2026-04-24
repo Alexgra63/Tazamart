@@ -4,7 +4,6 @@ import { Order, OrderStatus, Language } from '../types';
 
 interface OrderHistoryViewProps {
     orders: Order[];
-    // Added lang prop to fix TypeScript error in App.tsx
     lang: Language;
 }
 
@@ -15,49 +14,22 @@ const statusColorMap: Record<OrderStatus, string> = {
 };
 
 const translations = {
-    [Language.EN]: {
-        title: "My Orders",
-        empty: "You have no past orders.",
-        orderId: "Order ID",
-        date: "Date",
-        total: "Total",
-        items: "Items",
-        pending: "Pending",
-        packed: "Packed",
-        delivered: "Delivered"
-    },
-    [Language.UR]: {
-        title: "میرے آرڈرز",
-        empty: "آپ کا کوئی پرانا آرڈر نہیں ہے۔",
-        orderId: "آرڈر آئی ڈی",
-        date: "تاریخ",
-        total: "کل",
-        items: "اشیاء",
-        pending: "انتظار میں",
-        packed: "پیک ہو گیا",
-        delivered: "پہنچ گیا"
-    }
-};
-
-const statusTranslationMap: Record<Language, Record<OrderStatus, string>> = {
-    [Language.EN]: {
-        [OrderStatus.Pending]: "Pending",
-        [OrderStatus.Packed]: "Packed",
-        [OrderStatus.Delivered]: "Delivered"
-    },
-    [Language.UR]: {
-        [OrderStatus.Pending]: "انتظار میں",
-        [OrderStatus.Packed]: "پیک ہو گیا",
-        [OrderStatus.Delivered]: "پہنچ گیا"
-    }
+    title: "My Orders",
+    empty: "You have no past orders.",
+    orderId: "Order ID",
+    date: "Date",
+    total: "Total",
+    items: "Items",
+    pending: "Pending",
+    packed: "Packed",
+    delivered: "Delivered"
 };
 
 export const OrderHistoryView: React.FC<OrderHistoryViewProps> = ({ orders, lang }) => {
-    const t = translations[lang];
-    const isUrdu = lang === Language.UR;
+    const t = translations;
 
     return (
-        <div className={`container mx-auto px-4 py-8 pb-32 animate-in fade-in duration-500 ${isUrdu ? 'rtl text-right' : 'ltr'}`}>
+        <div className="container mx-auto px-4 py-8 pb-32 animate-in fade-in duration-500 ltr text-left">
             <h2 className="text-3xl font-black text-dark dark:text-white mb-8 tracking-tight">{t.title}</h2>
             {orders.length === 0 ? (
                 <div className="text-center py-24 bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-soft border border-gray-100 dark:border-slate-800">
@@ -68,19 +40,19 @@ export const OrderHistoryView: React.FC<OrderHistoryViewProps> = ({ orders, lang
                 <div className="space-y-6">
                     {orders.slice().reverse().map(order => (
                         <div key={order.id} className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-premium border border-gray-50 dark:border-slate-800 transition-all hover:shadow-lg">
-                            <div className={`flex flex-wrap justify-between items-start mb-6 gap-4 ${isUrdu ? 'flex-row-reverse' : ''}`}>
-                                <div className={isUrdu ? 'text-right' : 'text-left'}>
+                            <div className="flex flex-wrap justify-between items-start mb-6 gap-4">
+                                <div className="text-left">
                                     <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-1">{t.orderId}</p>
                                     <p className="font-black text-dark dark:text-white text-lg">#{order.id.split('-').pop()}</p>
                                     <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold mt-1 uppercase tracking-tighter">{t.date}: {new Date(order.orderDate).toLocaleDateString()}</p>
                                 </div>
-                                <div className={isUrdu ? 'text-left' : 'text-right'}>
-                                    <div className={`flex items-baseline gap-1 ${isUrdu ? 'flex-row-reverse' : ''}`}>
-                                        <span className="text-[11px] font-black text-primary uppercase">{isUrdu ? 'روپے' : 'Rs.'}</span>
+                                <div className="text-right">
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-[11px] font-black text-primary uppercase">Rs.</span>
                                         <span className="text-2xl font-black text-primary tracking-tighter">{order.total.toLocaleString()}</span>
                                     </div>
                                     <span className={`inline-block mt-2 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg ${statusColorMap[order.status]}`}>
-                                        {statusTranslationMap[lang][order.status]}
+                                        {order.status}
                                     </span>
                                 </div>
                             </div>
@@ -88,9 +60,9 @@ export const OrderHistoryView: React.FC<OrderHistoryViewProps> = ({ orders, lang
                                 <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-4">{t.items}:</h4>
                                 <ul className="space-y-2">
                                     {order.items.map(item => (
-                                        <li key={item.id} className={`flex justify-between items-center text-sm dark:text-gray-300 ${isUrdu ? 'flex-row-reverse' : ''}`}>
+                                        <li key={item.id} className="flex justify-between items-center text-sm dark:text-gray-300">
                                             <span className="font-bold">
-                                                {isUrdu && item.nameUrdu ? item.nameUrdu : item.name}
+                                                {item.name}
                                             </span>
                                             <span className="font-black text-gray-400 text-xs">× {item.quantity}</span>
                                         </li>

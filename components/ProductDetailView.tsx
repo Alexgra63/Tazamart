@@ -12,32 +12,17 @@ interface ProductDetailViewProps {
 }
 
 const translations = {
-    [Language.EN]: {
-        back: "Back",
-        per: "per",
-        rs: "Rs.",
-        quantity: "Quantity",
-        addToCart: "Add to Basket",
-        desc: "Product Description",
-        noDesc: "Fresh premium quality item selected specially for TazaMart customers.",
-        added: "Added to Basket",
-        total: "Subtotal",
-        adjustWeight: "Adjust weight",
-        selectPieces: "Select pieces"
-    },
-    [Language.UR]: {
-        back: "واپس",
-        per: "فی",
-        rs: "روپے",
-        quantity: "مقدار",
-        addToCart: "ٹوکری میں ڈالیں",
-        desc: "تفصیلات",
-        noDesc: "تازہ اور بہترین معیار کی چیز جو خاص طور پر تازہ مارٹ کے صارفین کے لیے منتخب کی گئی ہے۔",
-        added: "ٹوکری میں شامل کر دیا گیا",
-        total: "کل رقم",
-        adjustWeight: "وزن کم یا زیادہ کریں",
-        selectPieces: "تعداد منتخب کریں"
-    }
+    back: "Back",
+    per: "per",
+    rs: "Rs.",
+    quantity: "Quantity",
+    addToCart: "Add to Basket",
+    desc: "Product Description",
+    noDesc: "Fresh premium quality item selected specially for TazaMart customers.",
+    added: "Added to Basket",
+    total: "Subtotal",
+    adjustWeight: "Adjust weight",
+    selectPieces: "Select pieces"
 };
 
 export const ProductDetailView: React.FC<ProductDetailViewProps> = ({ 
@@ -45,8 +30,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
 }) => {
     const [quantity, setQuantity] = useState(1);
     const [addedToast, setAddedToast] = useState(false);
-    const t = translations[lang];
-    const isUrdu = lang === Language.UR;
+    const t = translations;
 
     const isWeightBased = product.unit === 'kg';
     const step = isWeightBased ? 0.25 : 1;
@@ -59,15 +43,15 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
     };
 
     return (
-        <div className={`min-h-screen bg-white dark:bg-slate-950 animate-in slide-in-from-right duration-300 pb-20 ${isUrdu ? 'rtl text-right' : 'ltr text-left'}`} dir={isUrdu ? 'rtl' : 'ltr'}>
+        <div className="min-h-screen bg-white dark:bg-slate-950 animate-in slide-in-from-right duration-300 pb-20 ltr text-left" dir="ltr">
             
             {/* Floating Navigation Buttons */}
-            <div className={`fixed top-[72px] left-0 right-0 z-[60] flex items-center justify-between p-4 pointer-events-none max-w-7xl mx-auto`}>
+            <div className="fixed top-[72px] left-0 right-0 z-[60] flex items-center justify-between p-4 pointer-events-none max-w-7xl mx-auto">
                 <button 
                     onClick={onBack}
                     className="pointer-events-auto w-11 h-11 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-premium flex items-center justify-center text-dark dark:text-white transition-all active:scale-90 border border-white/20 dark:border-slate-700/50"
                 >
-                    <span className="material-symbols-rounded text-2xl">{isUrdu ? 'arrow_forward' : 'arrow_back'}</span>
+                    <span className="material-symbols-rounded text-2xl">arrow_back</span>
                 </button>
                 <button 
                     onClick={() => toggleFavorite(product.id)}
@@ -105,15 +89,15 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
 
                         {/* Title & Price */}
                         <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-dark dark:text-white tracking-tighter leading-none mb-6">
-                            {isUrdu && product.nameUrdu ? product.nameUrdu : product.name}
+                            {product.name}
                         </h1>
                         
                         <div className="flex items-center gap-3 mb-10">
-                            <div className={`flex items-baseline gap-1 ${isUrdu ? 'flex-row-reverse' : ''}`}>
+                            <div className="flex items-baseline gap-1">
                                 <span className="text-xs font-black text-primary uppercase">{t.rs}</span>
                                 <span className="text-4xl md:text-5xl font-black text-primary tracking-tighter">{product.price}</span>
                             </div>
-                            <span className={`text-gray-400 font-bold text-[11px] tracking-widest uppercase border-gray-100 dark:border-slate-800 ${isUrdu ? 'border-r pr-3' : 'border-l pl-3'}`}>
+                            <span className="text-gray-400 font-bold text-[11px] tracking-widest uppercase border-gray-100 dark:border-slate-800 border-l pl-3">
                                 {t.per} {product.unit}
                             </span>
                         </div>
@@ -149,15 +133,15 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
                         <div className="space-y-4 mb-20 md:mb-0">
                             <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest border-b border-gray-50 dark:border-slate-800 pb-2">{t.desc}</h4>
                             <p className="text-gray-600 dark:text-gray-400 text-lg sm:text-xl leading-relaxed font-medium">
-                                {(isUrdu && product.descriptionUrdu) ? product.descriptionUrdu : (product.description || t.noDesc)}
+                                {product.description || t.noDesc}
                             </p>
                         </div>
 
                         {/* Desktop Add to Cart - Visible only on MD+ */}
                         <div className="hidden md:flex items-center gap-6 mt-12 bg-gray-50 dark:bg-slate-900 shadow-premium p-6 rounded-[2rem] border border-gray-100 dark:border-slate-800">
-                            <div className={`flex-grow ${isUrdu ? 'text-right' : 'text-left'}`}>
+                            <div className="flex-grow text-left">
                                 <p className="text-[9px] font-black uppercase text-gray-400 tracking-widest mb-1">{t.total}</p>
-                                <div className={`flex items-baseline gap-1 ${isUrdu ? 'flex-row-reverse' : ''}`}>
+                                <div className="flex items-baseline gap-1">
                                     <span className="text-[10px] font-black text-dark dark:text-white">{t.rs}</span>
                                     <span className="text-3xl font-black text-dark dark:text-white tracking-tighter">{(product.price * quantity).toLocaleString()}</span>
                                 </div>
@@ -177,9 +161,9 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
             {/* Fixed Action Footer - Floating for Mobile Only */}
             <div className="md:hidden fixed bottom-[88px] left-0 right-0 px-4 z-50">
                 <div className="max-w-3xl mx-auto flex items-center gap-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl p-3 rounded-[2rem] shadow-premium border border-gray-100/50 dark:border-slate-800/50">
-                    <div className={`${isUrdu ? 'pr-4 text-right' : 'pl-4 text-left'} flex-1`}>
+                    <div className="pl-4 text-left flex-1">
                         <p className="text-[9px] font-black uppercase text-gray-400 tracking-widest mb-0.5">{t.total}</p>
-                        <div className={`flex items-baseline gap-1 ${isUrdu ? 'flex-row-reverse' : ''}`}>
+                        <div className="flex items-baseline gap-1">
                             <span className="text-[10px] font-black text-dark dark:text-white">{t.rs}</span>
                             <span className="text-2xl font-black text-dark dark:text-white tracking-tighter">{(product.price * quantity).toLocaleString()}</span>
                         </div>

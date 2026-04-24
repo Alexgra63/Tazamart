@@ -1,6 +1,6 @@
 {
   "name": "TazaMart",
-  "description": "An online fruit and vegetable delivery platform with a user-friendly storefront and a comprehensive admin panel for order and product management.",
+  "description": "An online fruit and vegetable delivery platform primarily in English, featuring Urdu-capable product search and a comprehensive admin management console.",
   "requestFramePermissions": [],
   "majorCapabilities": []
 }
