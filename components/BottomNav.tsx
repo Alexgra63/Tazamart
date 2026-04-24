@@ -22,7 +22,6 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentView, setView, cart
 
     const navItems = [
         { view: View.Home, icon: 'home', label: t.home },
-        { view: View.Cart, icon: 'shopping_basket', label: t.cart, count: cartCount },
         { view: View.Favorites, icon: 'favorite', label: t.favorites },
         { view: View.OrderHistory, icon: 'receipt_long', label: t.history },
         { view: View.Profile, icon: 'person', label: t.profile },
