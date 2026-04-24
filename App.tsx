@@ -14,6 +14,7 @@ import { ProfileView } from './components/ProfileView.tsx';
 import { FavoritesView } from './components/FavoritesView.tsx';
 import { Product, CartItem, Order, OrderStatus, View, Language, Theme, UserProfile } from './types.ts';
 import { initialProducts } from './data.ts';
+import { localizeProducts } from './lib/localization.ts';
 
 const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbytQbtCT4JNwAFrI_-7aDWoe2Ri1aSHJonO5BOLXRAb0P32DqBeWl9FWpgIuCpe7x0f/exec'; 
 
@@ -176,11 +177,12 @@ const App: React.FC = () => {
             
             const data = await response.json();
             if (data.products) {
-                const products = data.products.map((p: any) => ({
+                const fetchedProducts = data.products.map((p: any) => ({
                     ...p,
                     price: parseFloat(p.price),
                     id: isNaN(Number(p.id)) ? p.id : Number(p.id)
                 }));
+                const products = localizeProducts(fetchedProducts);
                 const orders = (data.orders || []).map((o: any) => ({
                     ...o,
                     orderDate: new Date(o.orderDate)
@@ -212,7 +214,7 @@ const App: React.FC = () => {
         dispatch({ 
             type: 'SET_INITIAL_STATE', 
             payload: {
-                products: cachedProducts ? JSON.parse(cachedProducts) : [],
+                products: cachedProducts ? localizeProducts(JSON.parse(cachedProducts)) : localizeProducts(initialProducts),
                 orders: storedOrders ? JSON.parse(storedOrders).map((o: any) => ({...o, orderDate: new Date(o.orderDate)})) : [],
                 favorites: storedFavs ? JSON.parse(storedFavs) : [],
                 profile: storedProfile ? JSON.parse(storedProfile) : { name: '', address: '', phone: '' },

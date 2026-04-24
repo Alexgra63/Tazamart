@@ -39,10 +39,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
                 </button>
             </div>
             <div className="p-3 md:p-5">
-                <h3 className="text-xs md:text-sm font-black text-dark dark:text-white line-clamp-1 group-hover:text-primary transition-colors">{product.name}</h3>
+                <h3 className="text-xs md:text-sm font-black text-dark dark:text-white line-clamp-1 group-hover:text-primary transition-colors">
+                    {lang === Language.UR && product.nameUrdu ? product.nameUrdu : product.name}
+                </h3>
                 <div className={`flex items-center mt-1 ${lang === Language.UR ? 'flex-row-reverse' : ''}`}>
-                    <span className={`text-sm md:text-lg font-black text-dark dark:text-white ${lang === Language.UR ? 'ml-0' : ''}`}>{lang === Language.UR ? 'روپے' : 'Rs.'} {product.price}</span>
-                    <span className={`text-[9px] md:text-[11px] text-gray-400 font-bold ${lang === Language.UR ? 'mr-1' : 'ml-1'} uppercase tracking-tighter`}>{lang === Language.UR ? 'فی' : '/'} {product.unit}</span>
+                    <span className={`text-sm md:text-lg font-black text-dark dark:text-white ${lang === Language.UR ? 'ml-0 font-urdu' : ''}`}>{lang === Language.UR ? 'روپے' : 'Rs.'} {product.price}</span>
+                    <span className={`text-[9px] md:text-[11px] text-gray-400 font-bold ${lang === Language.UR ? 'mr-1 font-urdu' : 'ml-1'} uppercase tracking-tighter`}>{lang === Language.UR ? 'فی' : '/'} {product.unit}</span>
                 </div>
             </div>
         </div>

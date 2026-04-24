@@ -100,7 +100,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
     const [syncMessage, setSyncMessage] = useState('');
     
     const [newProduct, setNewProduct] = useState<Partial<Product>>({
-        name: '', price: 0, image: '', category: ProductCategory.Vegetables, unit: 'kg', description: ''
+        name: '', nameUrdu: '', price: 0, image: '', category: ProductCategory.Vegetables, unit: 'kg', description: '', descriptionUrdu: ''
     });
 
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -240,7 +240,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
             {tab === 'products' && (
                 <div className="space-y-6">
                     <button 
-                        onClick={() => { setEditingProduct(null); setNewProduct({ name: '', price: 0, image: '', category: ProductCategory.Vegetables, unit: 'kg', description: '' }); setIsProductModalOpen(true); }} 
+                        onClick={() => { setEditingProduct(null); setNewProduct({ name: '', nameUrdu: '', price: 0, image: '', category: ProductCategory.Vegetables, unit: 'kg', description: '', descriptionUrdu: '' }); setIsProductModalOpen(true); }} 
                         className="bg-primary text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest flex items-center shadow-premium hover:shadow-lg transition-all"
                     >
                         <span className="material-symbols-rounded mr-3">add</span> Add New Item
@@ -297,8 +297,12 @@ export const AdminView: React.FC<AdminViewProps> = ({
                         </div>
                         <form onSubmit={handleProductSubmit} className="space-y-6">
                             <div>
-                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Product Name</label>
+                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Product Name (English)</label>
                                 <input required className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-4 focus:ring-primary/5 transition-all text-sm font-bold" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} placeholder="e.g. Red Apples" />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest text-right">مصنوعات کا نام (اردو)</label>
+                                <input className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-4 focus:ring-primary/5 transition-all text-sm font-bold text-right" dir="rtl" value={newProduct.nameUrdu} onChange={e => setNewProduct({...newProduct, nameUrdu: e.target.value})} placeholder="مثلاً: سرخ سیب" />
                             </div>
                             <div className="grid grid-cols-2 gap-6">
                                 <div>
@@ -340,8 +344,12 @@ export const AdminView: React.FC<AdminViewProps> = ({
                             </div>
 
                             <div>
-                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Description</label>
+                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Description (English)</label>
                                 <textarea className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-4 focus:ring-primary/5 transition-all text-sm font-medium h-24 no-scrollbar" value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})} placeholder="Item details..." />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest text-right">تفصیلات (اردو)</label>
+                                <textarea className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-4 focus:ring-primary/5 transition-all text-sm font-medium h-24 no-scrollbar text-right" dir="rtl" value={newProduct.descriptionUrdu} onChange={e => setNewProduct({...newProduct, descriptionUrdu: e.target.value})} placeholder="آئٹم کی تفصیلات..." />
                             </div>
                             <div className="flex space-x-4 pt-4">
                                 <button type="button" onClick={() => setIsProductModalOpen(false)} className="flex-1 py-5 rounded-2xl font-black uppercase tracking-widest bg-gray-100 text-gray-400">Discard</button>

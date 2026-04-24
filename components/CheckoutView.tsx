@@ -146,7 +146,9 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, placeOrder, se
                         <div className="space-y-4 max-h-[250px] overflow-y-auto no-scrollbar">
                             {cart.map(item => (
                                 <div key={item.id} className={`flex justify-between items-center text-[11px] dark:text-gray-300 ${isUrdu ? 'flex-row-reverse' : ''}`}>
-                                    <span className="font-bold">{item.name} <span className="text-gray-400">× {item.quantity}</span></span>
+                                    <span className="font-bold">
+                                        {isUrdu && item.nameUrdu ? item.nameUrdu : item.name} <span className="text-gray-400">× {item.quantity}</span>
+                                    </span>
                                     <span className={`font-black ${isUrdu ? 'flex flex-row-reverse gap-1' : ''}`}>
                                         <span>{isUrdu ? 'روپے' : 'Rs.'}</span>
                                         <span>{(item.price * item.quantity).toFixed(0)}</span>

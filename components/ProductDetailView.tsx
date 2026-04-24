@@ -105,7 +105,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
 
                         {/* Title & Price */}
                         <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-dark dark:text-white tracking-tighter leading-none mb-6">
-                            {product.name}
+                            {isUrdu && product.nameUrdu ? product.nameUrdu : product.name}
                         </h1>
                         
                         <div className="flex items-center gap-3 mb-10">
@@ -149,7 +149,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
                         <div className="space-y-4 mb-20 md:mb-0">
                             <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest border-b border-gray-50 dark:border-slate-800 pb-2">{t.desc}</h4>
                             <p className="text-gray-600 dark:text-gray-400 text-lg sm:text-xl leading-relaxed font-medium">
-                                {product.description || t.noDesc}
+                                {(isUrdu && product.descriptionUrdu) ? product.descriptionUrdu : (product.description || t.noDesc)}
                             </p>
                         </div>
 

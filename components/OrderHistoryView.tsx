@@ -88,8 +88,10 @@ export const OrderHistoryView: React.FC<OrderHistoryViewProps> = ({ orders, lang
                                 <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-4">{t.items}:</h4>
                                 <ul className="space-y-2">
                                     {order.items.map(item => (
-                                        <li key={item.id} className="flex justify-between items-center text-sm dark:text-gray-300">
-                                            <span className="font-bold">{item.name}</span>
+                                        <li key={item.id} className={`flex justify-between items-center text-sm dark:text-gray-300 ${isUrdu ? 'flex-row-reverse' : ''}`}>
+                                            <span className="font-bold">
+                                                {isUrdu && item.nameUrdu ? item.nameUrdu : item.name}
+                                            </span>
                                             <span className="font-black text-gray-400 text-xs">× {item.quantity}</span>
                                         </li>
                                     ))}

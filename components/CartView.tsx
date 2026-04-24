@@ -66,7 +66,9 @@ export const CartView: React.FC<CartViewProps> = ({ cart, updateQuantity, remove
                             <div key={item.id} className="bg-white dark:bg-slate-900 p-4 rounded-[2rem] shadow-soft border border-gray-100 dark:border-slate-800 flex items-center gap-4 transition-all">
                                 <img src={item.image} alt={item.name} className="w-24 h-24 rounded-2xl object-cover shrink-0 shadow-sm" referrerPolicy="no-referrer" />
                                                                 <div className="flex-grow">
-                                                                    <h3 className="font-black text-dark dark:text-white text-sm">{item.name}</h3>
+                                                                    <h3 className="font-black text-dark dark:text-white text-sm">
+                                                                        {isUrdu && item.nameUrdu ? item.nameUrdu : item.name}
+                                                                    </h3>
                                                                     <p className={`text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-tighter ${isUrdu ? 'flex flex-row-reverse justify-end gap-1' : ''}`}>
                                                                         <span>{isUrdu ? 'روپے' : 'Rs.'}</span>
                                                                         <span>{item.price}</span>
