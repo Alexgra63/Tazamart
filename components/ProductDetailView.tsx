@@ -45,38 +45,38 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
     return (
         <div className="min-h-screen bg-white dark:bg-slate-950 animate-in slide-in-from-right duration-300 pb-20 ltr text-left" dir="ltr">
             
-            {/* Floating Navigation Buttons */}
-            <div className="fixed top-[72px] left-0 right-0 z-[60] flex items-center justify-between p-4 pointer-events-none max-w-7xl mx-auto">
+            {/* Navigation Buttons - Adjusted for sticky header */}
+            <div className="sticky top-0 z-[60] flex items-center justify-between p-4 pointer-events-none max-w-7xl mx-auto">
                 <button 
                     onClick={onBack}
-                    className="pointer-events-auto w-11 h-11 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-premium flex items-center justify-center text-dark dark:text-white transition-all active:scale-90 border border-white/20 dark:border-slate-700/50"
+                    className="pointer-events-auto w-10 h-10 md:w-12 md:h-12 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-premium flex items-center justify-center text-dark dark:text-white transition-all active:scale-90 border border-white/20 dark:border-slate-700/50"
                 >
-                    <span className="material-symbols-rounded text-2xl">arrow_back</span>
+                    <span className="material-symbols-rounded text-xl md:text-2xl">arrow_back</span>
                 </button>
                 <button 
                     onClick={() => toggleFavorite(product.id)}
-                    className={`pointer-events-auto w-11 h-11 rounded-2xl shadow-premium flex items-center justify-center backdrop-blur-xl transition-all active:scale-90 border ${isFavorite ? 'bg-red-500 text-white border-red-400' : 'bg-white/90 dark:bg-slate-800/90 text-gray-400 border-white/20 dark:border-slate-700/50'}`}
+                    className={`pointer-events-auto w-10 h-10 md:w-12 md:h-12 rounded-2xl shadow-premium flex items-center justify-center backdrop-blur-xl transition-all active:scale-90 border ${isFavorite ? 'bg-red-500 text-white border-red-400' : 'bg-white/90 dark:bg-slate-800/90 text-gray-400 border-white/20 dark:border-slate-700/50'}`}
                 >
-                    <span className="material-symbols-rounded text-2xl" style={{ fontVariationSettings: isFavorite ? "'FILL' 1" : "'FILL' 0" }}>favorite</span>
+                    <span className="material-symbols-rounded text-xl md:text-2xl" style={{ fontVariationSettings: isFavorite ? "'FILL' 1" : "'FILL' 0" }}>favorite</span>
                 </button>
             </div>
 
             {/* Main Content */}
-            <div className="md:flex md:items-start md:gap-12 max-w-7xl mx-auto md:px-8 pt-2 md:pt-12">
+            <div className="md:flex md:items-start md:gap-16 max-w-7xl mx-auto px-4 md:px-8 pb-12">
                 {/* Hero Image Section */}
-                <div className="relative w-full md:w-1/2 h-[45vh] md:h-[70vh] overflow-hidden rounded-b-[2rem] md:rounded-[2.5rem] shadow-soft">
+                <div className="relative w-full md:w-[45%] h-[40vh] sm:h-[50vh] md:h-[600px] overflow-hidden rounded-[2rem] md:rounded-[3rem] shadow-soft shrink-0">
                     <img 
                         src={product.image} 
                         alt={product.name} 
                         referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
                 </div>
 
                 {/* Content Details */}
-                <div className="relative bg-white dark:bg-slate-950 px-6 md:px-0 pt-10 md:pt-0 md:flex-1">
-                    <div className="max-w-3xl mx-auto md:mx-0">
+                <div className="relative px-2 md:px-0 pt-8 md:pt-4 md:flex-1">
+                    <div className="max-w-3xl">
                         {/* Category & Badge */}
                         <div className="flex items-center gap-2 mb-4">
                             <span className="text-[9px] font-black uppercase text-primary bg-primary/10 px-3 py-1 rounded-lg tracking-widest border border-primary/5">

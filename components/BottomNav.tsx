@@ -29,7 +29,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentView, setView, cart
     ];
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-6 pt-2 pointer-events-none">
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 px-4 pb-6 pt-2 pointer-events-none">
             <div className="max-w-xl mx-auto bg-white/80 dark:bg-slate-900/80 backdrop-blur-3xl rounded-[2.5rem] shadow-premium border border-white/20 dark:border-slate-800/50 flex items-center justify-between p-2 pointer-events-auto">
                 {navItems.map((item) => {
                     const isActive = currentView === item.view;
