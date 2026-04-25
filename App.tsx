@@ -353,12 +353,14 @@ const App: React.FC = () => {
             <main className="flex-grow pb-32 md:pb-16 max-w-7xl mx-auto w-full px-0 md:px-8">
                 {renderView()}
             </main>
-            <BottomNav 
-                currentView={view} 
-                setView={setView} 
-                cartCount={state.cart.reduce((c, i) => c + i.quantity, 0)}
-                lang={state.language}
-            />
+            {view !== View.ProductDetail && (
+                <BottomNav 
+                    currentView={view} 
+                    setView={setView} 
+                    cartCount={state.cart.reduce((c, i) => c + i.quantity, 0)}
+                    lang={state.language}
+                />
+            )}
         </div>
     );
 };

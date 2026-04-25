@@ -49,8 +49,8 @@ export const CartView: React.FC<CartViewProps> = ({ cart, updateQuantity, remove
                 <div className="flex flex-col lg:flex-row gap-12 items-start">
                     <div className="w-full lg:flex-grow space-y-6">
                         {cart.map(item => (
-                            <div key={item.id} className="bg-white dark:bg-slate-900 p-4 md:p-5 rounded-[2rem] md:rounded-[2.5rem] shadow-soft border border-gray-100 dark:border-slate-800 flex items-center md:items-stretch gap-4 md:gap-6 transition-all hover:shadow-lg">
-                                <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-2xl md:rounded-3xl overflow-hidden shrink-0 shadow-sm align-middle self-center">
+                            <div key={item.id} className="bg-white dark:bg-slate-900 p-3 sm:p-4 md:p-5 rounded-3xl md:rounded-[2.5rem] shadow-soft border border-gray-100 dark:border-slate-800 flex items-center md:items-stretch gap-3 md:gap-6 transition-all hover:shadow-lg">
+                                <div className="w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-2xl md:rounded-3xl overflow-hidden shrink-0 shadow-sm align-middle self-center">
                                     <img src={item.image} alt={item.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                                 </div>
                                 <div className="flex-grow min-w-0 flex flex-col justify-center">
@@ -59,35 +59,35 @@ export const CartView: React.FC<CartViewProps> = ({ cart, updateQuantity, remove
                                             {item.name}
                                         </h3>
                                         <button onClick={() => removeFromCart(item.id)} className="text-gray-300 dark:text-slate-700 hover:text-red-500 transition-colors shrink-0 p-1 md:p-0">
-                                            <span className="material-symbols-rounded text-[20px] md:text-[24px]">delete</span>
+                                            <span className="material-symbols-rounded text-[18px] md:text-[24px]">delete</span>
                                         </button>
                                     </div>
-                                    <p className="text-[10px] md:text-[11px] text-gray-500 dark:text-gray-400 font-black uppercase tracking-widest mb-3 md:mb-4">
+                                    <p className="text-[9px] md:text-[11px] text-gray-500 dark:text-gray-400 font-black uppercase tracking-widest mb-2 md:mb-4">
                                         <span>Rs. {item.price}</span>
                                         <span className="mx-1 md:mx-2 opacity-30">/</span>
                                         <span>{item.unit}</span>
                                     </p>
                                     
-                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mt-auto">
-                                        <div className="flex items-center bg-gray-50 dark:bg-slate-800 rounded-xl md:rounded-2xl p-1 md:p-1.5 border border-gray-100 dark:border-slate-700 shadow-sm shrink-0 self-start sm:self-auto">
+                                    <div className="flex flex-row items-center justify-between gap-2 sm:gap-4 mt-auto">
+                                        <div className="flex items-center bg-gray-50 dark:bg-slate-800 rounded-xl md:rounded-2xl p-1 md:p-1.5 border border-gray-100 dark:border-slate-700 shadow-sm shrink-0">
                                             <button 
                                                 onClick={() => handleQuantityChange(item, -1)} 
-                                                className="w-7 h-7 md:w-9 md:h-9 rounded-lg md:rounded-xl bg-white dark:bg-slate-700 text-gray-400 shadow-sm flex items-center justify-center hover:text-primary transition-all disabled:opacity-30" 
+                                                className="w-6 h-6 md:w-9 md:h-9 rounded-md md:rounded-xl bg-white dark:bg-slate-700 text-gray-400 shadow-sm flex items-center justify-center hover:text-primary transition-all disabled:opacity-30" 
                                                 disabled={item.quantity <= (item.unit === 'kg' ? 0.25 : 1)}
                                             >
-                                                <span className="material-symbols-rounded text-[18px] md:text-[20px]">remove</span>
+                                                <span className="material-symbols-rounded text-[16px] md:text-[20px]">remove</span>
                                             </button>
-                                            <span className="px-3 md:px-4 font-black text-[11px] md:text-xs min-w-[50px] md:min-w-[70px] text-center dark:text-white flex items-baseline justify-center gap-1">
-                                                {item.quantity} <span className="text-[8px] md:text-[9px] text-gray-400">{item.unit}</span>
+                                            <span className="px-2 md:px-4 font-black text-[10px] md:text-xs min-w-[32px] md:min-w-[70px] text-center dark:text-white flex items-baseline justify-center gap-0.5">
+                                                {item.quantity} <span className="text-[7px] md:text-[9px] text-gray-400 hidden sm:inline">{item.unit}</span>
                                             </span>
                                             <button 
                                                 onClick={() => handleQuantityChange(item, 1)} 
-                                                className="w-7 h-7 md:w-9 md:h-9 rounded-lg md:rounded-xl bg-white dark:bg-slate-700 text-gray-400 shadow-sm flex items-center justify-center hover:text-primary transition-all"
+                                                className="w-6 h-6 md:w-9 md:h-9 rounded-md md:rounded-xl bg-white dark:bg-slate-700 text-gray-400 shadow-sm flex items-center justify-center hover:text-primary transition-all"
                                             >
-                                                <span className="material-symbols-rounded text-[18px] md:text-[20px]">add</span>
+                                                <span className="material-symbols-rounded text-[16px] md:text-[20px]">add</span>
                                             </button>
                                         </div>
-                                        <div className="text-left sm:text-right">
+                                        <div className="text-right shrink-0">
                                             <span className="hidden sm:block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Subtotal</span>
                                             <span className="font-black text-primary text-sm md:text-xl tracking-tighter">
                                                 Rs. {(item.price * item.quantity).toLocaleString(undefined, {minimumFractionDigits: 0})}

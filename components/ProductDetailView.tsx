@@ -64,7 +64,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
             {/* Main Content */}
             <div className="md:flex md:items-start md:gap-16 max-w-7xl mx-auto px-4 md:px-8 pb-12">
                 {/* Hero Image Section */}
-                <div className="relative w-full md:w-[45%] h-[40vh] sm:h-[50vh] md:h-[600px] overflow-hidden rounded-[2rem] md:rounded-[3rem] shadow-soft shrink-0">
+                <div className="relative w-full md:w-[40%] h-[40vh] sm:h-[50vh] md:h-[400px] overflow-hidden rounded-[2rem] md:rounded-[2.5rem] shadow-soft shrink-0">
                     <img 
                         src={product.image} 
                         alt={product.name} 
@@ -88,14 +88,14 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
                         </div>
 
                         {/* Title & Price */}
-                        <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-dark dark:text-white tracking-tighter leading-none mb-6">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-dark dark:text-white tracking-tighter leading-none mb-4 md:mb-6">
                             {product.name}
                         </h1>
                         
-                        <div className="flex items-center gap-3 mb-10">
+                        <div className="flex items-center gap-3 mb-6 md:mb-8">
                             <div className="flex items-baseline gap-1">
                                 <span className="text-xs font-black text-primary uppercase">{t.rs}</span>
-                                <span className="text-4xl md:text-5xl font-black text-primary tracking-tighter">{product.price}</span>
+                                <span className="text-4xl font-black text-primary tracking-tighter">{product.price}</span>
                             </div>
                             <span className="text-gray-400 font-bold text-[11px] tracking-widest uppercase border-gray-100 dark:border-slate-800 border-l pl-3">
                                 {t.per} {product.unit}
@@ -103,7 +103,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
                         </div>
 
                         {/* Quantity Selector */}
-                        <div className="bg-gray-50 dark:bg-slate-900 rounded-[2.5rem] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-4 mb-10 border border-gray-100 dark:border-slate-800">
+                        <div className="bg-gray-50 dark:bg-slate-900 rounded-[2rem] p-5 md:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 border border-gray-100 dark:border-slate-800">
                             <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
                                 <span className="font-black text-dark dark:text-white uppercase tracking-widest text-[9px] mb-1 opacity-40">{t.quantity}</span>
                                 <p className="text-[11px] font-bold text-gray-400">{isWeightBased ? t.adjustWeight : t.selectPieces}</p>
@@ -130,15 +130,15 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
                         </div>
 
                         {/* Description */}
-                        <div className="space-y-4 mb-20 md:mb-0">
+                        <div className="space-y-3 mb-20 md:mb-0">
                             <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest border-b border-gray-50 dark:border-slate-800 pb-2">{t.desc}</h4>
-                            <p className="text-gray-600 dark:text-gray-400 text-lg sm:text-xl leading-relaxed font-medium">
+                            <p className="text-gray-600 dark:text-gray-400 text-base sm:text-lg leading-relaxed font-medium">
                                 {product.description || t.noDesc}
                             </p>
                         </div>
 
                         {/* Desktop Add to Cart - Visible only on MD+ */}
-                        <div className="hidden md:flex items-center gap-6 mt-12 bg-gray-50 dark:bg-slate-900 shadow-premium p-6 rounded-[2rem] border border-gray-100 dark:border-slate-800">
+                        <div className="hidden md:flex items-center gap-6 mt-8 bg-gray-50 dark:bg-slate-900 shadow-premium p-5 rounded-[2rem] border border-gray-100 dark:border-slate-800">
                             <div className="flex-grow text-left">
                                 <p className="text-[9px] font-black uppercase text-gray-400 tracking-widest mb-1">{t.total}</p>
                                 <div className="flex items-baseline gap-1">
@@ -159,8 +159,8 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
             </div>
 
             {/* Fixed Action Footer - Floating for Mobile Only */}
-            <div className="md:hidden fixed bottom-[88px] left-0 right-0 px-4 z-50">
-                <div className="max-w-3xl mx-auto flex items-center gap-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl p-3 rounded-[2rem] shadow-premium border border-gray-100/50 dark:border-slate-800/50">
+            <div className="md:hidden fixed bottom-0 left-0 right-0 px-4 pb-6 pt-2 z-50 pointer-events-none">
+                <div className="max-w-3xl mx-auto flex items-center gap-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl p-3 rounded-[2.5rem] shadow-premium border border-white/20 dark:border-slate-800/50 pointer-events-auto">
                     <div className="pl-4 text-left flex-1">
                         <p className="text-[9px] font-black uppercase text-gray-400 tracking-widest mb-0.5">{t.total}</p>
                         <div className="flex items-baseline gap-1">
