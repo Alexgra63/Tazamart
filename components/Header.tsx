@@ -40,7 +40,7 @@ export const Header: React.FC<HeaderProps> = ({
                     <div className="bg-gradient-to-br from-primary to-primary-dark p-2 rounded-2xl shadow-premium">
                         <span className="material-symbols-rounded text-white text-lg leading-none">shopping_basket</span>
                     </div>
-                    <span className="text-xl md:text-2xl font-black text-dark dark:text-white tracking-tighter">TazaMart</span>
+                    <span className="text-xl md:text-2xl font-black text-dark dark:text-white tracking-tighter">Vegelo</span>
                 </div>
 
                 <div className="flex items-center space-x-2">

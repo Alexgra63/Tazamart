@@ -7,6 +7,7 @@ interface BottomNavProps {
     setView: (view: View) => void;
     cartCount: number;
     lang: Language;
+    isAdminUnlocked?: boolean;
 }
 
 const translations = {
@@ -14,10 +15,11 @@ const translations = {
     cart: "Basket",
     favorites: "Favs",
     history: "Orders",
-    profile: "Profile"
+    profile: "Profile",
+    admin: "Admin"
 };
 
-export const BottomNav: React.FC<BottomNavProps> = ({ currentView, setView, cartCount, lang }) => {
+export const BottomNav: React.FC<BottomNavProps> = ({ currentView, setView, cartCount, lang, isAdminUnlocked }) => {
     const t = translations;
 
     const navItems = [
@@ -26,6 +28,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentView, setView, cart
         { view: View.OrderHistory, icon: 'receipt_long', label: t.history },
         { view: View.Profile, icon: 'person', label: t.profile },
     ];
+
+    if (isAdminUnlocked) {
+        navItems.push({ view: View.Admin, icon: 'admin_panel_settings', label: t.admin });
+    }
 
     return (
         <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 px-4 pb-6 pt-2 pointer-events-none">

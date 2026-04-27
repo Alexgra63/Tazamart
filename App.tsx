@@ -131,12 +131,12 @@ const appReducer = (state: AppState, action: Action): AppState => {
             return state;
     }
 
-    localStorage.setItem('tazamart_products_cache', JSON.stringify(newState.products));
-    localStorage.setItem('tazamart_orders', JSON.stringify(newState.orders));
-    localStorage.setItem('tazamart_favorites', JSON.stringify(newState.favorites));
-    localStorage.setItem('tazamart_profile', JSON.stringify(newState.profile));
-    localStorage.setItem('tazamart_lang', newState.language);
-    localStorage.setItem('tazamart_theme', newState.theme);
+    localStorage.setItem('vegelo_products_cache', JSON.stringify(newState.products));
+    localStorage.setItem('vegelo_orders', JSON.stringify(newState.orders));
+    localStorage.setItem('vegelo_favorites', JSON.stringify(newState.favorites));
+    localStorage.setItem('vegelo_profile', JSON.stringify(newState.profile));
+    localStorage.setItem('vegelo_lang', newState.language);
+    localStorage.setItem('vegelo_theme', newState.theme);
     return newState;
 };
 
@@ -195,12 +195,12 @@ const App: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        const storedOrders = localStorage.getItem('tazamart_orders');
-        const cachedProducts = localStorage.getItem('tazamart_products_cache');
-        const storedFavs = localStorage.getItem('tazamart_favorites');
-        const storedProfile = localStorage.getItem('tazamart_profile');
-        const storedLang = localStorage.getItem('tazamart_lang') as Language;
-        const storedTheme = localStorage.getItem('tazamart_theme') as Theme;
+        const storedOrders = localStorage.getItem('vegelo_orders');
+        const cachedProducts = localStorage.getItem('vegelo_products_cache');
+        const storedFavs = localStorage.getItem('vegelo_favorites');
+        const storedProfile = localStorage.getItem('vegelo_profile');
+        const storedLang = localStorage.getItem('vegelo_lang') as Language;
+        const storedTheme = localStorage.getItem('vegelo_theme') as Theme;
 
         // Check for admin query param
         const urlParams = new URLSearchParams(window.location.search);
@@ -359,6 +359,7 @@ const App: React.FC = () => {
                     setView={setView} 
                     cartCount={state.cart.reduce((c, i) => c + i.quantity, 0)}
                     lang={state.language}
+                    isAdminUnlocked={isAdminUnlocked}
                 />
             )}
         </div>

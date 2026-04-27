@@ -169,7 +169,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-6">
                 <div>
                     <h2 className="text-4xl font-black text-dark tracking-tight">Admin Console</h2>
-                    <p className="text-gray-400 text-sm mt-1 font-medium">TazaMart Portal</p>
+                    <p className="text-gray-400 text-sm mt-1 font-medium">Vegelo Portal</p>
                 </div>
                 <div className="flex bg-white p-1.5 rounded-2xl shadow-premium border border-gray-100">
                     <button onClick={() => setTab('dashboard')} className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${tab === 'dashboard' ? 'bg-primary text-white shadow-lg' : 'text-gray-400'}`}>Stats</button>
