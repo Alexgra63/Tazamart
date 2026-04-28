@@ -24,8 +24,8 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onLogin }) => {
     return (
         <div className="flex items-center justify-center min-h-[70vh] px-4">
             <div className="bg-white p-12 rounded-[2.5rem] shadow-premium w-full max-w-md border border-gray-100 text-center">
-                <div className="bg-gradient-to-br from-primary to-primary-dark w-16 h-16 rounded-2xl mx-auto flex items-center justify-center shadow-lg mb-8">
-                    <span className="material-symbols-rounded text-white text-3xl">lock</span>
+                <div className="mx-auto mb-8 flex justify-center">
+                    <img src="/logo.png" alt="Vegelo Logo" className="w-20 h-20 object-contain drop-shadow-lg" referrerPolicy="no-referrer" />
                 </div>
                 <h2 className="text-3xl font-black text-dark mb-2 tracking-tight">Vegelo Admin</h2>
                 <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-10">Restricted Area</p>

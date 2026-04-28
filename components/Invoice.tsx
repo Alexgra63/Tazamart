@@ -17,9 +17,12 @@ export const Invoice: React.FC<InvoiceProps> = ({ order, onClose }) => {
             <div className="bg-white p-10 rounded-[2.5rem] shadow-premium w-full max-w-4xl print:shadow-none print:p-0 my-8">
                 <div id="invoice-content">
                     <div className="flex flex-col sm:flex-row justify-between items-start mb-12 gap-6">
-                        <div>
-                            <h1 className="text-4xl font-black text-primary tracking-tighter leading-none">Vegelo</h1>
-                            <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mt-2">Premium Fresh Delivery</p>
+                        <div className="flex items-center space-x-3">
+                            <img src="/logo.png" alt="Vegelo Logo" className="h-12 w-12 object-contain" referrerPolicy="no-referrer" />
+                            <div>
+                                <h1 className="text-4xl font-black text-primary tracking-tighter leading-none">Vegelo</h1>
+                                <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mt-2">Premium Fresh Delivery</p>
+                            </div>
                         </div>
                         <div className="sm:text-right">
                             <h2 className="text-lg font-black text-dark tracking-tight uppercase">Invoice #{order.id.split('-').pop()}</h2>

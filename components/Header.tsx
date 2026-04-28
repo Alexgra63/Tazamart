@@ -37,9 +37,7 @@ export const Header: React.FC<HeaderProps> = ({
                     className="flex items-center space-x-3 cursor-pointer transition-transform active:scale-95 select-none" 
                     onClick={handleLogoClick}
                 >
-                    <div className="bg-gradient-to-br from-primary to-primary-dark p-2 rounded-2xl shadow-premium">
-                        <span className="material-symbols-rounded text-white text-lg leading-none">shopping_basket</span>
-                    </div>
+                    <img src="/logo.png" alt="Vegelo Logo" className="h-10 w-10 object-contain" referrerPolicy="no-referrer" />
                     <span className="text-xl md:text-2xl font-black text-dark dark:text-white tracking-tighter">Vegelo</span>
                 </div>
 
