@@ -13,9 +13,9 @@ export const Invoice: React.FC<InvoiceProps> = ({ order, onClose }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-dark/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 print:bg-white/0 print:static print:block overflow-y-auto">
-            <div className="bg-white p-10 rounded-[2.5rem] shadow-premium w-full max-w-4xl print:shadow-none print:p-0 my-8 relative">
-                <div id="invoice-content" className="w-full bg-white print:p-0">
+        <div className="fixed inset-0 bg-dark/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 print:p-0 print:bg-transparent overflow-y-auto">
+            <div className="bg-white p-10 rounded-[2.5rem] shadow-premium w-full max-w-4xl print:shadow-none print:p-0 print:m-0 relative print:static">
+                <div id="invoice-content" className="w-full bg-white">
                     <div className="flex flex-col sm:flex-row justify-between items-start mb-12 gap-6">
                         <div className="flex items-center space-x-3">
                             <img src="/logo.png" alt="Vegelo Logo" className="h-12 w-12 object-contain" />
