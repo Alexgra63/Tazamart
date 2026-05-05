@@ -52,6 +52,24 @@
         [dir="rtl"] {
             text-align: right;
         }
+
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                z-index: 9999;
+            }
+        }
     </style>
 <script type="importmap">
 {
@@ -66,7 +84,6 @@
 </head>
 <body class="bg-light dark:bg-dark font-sans selection:bg-primary selection:text-white transition-colors duration-300">
     <div id="root"></div>
-    <script type="module" src="index.tsx"></script>
 <script type="module" src="/index.tsx"></script>
 </body>
 </html>
