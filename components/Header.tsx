@@ -31,13 +31,13 @@ export const Header: React.FC<HeaderProps> = ({
     const t = { home: 'Home', orders: 'Orders', liked: 'Liked', account: 'Account' };
 
     return (
-        <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl sticky top-0 z-50 px-4 py-3 md:py-4 border-b border-gray-100 dark:border-slate-800 shadow-sm transition-colors">
+        <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl sticky top-0 z-50 px-4 py-3 md:py-4 border-b border-gray-100 dark:border-slate-800 shadow-sm transition-colors no-print">
             <div className="max-w-7xl mx-auto flex items-center justify-between ltr">
                 <div 
                     className="flex items-center space-x-3 cursor-pointer transition-transform active:scale-95 select-none" 
                     onClick={handleLogoClick}
                 >
-                    <img src="/logo.png" alt="Vegelo Logo" className="h-10 w-10 object-contain" crossOrigin="anonymous" />
+                    <img src="/logo.png" alt="Vegelo Logo" className="h-10 w-10 object-contain" />
                     <span className="text-xl md:text-2xl font-black text-dark dark:text-white tracking-tighter">Vegelo</span>
                 </div>
 

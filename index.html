@@ -56,18 +56,28 @@
         @media print {
             body {
                 background: white !important;
-                color: black !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
-            .no-print {
+            body > *:not(#root) {
                 display: none !important;
             }
-            .print-only {
-                display: block !important;
+            #root * {
+                visibility: hidden !important;
+            }
+            #invoice-content, #invoice-content * {
+                visibility: visible !important;
+            }
+            #invoice-content {
                 position: absolute;
                 left: 0;
                 top: 0;
                 width: 100%;
-                z-index: 9999;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .no-print {
+                display: none !important;
             }
         }
     </style>
