@@ -1,14 +1,15 @@
 
 import React, { useState } from 'react';
-import { UserProfile, Language } from '../types';
+import { UserProfile, Language, View } from '../types';
 
 interface ProfileViewProps {
     profile: UserProfile;
     updateProfile: (profile: UserProfile) => void;
     lang: Language;
+    setView: (view: View) => void;
 }
 
-export const ProfileView: React.FC<ProfileViewProps> = ({ profile, updateProfile, lang }) => {
+export const ProfileView: React.FC<ProfileViewProps> = ({ profile, updateProfile, lang, setView }) => {
     const [formData, setFormData] = useState<UserProfile>(profile);
     const [isSaved, setIsSaved] = useState(false);
 
@@ -79,6 +80,31 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, updateProfile
                     </div>
                 )}
             </form>
+
+            {/* Support Pages Section */}
+            <div className="mt-12 space-y-4">
+                <h3 className="text-[10px] font-black uppercase text-gray-400 dark:text-slate-600 tracking-widest mb-4 ml-4">Support & Information</h3>
+                <div className="grid grid-cols-1 gap-3">
+                    {[
+                        { title: 'About Us', view: View.AboutUs, icon: 'info' },
+                        { title: 'Contact Us', view: View.ContactUs, icon: 'alternate_email' },
+                        { title: 'Return Policy', view: View.ReturnPolicy, icon: 'keyboard_return' },
+                        { title: 'Terms & Conditions', view: View.Terms, icon: 'description' }
+                    ].map((item) => (
+                        <button 
+                            key={item.title}
+                            onClick={() => setView(item.view)}
+                            className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-gray-100 dark:border-slate-800 flex items-center justify-between group hover:border-primary transition-colors text-left"
+                        >
+                            <div className="flex items-center">
+                                <span className="material-symbols-rounded text-gray-400 group-hover:text-primary transition-colors mr-4">{item.icon}</span>
+                                <span className="text-sm font-black text-dark dark:text-white">{item.title}</span>
+                            </div>
+                            <span className="material-symbols-rounded text-gray-300 dark:text-slate-700 transition-transform group-hover:translate-x-1">chevron_right</span>
+                        </button>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 };

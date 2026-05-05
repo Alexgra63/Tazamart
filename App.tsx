@@ -1,6 +1,7 @@
 
 import React, { useState, useReducer, useEffect, useCallback } from 'react';
 import { Header } from './components/Header.tsx';
+import { Footer } from './components/Footer.tsx';
 import { BottomNav } from './components/BottomNav.tsx';
 import { HomeView } from './components/HomeView.tsx';
 import { CartView } from './components/CartView.tsx';
@@ -12,8 +13,9 @@ import { AdminLoginView } from './components/AdminLoginView.tsx';
 import { ProductDetailView } from './components/ProductDetailView.tsx';
 import { ProfileView } from './components/ProfileView.tsx';
 import { FavoritesView } from './components/FavoritesView.tsx';
-import { Product, CartItem, Order, OrderStatus, View, Language, Theme, UserProfile } from './types.ts';
-import { initialProducts } from './data.ts';
+import { Product, CartItem, Order, OrderStatus, View, Language, Theme, UserProfile, AppPage } from './types.ts';
+import { initialProducts, initialPages } from './data.ts';
+import { PageView } from './components/PageView.tsx';
 
 const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbytQbtCT4JNwAFrI_-7aDWoe2Ri1aSHJonO5BOLXRAb0P32DqBeWl9FWpgIuCpe7x0f/exec'; 
 
@@ -27,6 +29,7 @@ type AppState = {
     language: Language;
     theme: Theme;
     isLoading: boolean;
+    pages: AppPage[];
 };
 
 type Action =
@@ -43,6 +46,7 @@ type Action =
     | { type: 'PLACE_ORDER'; payload: Order }
     | { type: 'CLEAR_CART' }
     | { type: 'UPDATE_ORDER_STATUS'; payload: { orderId: string; status: OrderStatus } }
+    | { type: 'UPDATE_PAGE'; payload: AppPage }
     | { type: 'SET_LOADING'; payload: boolean };
 
 const appReducer = (state: AppState, action: Action): AppState => {
@@ -127,6 +131,15 @@ const appReducer = (state: AppState, action: Action): AppState => {
                 ),
             };
             break;
+        case 'UPDATE_PAGE':
+            const exists = state.pages.some(p => p.slug === action.payload.slug);
+            newState = {
+                ...state,
+                pages: exists 
+                    ? state.pages.map(p => p.slug === action.payload.slug ? action.payload : p)
+                    : [...state.pages, action.payload]
+            };
+            break;
         default:
             return state;
     }
@@ -137,6 +150,7 @@ const appReducer = (state: AppState, action: Action): AppState => {
     localStorage.setItem('vegelo_profile', JSON.stringify(newState.profile));
     localStorage.setItem('vegelo_lang', newState.language);
     localStorage.setItem('vegelo_theme', newState.theme);
+    localStorage.setItem('vegelo_pages', JSON.stringify(newState.pages));
     return newState;
 };
 
@@ -150,7 +164,8 @@ const App: React.FC = () => {
         profile: { name: '', address: '', phone: '' },
         language: Language.EN,
         theme: Theme.Light,
-        isLoading: true
+        isLoading: true,
+        pages: initialPages
     });
 
     const [view, setView] = useState<View>(View.Home);
@@ -201,6 +216,7 @@ const App: React.FC = () => {
         const storedProfile = localStorage.getItem('vegelo_profile');
         const storedLang = localStorage.getItem('vegelo_lang') as Language;
         const storedTheme = localStorage.getItem('vegelo_theme') as Theme;
+        const storedPages = localStorage.getItem('vegelo_pages');
 
         // Check for admin query param
         const urlParams = new URLSearchParams(window.location.search);
@@ -218,6 +234,7 @@ const App: React.FC = () => {
                 profile: storedProfile ? JSON.parse(storedProfile) : { name: '', address: '', phone: '' },
                 language: storedLang || Language.EN,
                 theme: storedTheme || Theme.Light,
+                pages: storedPages ? JSON.parse(storedPages) : initialPages
             }
         });
 
@@ -280,6 +297,11 @@ const App: React.FC = () => {
     const onDeleteProduct = (productId: number) => {
         syncToRemote('delete', { id: productId.toString() });
     };
+
+    const onUpdatePage = (page: AppPage) => {
+        dispatch({ type: 'UPDATE_PAGE', payload: page });
+        // Optional: Sync to remote if pages are stored there too
+    };
     
     const handleProductClick = (product: Product) => {
         setSelectedProduct(product);
@@ -306,6 +328,18 @@ const App: React.FC = () => {
                 return <CartView lang={state.language} cart={state.cart} updateQuantity={onUpdateQuantity} removeFromCart={onRemoveFromCart} setView={setView} />;
             case View.Checkout:
                 return <CheckoutView lang={state.language} profile={state.profile} cart={state.cart} placeOrder={onPlaceOrder} setView={setView} />;
+            case View.AboutUs:
+                const aboutPage = state.pages.find(p => p.slug === 'about-us') || initialPages[0];
+                return <PageView title={aboutPage.title} content={aboutPage.content} onBack={() => setView(View.Home)} />;
+            case View.Terms:
+                const termsPage = state.pages.find(p => p.slug === 'terms-and-conditions') || initialPages[1];
+                return <PageView title={termsPage.title} content={termsPage.content} onBack={() => setView(View.Home)} />;
+            case View.ReturnPolicy:
+                const returnPage = state.pages.find(p => p.slug === 'return-policy') || initialPages[2];
+                return <PageView title={returnPage.title} content={returnPage.content} onBack={() => setView(View.Home)} />;
+            case View.ContactUs:
+                const contactPage = state.pages.find(p => p.slug === 'contact-us') || initialPages[3];
+                return <PageView title={contactPage.title} content={contactPage.content} onBack={() => setView(View.Home)} />;
             case View.Confirmation:
                 return <OrderConfirmationView lang={state.language} lastOrder={lastOrder} setView={setView} />;
             case View.OrderHistory:
@@ -324,13 +358,14 @@ const App: React.FC = () => {
                     profile={state.profile} 
                     updateProfile={updateProfile} 
                     lang={state.language}
+                    setView={setView}
                 />;
             case View.AdminLogin:
                 return <AdminLoginView onLogin={() => { setIsAuthenticated(true); setView(View.Admin); }} />;
             case View.Admin:
                 return isAuthenticated ? (
                     // consumption of strictly remote orders for admin
-                    <AdminView orders={state.remoteOrders} products={state.products} updateOrderStatus={onUpdateOrderStatus} addProduct={onAddProduct} updateProduct={onUpdateProduct} deleteProductExplicit={onDeleteProduct} />
+                    <AdminView orders={state.remoteOrders} products={state.products} pages={state.pages} updateOrderStatus={onUpdateOrderStatus} addProduct={onAddProduct} updateProduct={onUpdateProduct} deleteProductExplicit={onDeleteProduct} updatePage={onUpdatePage} />
                 ) : (
                     <AdminLoginView onLogin={() => { setIsAuthenticated(true); setView(View.Admin); }} />
                 );

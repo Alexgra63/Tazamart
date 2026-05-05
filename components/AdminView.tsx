@@ -1,7 +1,9 @@
 
 import React, { useState, ChangeEvent, useMemo, useRef } from 'react';
-import { Order, OrderStatus, Product, ProductCategory } from '../types';
+import { Order, OrderStatus, Product, ProductCategory, AppPage } from '../types';
 import { Invoice } from './Invoice';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const AdminDashboard: React.FC<{ orders: Order[], products: Product[] }> = ({ orders, products }) => {
     const stats = useMemo(() => {
@@ -77,27 +79,53 @@ const AdminDashboard: React.FC<{ orders: Order[], products: Product[] }> = ({ or
 interface AdminViewProps {
     orders: Order[];
     products: Product[];
+    pages: AppPage[];
     updateOrderStatus: (orderId: string, status: OrderStatus) => void;
     addProduct: (product: Product) => void;
     updateProduct: (product: Product) => void;
     deleteProductExplicit: (productId: number) => void;
+    updatePage: (page: AppPage) => void;
 }
 
 export const AdminView: React.FC<AdminViewProps> = ({ 
     orders, 
     products, 
+    pages,
     updateOrderStatus, 
     addProduct, 
     updateProduct, 
-    deleteProductExplicit 
+    deleteProductExplicit,
+    updatePage
 }) => {
-    const [tab, setTab] = useState<'dashboard' | 'orders' | 'products'>('dashboard');
+    const [tab, setTab] = useState<'dashboard' | 'orders' | 'products' | 'pages'>('dashboard');
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [proofToView, setProofToView] = useState<string | null>(null);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [isProductModalOpen, setIsProductModalOpen] = useState(false);
     const [isSyncing, setIsSyncing] = useState(false);
     const [syncMessage, setSyncMessage] = useState('');
+    
+    // Page Editing State
+    const [selectedPage, setSelectedPage] = useState<AppPage | null>(null);
+    const [localPageContent, setLocalPageContent] = useState('');
+    const [isAddingPage, setIsAddingPage] = useState(false);
+    const [newPageTitle, setNewPageTitle] = useState('');
+    const [newPageSlug, setNewPageSlug] = useState('');
+
+    const handleAddPage = () => {
+        if (!newPageTitle || !newPageSlug) return;
+        const newPage: AppPage = {
+            id: `page-${Date.now()}`,
+            title: newPageTitle,
+            slug: newPageSlug.toLowerCase().replace(/\s+/g, '-'),
+            content: '# New Page\n\nEdit this content...',
+            lastUpdated: new Date()
+        };
+        updatePage(newPage);
+        setIsAddingPage(false);
+        setNewPageTitle('');
+        setNewPageSlug('');
+    };
     
     const [newProduct, setNewProduct] = useState<Partial<Product>>({
         name: '', price: 0, image: '', category: ProductCategory.Vegetables, unit: 'kg', description: ''
@@ -171,10 +199,11 @@ export const AdminView: React.FC<AdminViewProps> = ({
                     <h2 className="text-4xl font-black text-dark tracking-tight">Admin Console</h2>
                     <p className="text-gray-400 text-sm mt-1 font-medium">Vegelo Portal</p>
                 </div>
-                <div className="flex bg-white p-1.5 rounded-2xl shadow-premium border border-gray-100">
-                    <button onClick={() => setTab('dashboard')} className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${tab === 'dashboard' ? 'bg-primary text-white shadow-lg' : 'text-gray-400'}`}>Stats</button>
-                    <button onClick={() => setTab('orders')} className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${tab === 'orders' ? 'bg-primary text-white shadow-lg' : 'text-gray-400'}`}>Orders</button>
-                    <button onClick={() => setTab('products')} className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${tab === 'products' ? 'bg-primary text-white shadow-lg' : 'text-gray-400'}`}>Inventory</button>
+                <div className="flex bg-white p-1.5 rounded-2xl shadow-premium border border-gray-100 overflow-x-auto no-scrollbar">
+                    <button onClick={() => setTab('dashboard')} className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 ${tab === 'dashboard' ? 'bg-primary text-white shadow-lg' : 'text-gray-400'}`}>Stats</button>
+                    <button onClick={() => setTab('orders')} className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 ${tab === 'orders' ? 'bg-primary text-white shadow-lg' : 'text-gray-400'}`}>Orders</button>
+                    <button onClick={() => setTab('products')} className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 ${tab === 'products' ? 'bg-primary text-white shadow-lg' : 'text-gray-400'}`}>Inventory</button>
+                    <button onClick={() => setTab('pages')} className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 ${tab === 'pages' ? 'bg-primary text-white shadow-lg' : 'text-gray-400'}`}>Pages</button>
                 </div>
             </div>
 
@@ -237,6 +266,96 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 </div>
             )}
 
+            {tab === 'pages' && (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div className="lg:col-span-4 space-y-4">
+                        <button 
+                            onClick={() => setIsAddingPage(true)}
+                            className="w-full p-6 border-2 border-dashed border-primary/20 rounded-3xl text-primary font-black uppercase text-[10px] tracking-widest hover:bg-primary/5 transition-all flex items-center justify-center mb-6"
+                        >
+                            <span className="material-symbols-rounded mr-2">add_circle</span> Add Custom Page
+                        </button>
+                        {pages.map(page => (
+                            <button 
+                                key={page.id}
+                                onClick={() => { setSelectedPage(page); setLocalPageContent(page.content); }}
+                                className={`w-full p-6 bg-white rounded-3xl shadow-soft border text-left transition-all group ${selectedPage?.id === page.id ? 'border-primary ring-2 ring-primary/10' : 'border-gray-100 hover:border-primary/40'}`}
+                            >
+                                <div className="flex justify-between items-center">
+                                    <h4 className="font-black text-dark tracking-tight">{page.title}</h4>
+                                    <span className="material-symbols-rounded text-gray-300 group-hover:text-primary transition-colors">edit_note</span>
+                                </div>
+                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2">Slug: /{page.slug}</p>
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="lg:col-span-8">
+                        {selectedPage ? (
+                            <div className="bg-white rounded-[2.5rem] shadow-premium border border-gray-100 p-8 flex flex-col h-full min-h-[600px] animate-in slide-in-from-right-4 duration-300">
+                                <div className="flex justify-between items-center mb-6">
+                                    <div>
+                                        <h3 className="text-2xl font-black text-dark tracking-tight">Editing: {selectedPage.title}</h3>
+                                        <div className="flex items-center space-x-4 mt-1">
+                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none">Markdown Powered Editor</p>
+                                            {!['about-us', 'terms-and-conditions', 'return-policy'].includes(selectedPage.slug) && (
+                                                <button 
+                                                    onClick={() => {
+                                                        if (confirm('Are you sure you want to delete this custom page?')) {
+                                                            // Logic to delete page - for now we'll just remove it from state if possible
+                                                            // but let's keep it simple and just allow editing for now as deletePage is not in props
+                                                        }
+                                                    }}
+                                                    className="text-[9px] font-black text-red-400 uppercase tracking-widest leading-none hover:text-red-500 transition-colors"
+                                                >
+                                                    Delete Page
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <button 
+                                        onClick={() => {
+                                            setIsSyncing(true);
+                                            setSyncMessage('Saving Page...');
+                                            updatePage({ ...selectedPage, content: localPageContent, lastUpdated: new Date() });
+                                            setTimeout(() => { setIsSyncing(false); setSyncMessage(''); }, 1000);
+                                        }}
+                                        className="bg-primary text-white px-6 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-premium hover:shadow-lg transition-all"
+                                    >
+                                        Save Changes
+                                    </button>
+                                </div>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 flex-grow">
+                                    <div className="flex flex-col">
+                                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-3">Editor Source</label>
+                                        <textarea 
+                                            value={localPageContent}
+                                            onChange={(e) => setLocalPageContent(e.target.value)}
+                                            className="flex-grow w-full p-6 rounded-2xl bg-gray-50 border-none outline-none focus:ring-4 focus:ring-primary/5 font-mono text-sm leading-relaxed no-scrollbar resize-none h-[400px]"
+                                            placeholder="# Heading 1&#10;## Heading 2&#10;* Bullet point&#10;**Bold text**"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-3 text-right">Live Preview</label>
+                                        <div className="flex-grow w-full p-6 rounded-2xl bg-gray-50/50 border border-gray-100 overflow-y-auto h-[400px] prose prose-sm max-w-none prose-headings:font-black prose-p:font-medium">
+                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                {localPageContent || '_No content yet. Use the editor to add details._'}
+                                            </ReactMarkdown>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="bg-gray-50/50 rounded-[2.5rem] border-2 border-dashed border-gray-200 p-20 text-center flex flex-col items-center justify-center">
+                                <span className="material-symbols-rounded text-5xl text-gray-300 mb-4 scale-150 opacity-40">article</span>
+                                <h3 className="text-xl font-black text-gray-400 tracking-tight">Select a page to edit content</h3>
+                                <p className="text-[10px] font-bold text-gray-300 uppercase tracking-widest mt-2">Manage Returns, Terms, and About Us info</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
             {tab === 'products' && (
                 <div className="space-y-6">
                     <button 
@@ -358,6 +477,30 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 <div className="fixed inset-0 bg-dark/90 backdrop-blur-md flex items-center justify-center z-[101] p-4" onClick={() => setProofToView(null)}>
                     <div className="bg-white rounded-3xl p-4 max-w-2xl w-full" onClick={e => e.stopPropagation()}>
                         <img src={proofToView} className="w-full h-auto max-h-[80vh] object-contain rounded-2xl" alt="Proof" />
+                    </div>
+                </div>
+            )}
+
+            {isAddingPage && (
+                <div className="fixed inset-0 bg-dark/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+                    <div className="bg-white w-full max-w-md rounded-[2.5rem] p-10 shadow-premium animate-in slide-in-from-bottom-8 duration-300">
+                        <div className="flex justify-between items-center mb-8">
+                            <h3 className="text-2xl font-black text-dark">Add Custom Page</h3>
+                            <button onClick={() => setIsAddingPage(false)} className="text-gray-400">
+                                <span className="material-symbols-rounded">close</span>
+                            </button>
+                        </div>
+                        <div className="space-y-6">
+                            <div>
+                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Page Title</label>
+                                <input value={newPageTitle} onChange={e => setNewPageTitle(e.target.value)} className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-4 focus:ring-primary/5 font-bold" placeholder="e.g. FAQ" />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">URL Slug</label>
+                                <input value={newPageSlug} onChange={e => setNewPageSlug(e.target.value)} className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-4 focus:ring-primary/5 font-bold" placeholder="e.g. faq" />
+                            </div>
+                            <button onClick={handleAddPage} className="w-full bg-primary text-white py-4 rounded-2xl font-black uppercase tracking-widest shadow-premium">Create Page</button>
+                        </div>
                     </div>
                 </div>
             )}

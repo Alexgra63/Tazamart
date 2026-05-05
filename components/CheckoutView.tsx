@@ -16,6 +16,8 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, placeOrder, se
     const [paymentProof, setPaymentProof] = useState<string | null>(null);
     const [paymentProofPreview, setPaymentProofPreview] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [agreedToPolicies, setAgreedToPolicies] = useState(false);
+    const [agreedToDeliveryPay, setAgreedToDeliveryPay] = useState(false);
     
     const t = {
         title: "Checkout",
@@ -24,7 +26,9 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, placeOrder, se
         submit: "Confirm Order",
         name: "Name",
         phone: "Phone",
-        address: "Address"
+        address: "Address",
+        agreePolicies: "I agree to the Terms, Conditions & Return Policy",
+        agreeDelivery: "I agree to pay for delivery charges separately"
     };
 
     const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -50,6 +54,11 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, placeOrder, se
         e.preventDefault();
         if (!customer.name || !customer.address || !customer.phone || !paymentProof) {
             alert('Please fill all fields and upload payment proof.');
+            return;
+        }
+
+        if (!agreedToPolicies || !agreedToDeliveryPay) {
+            alert('Please agree to the policies and delivery payment terms to proceed.');
             return;
         }
 
@@ -164,10 +173,51 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, placeOrder, se
                                 </span>
                             </div>
                         </div>
+                        <div className="mt-6 pt-6 border-t border-gray-50 dark:border-slate-800 space-y-4">
+                            <label className="flex items-start space-x-3 cursor-pointer group">
+                                <div className="relative mt-0.5">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={agreedToPolicies}
+                                        onChange={(e) => setAgreedToPolicies(e.target.checked)}
+                                        className="sr-only"
+                                    />
+                                    <div className={`w-5 h-5 rounded-md border-2 transition-all flex items-center justify-center ${agreedToPolicies ? 'bg-primary border-primary' : 'border-gray-200 dark:border-slate-700 bg-transparent'}`}>
+                                        {agreedToPolicies && <span className="material-symbols-rounded text-[14px] text-white font-black">check</span>}
+                                    </div>
+                                </div>
+                                <span className="text-[11px] font-bold text-gray-500 dark:text-gray-400">
+                                    {t.agreePolicies} 
+                                    <div className="mt-1 space-x-2">
+                                        <button type="button" onClick={() => setView(View.Terms)} className="text-primary hover:underline">Terms</button>
+                                        <span className="text-gray-300">|</span>
+                                        <button type="button" onClick={() => setView(View.ReturnPolicy)} className="text-primary hover:underline">Return Policy</button>
+                                    </div>
+                                </span>
+                            </label>
+
+                            <label className="flex items-center space-x-3 cursor-pointer group">
+                                <div className="relative">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={agreedToDeliveryPay}
+                                        onChange={(e) => setAgreedToDeliveryPay(e.target.checked)}
+                                        className="sr-only"
+                                    />
+                                    <div className={`w-5 h-5 rounded-md border-2 transition-all flex items-center justify-center ${agreedToDeliveryPay ? 'bg-primary border-primary' : 'border-gray-200 dark:border-slate-700 bg-transparent'}`}>
+                                        {agreedToDeliveryPay && <span className="material-symbols-rounded text-[14px] text-white font-black">check</span>}
+                                    </div>
+                                </div>
+                                <span className="text-[11px] font-bold text-gray-500 dark:text-gray-400">
+                                    {t.agreeDelivery}
+                                </span>
+                            </label>
+                        </div>
+
                         <button 
                             type="submit" 
-                            disabled={isSubmitting}
-                            className="w-full mt-8 bg-primary text-white py-4 rounded-xl font-black uppercase text-xs tracking-widest shadow-premium disabled:opacity-50"
+                            disabled={isSubmitting || !agreedToPolicies || !agreedToDeliveryPay}
+                            className="w-full mt-8 bg-primary text-white py-4 rounded-xl font-black uppercase text-xs tracking-widest shadow-premium disabled:opacity-50 disabled:grayscale transition-all"
                         >
                             {isSubmitting ? '...' : t.submit}
                         </button>

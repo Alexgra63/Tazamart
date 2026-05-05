@@ -64,5 +64,17 @@ export enum View {
     AdminLogin,
     ProductDetail,
     Favorites,
-    Profile
+    Profile,
+    AboutUs,
+    Terms,
+    ReturnPolicy,
+    ContactUs
+}
+
+export interface AppPage {
+    id: string;
+    slug: string;
+    title: string;
+    content: string;
+    lastUpdated: Date;
 }
