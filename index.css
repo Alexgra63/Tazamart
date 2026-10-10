@@ -1,0 +1,107 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Class-based dark mode (toggled on <html>) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---- Tazamart design tokens ("Fresh Mandi") ---- */
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-urdu: "Noto Nastaliq Urdu", "Plus Jakarta Sans", serif;
+  --font-mono: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif; /* prices use tabular sans */
+
+  /* Brand */
+  --color-primary: #15803d;
+  --color-primary-dark: #166534;
+  --color-primary-soft: #dcfce7;
+  --color-secondary: #f59e0b;      /* mango / saffron accent */
+  --color-secondary-dark: #d97706;
+  --color-accent: #f59e0b;
+
+  /* Surfaces & ink */
+  --color-light: #fffbf5;          /* cream page background */
+  --color-dark: #0c0a09;           /* dark page background */
+  --color-ink: #1c1917;
+  --color-muted: #57534e;
+  --color-line: #ede7dd;
+
+  /* Warm neutral scale: gray-* and slate-* both map to warm stone tones
+     so every legacy class picks up the new palette. gray-400 is darkened
+     for WCAG AA contrast on cream/white. */
+  --color-gray-50: #faf7f2;
+  --color-gray-100: #f2ede5;
+  --color-gray-200: #e4ddd2;
+  --color-gray-300: #a8a29e;
+  --color-gray-400: #6b645d;
+  --color-gray-500: #57534e;
+  --color-gray-600: #44403c;
+  --color-gray-700: #292524;
+  --color-gray-800: #1c1917;
+  --color-gray-900: #0c0a09;
+
+  --color-slate-50: #faf7f2;
+  --color-slate-100: #f2ede5;
+  --color-slate-200: #e4ddd2;
+  --color-slate-300: #a8a29e;
+  --color-slate-400: #a8a29e;
+  --color-slate-500: #78716c;
+  --color-slate-600: #57534e;
+  --color-slate-700: #3a3532;
+  --color-slate-800: #292524;
+  --color-slate-900: #1c1917;
+  --color-slate-950: #0c0a09;
+
+  /* Calmer type weights: legacy font-black renders as extrabold */
+  --font-weight-black: 800;
+
+  --radius-card: 0.75rem;
+  --shadow-soft: 0 1px 2px rgb(28 25 23 / 0.04), 0 1px 1px rgb(28 25 23 / 0.03);
+  --shadow-premium: 0 8px 24px -8px rgb(28 25 23 / 0.18);
+}
+
+/* Dark-mode tweaks: lighter primary for contrast */
+.dark {
+  --color-primary: #4ade80;
+  --color-primary-dark: #22c55e;
+  --color-primary-soft: #14532d;
+  --color-gray-400: #a8a29e;
+  --color-gray-500: #a8a29e;
+  --color-line: #292524;
+}
+
+@layer base {
+  html { -webkit-tap-highlight-color: transparent; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+  [dir="rtl"] { text-align: right; font-family: var(--font-urdu); line-height: 2; }
+  h1, h2 { text-wrap: balance; }
+}
+
+.font-display { font-family: var(--font-display); letter-spacing: -0.01em; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.hero-gradient {
+  background:
+    radial-gradient(120% 120% at 100% 0%, rgb(245 158 11 / 0.25) 0%, transparent 45%),
+    linear-gradient(135deg, #166534 0%, #14532d 100%);
+}
+.material-symbols-rounded {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  display: inline-block;
+  vertical-align: middle;
+}
+.tabular { font-variant-numeric: tabular-nums; }
+
+@media print {
+  @page { size: auto; margin: 0mm; }
+  html, body { margin: 0 !important; padding: 0 !important; background: white !important; height: auto !important; overflow: visible !important; }
+  body > * { visibility: hidden !important; }
+  #invoice-content, #invoice-content * { visibility: visible !important; }
+  #invoice-content {
+    position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important;
+    margin: 0 !important; padding: 40px !important; background: white !important; box-shadow: none !important;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+  }
+  .no-print { display: none !important; height: 0 !important; width: 0 !important; overflow: hidden !important; }
+}
