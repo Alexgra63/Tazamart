@@ -87,50 +87,50 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, placeOrder, se
     return (
         <div className="container mx-auto px-4 py-8 pb-32 max-w-6xl text-left ltr">
             <div className="mb-8">
-                <h2 className="text-3xl font-black text-dark dark:text-white tracking-tight">{t.title}</h2>
+                <h1 className="font-display text-3xl md:text-4xl font-semibold text-ink dark:text-white">{t.title}</h1>
             </div>
 
             <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row gap-8">
                 <div className="flex-grow space-y-6">
-                    <div className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] shadow-premium border border-gray-100 dark:border-slate-800">
-                        <h3 className="text-lg font-black text-dark dark:text-white mb-6 flex items-center">
-                            <span className="w-8 h-8 bg-primary/10 text-primary rounded-xl flex items-center justify-center mr-3 text-xs font-black">01</span>
+                    <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-line">
+                        <h3 className="text-lg font-semibold text-dark dark:text-white mb-6 flex items-center">
+                            <span className="w-8 h-8 bg-primary/10 text-primary rounded-xl flex items-center justify-center mr-3 text-xs font-semibold">01</span>
                             {t.delivery}
                         </h3>
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-[9px] font-black uppercase text-gray-400 mb-2 tracking-widest">{t.name}</label>
-                                <input type="text" name="name" value={customer.name} onChange={handleInputChange} className="w-full px-5 py-3 rounded-xl bg-gray-50 dark:bg-slate-800 dark:text-white border-none outline-none focus:ring-4 focus:ring-primary/5 font-bold text-sm" required />
+                                <label className="block text-xs font-semibold text-gray-400 mb-2">{t.name}</label>
+                                <input type="text" name="name" value={customer.name} onChange={handleInputChange} className="w-full px-5 py-3 rounded-xl bg-white dark:bg-slate-800 dark:text-white border border-line outline-none focus:border-primary focus:ring-4 focus:ring-primary/15 font-bold text-sm" required />
                             </div>
                             <div>
-                                <label className="block text-[9px] font-black uppercase text-gray-400 mb-2 tracking-widest">{t.phone}</label>
-                                <input type="tel" name="phone" value={customer.phone} onChange={handleInputChange} className="w-full px-5 py-3 rounded-xl bg-gray-50 dark:bg-slate-800 dark:text-white border-none outline-none focus:ring-4 focus:ring-primary/5 font-bold text-sm" required />
+                                <label className="block text-xs font-semibold text-gray-400 mb-2">{t.phone}</label>
+                                <input type="tel" name="phone" value={customer.phone} onChange={handleInputChange} className="w-full px-5 py-3 rounded-xl bg-white dark:bg-slate-800 dark:text-white border border-line outline-none focus:border-primary focus:ring-4 focus:ring-primary/15 font-bold text-sm" required />
                             </div>
                             <div>
-                                <label className="block text-[9px] font-black uppercase text-gray-400 mb-2 tracking-widest">{t.address}</label>
-                                <input type="text" name="address" value={customer.address} onChange={handleInputChange} className="w-full px-5 py-3 rounded-xl bg-gray-50 dark:bg-slate-800 dark:text-white border-none outline-none focus:ring-4 focus:ring-primary/5 font-bold text-sm" required />
+                                <label className="block text-xs font-semibold text-gray-400 mb-2">{t.address}</label>
+                                <input type="text" name="address" value={customer.address} onChange={handleInputChange} className="w-full px-5 py-3 rounded-xl bg-white dark:bg-slate-800 dark:text-white border border-line outline-none focus:border-primary focus:ring-4 focus:ring-primary/15 font-bold text-sm" required />
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white dark:bg-slate-900 p-6 rounded-[2rem] shadow-premium border border-gray-100 dark:border-slate-800">
-                        <h3 className="text-lg font-black text-dark dark:text-white mb-6 flex items-center">
-                            <span className="w-8 h-8 bg-primary/10 text-primary rounded-xl flex items-center justify-center mr-3 text-xs font-black">02</span>
+                    <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-line">
+                        <h3 className="text-lg font-semibold text-dark dark:text-white mb-6 flex items-center">
+                            <span className="w-8 h-8 bg-primary/10 text-primary rounded-xl flex items-center justify-center mr-3 text-xs font-semibold">02</span>
                             {t.proof}
                         </h3>
                         
                         <div className="grid grid-cols-2 gap-3 mb-6">
-                            <button type="button" onClick={() => setPaymentMethod('Easypaisa')} className={`py-3.5 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all ${paymentMethod === 'Easypaisa' ? 'bg-primary text-white shadow-lg' : 'bg-gray-50 dark:bg-slate-800 text-gray-400'}`}>Easypaisa</button>
-                            <button type="button" onClick={() => setPaymentMethod('JazzCash')} className={`py-3.5 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all ${paymentMethod === 'JazzCash' ? 'bg-slate-900 dark:bg-slate-700 text-white shadow-lg' : 'bg-gray-50 dark:bg-slate-800 text-gray-400'}`}>JazzCash</button>
+                            <button type="button" onClick={() => setPaymentMethod('Easypaisa')} className={`py-3.5 rounded-xl font-semibold text-xs transition-all ${paymentMethod === 'Easypaisa' ? 'bg-primary text-white shadow-lg' : 'bg-gray-50 dark:bg-slate-800 text-gray-400'}`}>Easypaisa</button>
+                            <button type="button" onClick={() => setPaymentMethod('JazzCash')} className={`py-3.5 rounded-xl font-semibold text-xs transition-all ${paymentMethod === 'JazzCash' ? 'bg-slate-900 dark:bg-slate-700 text-white shadow-lg' : 'bg-gray-50 dark:bg-slate-800 text-gray-400'}`}>JazzCash</button>
                         </div>
                         
-                        <div className="p-6 rounded-2xl bg-gray-50 dark:bg-slate-800 text-center mb-6 border border-gray-100 dark:border-slate-800">
-                            <p className="text-3xl font-black text-dark dark:text-white mb-4 tracking-tighter">
+                        <div className="p-6 rounded-2xl bg-gray-50 dark:bg-slate-800 text-center mb-6 border border-line">
+                            <p className="text-3xl font-semibold text-dark dark:text-white mb-4">
                                 <span>Rs. </span>
                                 <span>{total.toLocaleString()}</span>
                             </p>
-                            <p className="text-xl font-black text-primary">{config.paymentNumber}</p>
-                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-1">Title: {config.paymentTitle}</p>
+                            <p className="text-xl font-semibold text-primary">{config.paymentNumber}</p>
+                            <p className="text-xs font-semibold text-gray-400 mt-1">Title: {config.paymentTitle}</p>
                         </div>
 
                         <div className="relative">
@@ -141,7 +141,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, placeOrder, se
                                 ) : (
                                     <div className="text-center">
                                         <span className="material-symbols-rounded text-4xl text-primary/40 mb-2">add_a_photo</span>
-                                        <p className="text-[10px] font-black text-primary uppercase tracking-widest">Upload Payment Screenshot</p>
+                                        <p className="text-xs font-semibold text-primary">Upload Payment Screenshot</p>
                                     </div>
                                 )}
                             </label>
@@ -150,31 +150,31 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, placeOrder, se
                 </div>
 
                 <div className="lg:w-[380px] shrink-0">
-                    <div className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-premium border border-gray-100 dark:border-slate-800 sticky top-24">
-                        <h3 className="text-lg font-black text-dark dark:text-white pb-4 mb-6 text-left">Order Summary</h3>
+                    <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-line sticky top-24">
+                        <h3 className="text-lg font-semibold text-dark dark:text-white pb-4 mb-6 text-left">Order Summary</h3>
                         <div className="space-y-4 max-h-[250px] overflow-y-auto no-scrollbar">
                             {cart.map(item => (
-                                <div key={item.id} className="flex justify-between items-center text-[11px] dark:text-gray-300">
+                                <div key={item.id} className="flex justify-between items-center text-sm dark:text-gray-300">
                                     <span className="font-bold">
                                         {item.name} <span className="text-gray-400">× {item.quantity}</span>
                                     </span>
-                                    <span className="font-black">
+                                    <span className="font-semibold">
                                         <span>Rs. </span>
                                         <span>{(item.price * item.quantity).toFixed(0)}</span>
                                     </span>
                                 </div>
                             ))}
                         </div>
-                        <div className="mt-6 pt-6 border-t border-gray-50 dark:border-slate-800">
+                        <div className="mt-6 pt-6 border-t border-line">
                             <div className="flex justify-between items-center">
-                                <span className="text-[9px] font-black text-gray-400 uppercase">Total</span>
-                                <span className="text-2xl font-black text-primary tracking-tighter">
+                                <span className="text-xs font-semibold text-gray-400">Total</span>
+                                <span className="text-2xl font-semibold text-primary">
                                     <span>Rs. </span>
                                     <span>{total.toLocaleString()}</span>
                                 </span>
                             </div>
                         </div>
-                        <div className="mt-6 pt-6 border-t border-gray-50 dark:border-slate-800 space-y-4">
+                        <div className="mt-6 pt-6 border-t border-line space-y-4">
                             <label className="flex items-start space-x-3 cursor-pointer group">
                                 <div className="relative mt-0.5">
                                     <input 
@@ -184,10 +184,10 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, placeOrder, se
                                         className="sr-only"
                                     />
                                     <div className={`w-5 h-5 rounded-md border-2 transition-all flex items-center justify-center ${agreedToPolicies ? 'bg-primary border-primary' : 'border-gray-200 dark:border-slate-700 bg-transparent'}`}>
-                                        {agreedToPolicies && <span className="material-symbols-rounded text-[14px] text-white font-black">check</span>}
+                                        {agreedToPolicies && <span className="material-symbols-rounded text-[14px] text-white font-semibold">check</span>}
                                     </div>
                                 </div>
-                                <span className="text-[11px] font-bold text-gray-500 dark:text-gray-400">
+                                <span className="text-sm font-bold text-gray-500 dark:text-gray-400">
                                     {t.agreePolicies} 
                                     <div className="mt-1 space-x-2">
                                         <button type="button" onClick={() => setView(View.Terms)} className="text-primary hover:underline">Terms</button>
@@ -206,10 +206,10 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, placeOrder, se
                                         className="sr-only"
                                     />
                                     <div className={`w-5 h-5 rounded-md border-2 transition-all flex items-center justify-center ${agreedToDeliveryPay ? 'bg-primary border-primary' : 'border-gray-200 dark:border-slate-700 bg-transparent'}`}>
-                                        {agreedToDeliveryPay && <span className="material-symbols-rounded text-[14px] text-white font-black">check</span>}
+                                        {agreedToDeliveryPay && <span className="material-symbols-rounded text-[14px] text-white font-semibold">check</span>}
                                     </div>
                                 </div>
-                                <span className="text-[11px] font-bold text-gray-500 dark:text-gray-400">
+                                <span className="text-sm font-bold text-gray-500 dark:text-gray-400">
                                     {t.agreeDelivery}
                                 </span>
                             </label>
@@ -218,7 +218,7 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, placeOrder, se
                         <button 
                             type="submit" 
                             disabled={isSubmitting || !agreedToPolicies || !agreedToDeliveryPay}
-                            className="w-full mt-8 bg-primary text-white py-4 rounded-xl font-black uppercase text-xs tracking-widest shadow-premium disabled:opacity-50 disabled:grayscale transition-all"
+                            className="w-full mt-8 bg-primary text-white py-4 rounded-xl font-semibold text-xs shadow-premium disabled:opacity-50 disabled:grayscale transition-all"
                         >
                             {isSubmitting ? '...' : t.submit}
                         </button>

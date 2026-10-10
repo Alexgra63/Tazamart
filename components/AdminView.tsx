@@ -33,41 +33,41 @@ const AdminDashboard: React.FC<{ orders: Order[], products: Product[] }> = ({ or
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="bg-white p-6 rounded-3xl shadow-soft border border-gray-100 flex flex-col justify-between">
-                    <span className="text-gray-400 text-xs font-black uppercase tracking-widest">Revenue</span>
-                    <p className="text-3xl font-black text-dark mt-2">Rs. {stats.totalSales.toLocaleString()}</p>
-                    <div className="mt-4 flex items-center text-[10px] text-primary font-black uppercase">
+                    <span className="text-gray-400 text-xs font-semibold">Revenue</span>
+                    <p className="text-3xl font-semibold text-dark mt-2">Rs. {stats.totalSales.toLocaleString()}</p>
+                    <div className="mt-4 flex items-center text-xs text-primary font-semibold">
                         <span className="bg-primary/10 px-2 py-0.5 rounded">↑ Live</span>
                     </div>
                 </div>
                 <div className="bg-white p-6 rounded-3xl shadow-soft border border-gray-100 flex flex-col justify-between">
-                    <span className="text-gray-400 text-xs font-black uppercase tracking-widest">Orders</span>
-                    <p className="text-3xl font-black text-dark mt-2">{stats.totalCount}</p>
-                    <div className="mt-4 flex items-center text-[10px] text-blue-500 font-black uppercase">
+                    <span className="text-gray-400 text-xs font-semibold">Orders</span>
+                    <p className="text-3xl font-semibold text-dark mt-2">{stats.totalCount}</p>
+                    <div className="mt-4 flex items-center text-xs text-blue-500 font-semibold">
                         <span className="bg-blue-50 px-2 py-0.5 rounded">{stats.pendingCount} Pending</span>
                     </div>
                 </div>
                 <div className="bg-white p-6 rounded-3xl shadow-soft border border-gray-100 flex flex-col justify-between">
-                    <span className="text-gray-400 text-xs font-black uppercase tracking-widest">Stock</span>
-                    <p className="text-3xl font-black text-dark mt-2">{products.length}</p>
+                    <span className="text-gray-400 text-xs font-semibold">Stock</span>
+                    <p className="text-3xl font-semibold text-dark mt-2">{products.length}</p>
                 </div>
                 <div className="bg-white p-6 rounded-3xl shadow-soft border border-gray-100 flex flex-col justify-between">
-                    <span className="text-gray-400 text-xs font-black uppercase tracking-widest">Best Seller</span>
-                    <p className="text-lg font-black text-dark mt-2 leading-tight truncate">
+                    <span className="text-gray-400 text-xs font-semibold">Best Seller</span>
+                    <p className="text-lg font-semibold text-dark mt-2 leading-tight truncate">
                         {stats.topProduct ? stats.topProduct.name : 'N/A'}
                     </p>
                 </div>
             </div>
 
             <div className="bg-white p-8 rounded-3xl shadow-premium border border-gray-100">
-                <h3 className="text-lg font-black text-dark mb-8 flex items-center">
+                <h3 className="text-lg font-semibold text-dark mb-8 flex items-center">
                     <div className="w-2 h-6 bg-primary rounded-full mr-3"></div>
                     Catalog Breakdown
                 </h3>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                      {Object.values(ProductCategory).map(cat => (
                          <div key={cat} className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                             <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{cat}</p>
-                             <p className="text-xl font-black text-dark mt-1">{products.filter(p => p.category === cat).length}</p>
+                             <p className="text-xs font-semibold text-gray-400">{cat}</p>
+                             <p className="text-xl font-semibold text-dark mt-1">{products.filter(p => p.category === cat).length}</p>
                          </div>
                      ))}
                 </div>
@@ -196,21 +196,21 @@ export const AdminView: React.FC<AdminViewProps> = ({
         <div className="container mx-auto px-4 py-8 pb-32">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-6">
                 <div>
-                    <h2 className="text-4xl font-black text-dark tracking-tight">Admin Console</h2>
+                    <h2 className="text-4xl font-semibold text-dark">Admin Console</h2>
                     <p className="text-gray-400 text-sm mt-1 font-medium">Tazamart Portal</p>
                 </div>
                 <div className="flex bg-white p-1.5 rounded-2xl shadow-premium border border-gray-100 overflow-x-auto no-scrollbar">
-                    <button onClick={() => setTab('dashboard')} className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 ${tab === 'dashboard' ? 'bg-primary text-white shadow-lg' : 'text-gray-400'}`}>Stats</button>
-                    <button onClick={() => setTab('orders')} className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 ${tab === 'orders' ? 'bg-primary text-white shadow-lg' : 'text-gray-400'}`}>Orders</button>
-                    <button onClick={() => setTab('products')} className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 ${tab === 'products' ? 'bg-primary text-white shadow-lg' : 'text-gray-400'}`}>Inventory</button>
-                    <button onClick={() => setTab('pages')} className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 ${tab === 'pages' ? 'bg-primary text-white shadow-lg' : 'text-gray-400'}`}>Pages</button>
+                    <button onClick={() => setTab('dashboard')} className={`px-5 py-2.5 rounded-xl text-xs font-semibold transition-all shrink-0 ${tab === 'dashboard' ? 'bg-primary text-white shadow-lg' : 'text-gray-400'}`}>Stats</button>
+                    <button onClick={() => setTab('orders')} className={`px-5 py-2.5 rounded-xl text-xs font-semibold transition-all shrink-0 ${tab === 'orders' ? 'bg-primary text-white shadow-lg' : 'text-gray-400'}`}>Orders</button>
+                    <button onClick={() => setTab('products')} className={`px-5 py-2.5 rounded-xl text-xs font-semibold transition-all shrink-0 ${tab === 'products' ? 'bg-primary text-white shadow-lg' : 'text-gray-400'}`}>Inventory</button>
+                    <button onClick={() => setTab('pages')} className={`px-5 py-2.5 rounded-xl text-xs font-semibold transition-all shrink-0 ${tab === 'pages' ? 'bg-primary text-white shadow-lg' : 'text-gray-400'}`}>Pages</button>
                 </div>
             </div>
 
             {isSyncing && (
                 <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] bg-white px-6 py-3 rounded-2xl shadow-premium border border-primary/20 flex items-center space-x-3 animate-in slide-in-from-top-4 duration-300">
                     <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-primary">{syncMessage}</span>
+                    <span className="text-xs font-semibold text-primary">{syncMessage}</span>
                 </div>
             )}
 
@@ -221,7 +221,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                     <div className="overflow-x-auto no-scrollbar">
                         <table className="w-full text-left">
                             <thead>
-                                <tr className="bg-gray-50/50 border-b border-gray-100 text-[10px] font-black uppercase text-gray-400 tracking-widest">
+                                <tr className="bg-gray-50/50 border-b border-gray-100 text-xs font-semibold text-gray-400">
                                     <th className="p-6">Order ID</th>
                                     <th className="p-6">Customer</th>
                                     <th className="p-6">Total</th>
@@ -232,17 +232,17 @@ export const AdminView: React.FC<AdminViewProps> = ({
                             <tbody className="divide-y divide-gray-50">
                                 {orders.slice().reverse().map(order => (
                                     <tr key={order.id} className="hover:bg-gray-50/50 transition-colors text-sm">
-                                        <td className="p-6 font-black text-gray-400">#{order.id.split('-').pop()}</td>
+                                        <td className="p-6 font-semibold text-gray-400">#{order.id.split('-').pop()}</td>
                                         <td className="p-6">
-                                            <div className="font-black text-dark">{order.customer.name}</div>
-                                            <div className="text-[10px] text-gray-400 font-bold">{order.customer.phone}</div>
+                                            <div className="font-semibold text-dark">{order.customer.name}</div>
+                                            <div className="text-xs text-gray-400 font-bold">{order.customer.phone}</div>
                                         </td>
-                                        <td className="p-6 font-black text-primary">Rs. {order.total.toLocaleString()}</td>
+                                        <td className="p-6 font-semibold text-primary">Rs. {order.total.toLocaleString()}</td>
                                         <td className="p-6">
                                             <select 
                                                 value={order.status}
                                                 onChange={(e) => handleStatusChange(order.id, e.target.value as OrderStatus)}
-                                                className={`text-[10px] font-black uppercase px-3 py-1.5 rounded-lg outline-none
+                                                className={`text-xs font-semibold px-3 py-1.5 rounded-lg outline-none
                                                     ${order.status === OrderStatus.Pending ? 'bg-yellow-50 text-yellow-600' : 
                                                       order.status === OrderStatus.Packed ? 'bg-blue-50 text-blue-600' : 
                                                       'bg-green-50 text-green-600'}`}
@@ -271,7 +271,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                     <div className="lg:col-span-4 space-y-4">
                         <button 
                             onClick={() => setIsAddingPage(true)}
-                            className="w-full p-6 border-2 border-dashed border-primary/20 rounded-3xl text-primary font-black uppercase text-[10px] tracking-widest hover:bg-primary/5 transition-all flex items-center justify-center mb-6"
+                            className="w-full p-6 border-2 border-dashed border-primary/20 rounded-3xl text-primary font-semibold text-xs hover:bg-primary/5 transition-all flex items-center justify-center mb-6"
                         >
                             <span className="material-symbols-rounded mr-2">add_circle</span> Add Custom Page
                         </button>
@@ -282,22 +282,22 @@ export const AdminView: React.FC<AdminViewProps> = ({
                                 className={`w-full p-6 bg-white rounded-3xl shadow-soft border text-left transition-all group ${selectedPage?.id === page.id ? 'border-primary ring-2 ring-primary/10' : 'border-gray-100 hover:border-primary/40'}`}
                             >
                                 <div className="flex justify-between items-center">
-                                    <h4 className="font-black text-dark tracking-tight">{page.title}</h4>
+                                    <h4 className="font-semibold text-dark">{page.title}</h4>
                                     <span className="material-symbols-rounded text-gray-300 group-hover:text-primary transition-colors">edit_note</span>
                                 </div>
-                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2">Slug: /{page.slug}</p>
+                                <p className="text-xs font-semibold text-gray-400 mt-2">Slug: /{page.slug}</p>
                             </button>
                         ))}
                     </div>
 
                     <div className="lg:col-span-8">
                         {selectedPage ? (
-                            <div className="bg-white rounded-[2.5rem] shadow-premium border border-gray-100 p-8 flex flex-col h-full min-h-[600px] animate-in slide-in-from-right-4 duration-300">
+                            <div className="bg-white rounded-2xl shadow-premium border border-gray-100 p-8 flex flex-col h-full min-h-[600px] animate-in slide-in-from-right-4 duration-300">
                                 <div className="flex justify-between items-center mb-6">
                                     <div>
-                                        <h3 className="text-2xl font-black text-dark tracking-tight">Editing: {selectedPage.title}</h3>
+                                        <h3 className="text-2xl font-semibold text-dark">Editing: {selectedPage.title}</h3>
                                         <div className="flex items-center space-x-4 mt-1">
-                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none">Markdown Powered Editor</p>
+                                            <p className="text-xs font-semibold text-gray-400 leading-none">Markdown Powered Editor</p>
                                             {!['about-us', 'terms-and-conditions', 'return-policy'].includes(selectedPage.slug) && (
                                                 <button 
                                                     onClick={() => {
@@ -306,7 +306,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                                                             // but let's keep it simple and just allow editing for now as deletePage is not in props
                                                         }
                                                     }}
-                                                    className="text-[9px] font-black text-red-400 uppercase tracking-widest leading-none hover:text-red-500 transition-colors"
+                                                    className="text-xs font-semibold text-red-400 leading-none hover:text-red-500 transition-colors"
                                                 >
                                                     Delete Page
                                                 </button>
@@ -320,7 +320,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                                             updatePage({ ...selectedPage, content: localPageContent, lastUpdated: new Date() });
                                             setTimeout(() => { setIsSyncing(false); setSyncMessage(''); }, 1000);
                                         }}
-                                        className="bg-primary text-white px-6 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-premium hover:shadow-lg transition-all"
+                                        className="bg-primary text-white px-6 py-3 rounded-xl font-semibold text-xs shadow-premium hover:shadow-lg transition-all"
                                     >
                                         Save Changes
                                     </button>
@@ -328,7 +328,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                                 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 flex-grow">
                                     <div className="flex flex-col">
-                                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-3">Editor Source</label>
+                                        <label className="text-xs font-semibold text-gray-400 mb-3">Editor Source</label>
                                         <textarea 
                                             value={localPageContent}
                                             onChange={(e) => setLocalPageContent(e.target.value)}
@@ -337,8 +337,8 @@ export const AdminView: React.FC<AdminViewProps> = ({
                                         />
                                     </div>
                                     <div className="flex flex-col">
-                                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-3 text-right">Live Preview</label>
-                                        <div className="flex-grow w-full p-6 rounded-2xl bg-gray-50/50 border border-gray-100 overflow-y-auto h-[400px] prose prose-sm max-w-none prose-headings:font-black prose-p:font-medium">
+                                        <label className="text-xs font-semibold text-gray-400 mb-3 text-right">Live Preview</label>
+                                        <div className="flex-grow w-full p-6 rounded-2xl bg-gray-50/50 border border-gray-100 overflow-y-auto h-[400px] prose prose-sm max-w-none prose-headings:font-semibold prose-p:font-medium">
                                             <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                                 {localPageContent || '_No content yet. Use the editor to add details._'}
                                             </ReactMarkdown>
@@ -347,10 +347,10 @@ export const AdminView: React.FC<AdminViewProps> = ({
                                 </div>
                             </div>
                         ) : (
-                            <div className="bg-gray-50/50 rounded-[2.5rem] border-2 border-dashed border-gray-200 p-20 text-center flex flex-col items-center justify-center">
+                            <div className="bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-200 p-20 text-center flex flex-col items-center justify-center">
                                 <span className="material-symbols-rounded text-5xl text-gray-300 mb-4 scale-150 opacity-40">article</span>
-                                <h3 className="text-xl font-black text-gray-400 tracking-tight">Select a page to edit content</h3>
-                                <p className="text-[10px] font-bold text-gray-300 uppercase tracking-widest mt-2">Manage Returns, Terms, and About Us info</p>
+                                <h3 className="text-xl font-semibold text-gray-400">Select a page to edit content</h3>
+                                <p className="text-xs font-bold text-gray-300 mt-2">Manage Returns, Terms, and About Us info</p>
                             </div>
                         )}
                     </div>
@@ -360,7 +360,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 <div className="space-y-6">
                     <button 
                         onClick={() => { setEditingProduct(null); setNewProduct({ name: '', price: 0, image: '', category: ProductCategory.Vegetables, unit: 'kg', description: '' }); setIsProductModalOpen(true); }} 
-                        className="bg-primary text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest flex items-center shadow-premium hover:shadow-lg transition-all"
+                        className="bg-primary text-white px-8 py-4 rounded-2xl font-semibold flex items-center shadow-premium hover:shadow-lg transition-all"
                     >
                         <span className="material-symbols-rounded mr-3">add</span> Add New Item
                     </button>
@@ -368,7 +368,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                     <div className="bg-white rounded-3xl shadow-premium border border-gray-100 overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
-                                <thead className="bg-gray-50 border-b border-gray-100 text-[10px] font-black uppercase text-gray-400 tracking-widest">
+                                <thead className="bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-400">
                                     <tr>
                                         <th className="p-6">Item</th>
                                         <th className="p-6">Category</th>
@@ -381,12 +381,12 @@ export const AdminView: React.FC<AdminViewProps> = ({
                                         <tr key={p.id} className="hover:bg-gray-50/30 transition-colors text-sm">
                                             <td className="p-6 flex items-center space-x-4">
                                                 <img src={p.image} className="w-12 h-12 rounded-xl object-cover shadow-soft" alt={p.name} referrerPolicy="no-referrer" onError={(e) => e.currentTarget.src = 'https://placehold.co/100x100?text=No+Img'} />
-                                                <span className="font-black text-dark">{p.name}</span>
+                                                <span className="font-semibold text-dark">{p.name}</span>
                                             </td>
                                             <td className="p-6">
-                                                <span className="text-[10px] font-black uppercase bg-gray-100 px-3 py-1 rounded-lg text-gray-500">{p.category}</span>
+                                                <span className="text-xs font-semibold bg-gray-100 px-3 py-1 rounded-lg text-gray-500">{p.category}</span>
                                             </td>
-                                            <td className="p-6 font-black text-dark">Rs. {p.price} / {p.unit}</td>
+                                            <td className="p-6 font-semibold text-dark">Rs. {p.price} / {p.unit}</td>
                                             <td className="p-6 text-right space-x-2">
                                                 <button onClick={() => { setEditingProduct(p); setNewProduct(p); setIsProductModalOpen(true); }} className="p-2.5 text-primary bg-primary/5 rounded-xl hover:bg-primary hover:text-white transition-all">
                                                     <span className="material-symbols-rounded text-lg">edit</span>
@@ -407,25 +407,25 @@ export const AdminView: React.FC<AdminViewProps> = ({
             {/* Product Add/Edit Modal */}
             {isProductModalOpen && (
                 <div className="fixed inset-0 bg-dark/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-                    <div className="bg-white w-full max-w-xl rounded-[2.5rem] p-10 shadow-premium overflow-y-auto max-h-[90vh] no-scrollbar animate-in slide-in-from-bottom-8 duration-300">
+                    <div className="bg-white w-full max-w-xl rounded-2xl p-10 shadow-premium overflow-y-auto max-h-[90vh] no-scrollbar animate-in slide-in-from-bottom-8 duration-300">
                         <div className="flex justify-between items-center mb-8">
-                            <h3 className="text-3xl font-black text-dark">{editingProduct ? 'Edit Item' : 'Add Item'}</h3>
+                            <h3 className="text-3xl font-semibold text-dark">{editingProduct ? 'Edit Item' : 'Add Item'}</h3>
                             <button onClick={() => setIsProductModalOpen(false)} className="text-gray-400 hover:text-dark">
                                 <span className="material-symbols-rounded text-2xl">close</span>
                             </button>
                         </div>
                         <form onSubmit={handleProductSubmit} className="space-y-6">
                             <div>
-                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Product Name</label>
+                                <label className="block text-xs font-semibold text-gray-400 mb-2">Product Name</label>
                                 <input required className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-4 focus:ring-primary/5 transition-all text-sm font-bold" value={newProduct.name} onChange={e => setNewProduct({...newProduct, name: e.target.value})} placeholder="e.g. Red Apples" />
                             </div>
                             <div className="grid grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Price (Rs)</label>
+                                    <label className="block text-xs font-semibold text-gray-400 mb-2">Price (Rs)</label>
                                     <input required type="number" className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-4 focus:ring-primary/5 transition-all text-sm font-bold" value={newProduct.price} onChange={e => setNewProduct({...newProduct, price: parseFloat(e.target.value)})} />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Unit</label>
+                                    <label className="block text-xs font-semibold text-gray-400 mb-2">Unit</label>
                                     <select className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-4 focus:ring-primary/5 transition-all text-sm font-bold" value={newProduct.unit} onChange={e => setNewProduct({...newProduct, unit: e.target.value as any})}>
                                         <option value="kg">Per kg</option>
                                         <option value="piece">Per piece</option>
@@ -434,24 +434,24 @@ export const AdminView: React.FC<AdminViewProps> = ({
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Category</label>
+                                <label className="block text-xs font-semibold text-gray-400 mb-2">Category</label>
                                 <select className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-4 focus:ring-primary/5 transition-all text-sm font-bold" value={newProduct.category} onChange={e => setNewProduct({...newProduct, category: e.target.value as any})}>
                                     {Object.values(ProductCategory).map(c => <option key={c} value={c}>{c}</option>)}
                                 </select>
                             </div>
                             
                             <div>
-                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Item Image</label>
+                                <label className="block text-xs font-semibold text-gray-400 mb-2">Item Image</label>
                                 <div className="flex flex-col items-center p-8 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 hover:border-primary/40 transition-all cursor-pointer relative" onClick={() => fileInputRef.current?.click()}>
                                     {newProduct.image ? (
                                         <div className="text-center">
                                             <img src={newProduct.image} className="h-32 w-auto rounded-xl shadow-lg mx-auto object-cover mb-4" alt="Preview" referrerPolicy="no-referrer" />
-                                            <p className="text-[10px] font-black text-primary uppercase">Tap to change image</p>
+                                            <p className="text-xs font-semibold text-primary">Tap to change image</p>
                                         </div>
                                     ) : (
                                         <div className="text-center py-4">
                                             <span className="material-symbols-rounded text-4xl text-gray-300">add_photo_alternate</span>
-                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2">Upload Image (JPG/PNG)</p>
+                                            <p className="text-xs font-semibold text-gray-400 mt-2">Upload Image (JPG/PNG)</p>
                                         </div>
                                     )}
                                     <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
@@ -459,12 +459,12 @@ export const AdminView: React.FC<AdminViewProps> = ({
                             </div>
 
                             <div>
-                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Description</label>
+                                <label className="block text-xs font-semibold text-gray-400 mb-2">Description</label>
                                 <textarea className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-4 focus:ring-primary/5 transition-all text-sm font-medium h-24 no-scrollbar" value={newProduct.description} onChange={e => setNewProduct({...newProduct, description: e.target.value})} placeholder="Item details..." />
                             </div>
                             <div className="flex space-x-4 pt-4">
-                                <button type="button" onClick={() => setIsProductModalOpen(false)} className="flex-1 py-5 rounded-2xl font-black uppercase tracking-widest bg-gray-100 text-gray-400">Discard</button>
-                                <button type="submit" className="flex-1 py-5 rounded-2xl font-black uppercase tracking-widest bg-primary text-white shadow-premium">Save</button>
+                                <button type="button" onClick={() => setIsProductModalOpen(false)} className="flex-1 py-5 rounded-2xl font-semibold bg-gray-100 text-gray-400">Discard</button>
+                                <button type="submit" className="flex-1 py-5 rounded-2xl font-semibold bg-primary text-white shadow-premium">Save</button>
                             </div>
                         </form>
                     </div>
@@ -483,23 +483,23 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
             {isAddingPage && (
                 <div className="fixed inset-0 bg-dark/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-                    <div className="bg-white w-full max-w-md rounded-[2.5rem] p-10 shadow-premium animate-in slide-in-from-bottom-8 duration-300">
+                    <div className="bg-white w-full max-w-md rounded-2xl p-10 shadow-premium animate-in slide-in-from-bottom-8 duration-300">
                         <div className="flex justify-between items-center mb-8">
-                            <h3 className="text-2xl font-black text-dark">Add Custom Page</h3>
+                            <h3 className="text-2xl font-semibold text-dark">Add Custom Page</h3>
                             <button onClick={() => setIsAddingPage(false)} className="text-gray-400">
                                 <span className="material-symbols-rounded">close</span>
                             </button>
                         </div>
                         <div className="space-y-6">
                             <div>
-                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">Page Title</label>
+                                <label className="block text-xs font-semibold text-gray-400 mb-2">Page Title</label>
                                 <input value={newPageTitle} onChange={e => setNewPageTitle(e.target.value)} className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-4 focus:ring-primary/5 font-bold" placeholder="e.g. FAQ" />
                             </div>
                             <div>
-                                <label className="block text-[10px] font-black uppercase text-gray-400 mb-2 tracking-widest">URL Slug</label>
+                                <label className="block text-xs font-semibold text-gray-400 mb-2">URL Slug</label>
                                 <input value={newPageSlug} onChange={e => setNewPageSlug(e.target.value)} className="w-full px-6 py-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-4 focus:ring-primary/5 font-bold" placeholder="e.g. faq" />
                             </div>
-                            <button onClick={handleAddPage} className="w-full bg-primary text-white py-4 rounded-2xl font-black uppercase tracking-widest shadow-premium">Create Page</button>
+                            <button onClick={handleAddPage} className="w-full bg-primary text-white py-4 rounded-2xl font-semibold shadow-premium">Create Page</button>
                         </div>
                     </div>
                 </div>
