@@ -18,8 +18,8 @@ import { Product, CartItem, Order, OrderStatus, View, Language, Theme, UserProfi
 import { initialProducts, initialPages } from './data.ts';
 import { PageView } from './components/PageView.tsx';
 import { config, migrateStorageKeys, ADMIN_PATH } from './lib/config';
+import { api, session, SECURE_BACKEND, AuthError } from './lib/api';
 
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbytQbtCT4JNwAFrI_-7aDWoe2Ri1aSHJonO5BOLXRAb0P32DqBeWl9FWpgIuCpe7x0f/exec'; 
 
 type AppState = {
     products: Product[];
@@ -49,7 +49,10 @@ type Action =
     | { type: 'CLEAR_CART' }
     | { type: 'UPDATE_ORDER_STATUS'; payload: { orderId: string; status: OrderStatus } }
     | { type: 'UPDATE_PAGE'; payload: AppPage }
-    | { type: 'SET_LOADING'; payload: boolean };
+    | { type: 'SET_LOADING'; payload: boolean }
+    | { type: 'SET_REMOTE_ORDERS'; payload: Order[] }
+    | { type: 'RENAME_ORDER'; payload: { from: string; to: string } }
+    | { type: 'SET_LOCAL_ORDER_STATUS'; payload: { orderId: string; status: OrderStatus } };
 
 const appReducer = (state: AppState, action: Action): AppState => {
     let newState: AppState = { ...state };
@@ -59,6 +62,14 @@ const appReducer = (state: AppState, action: Action): AppState => {
         case 'SET_REMOTE_DATA':
             // Update products and admin-only remote orders
             newState = { ...state, products: action.payload.products, remoteOrders: action.payload.orders, isLoading: false };
+            break;
+        case 'SET_REMOTE_ORDERS':
+            return { ...state, remoteOrders: action.payload };
+        case 'RENAME_ORDER':
+            newState = { ...state, orders: state.orders.map(o => o.id === action.payload.from ? { ...o, id: action.payload.to } : o) };
+            break;
+        case 'SET_LOCAL_ORDER_STATUS':
+            newState = { ...state, orders: state.orders.map(o => o.id === action.payload.orderId ? { ...o, status: action.payload.status } : o) };
             break;
         case 'SET_INITIAL_STATE':
             newState = { ...state, ...action.payload };
@@ -171,7 +182,7 @@ const App: React.FC = () => {
     });
 
     const [view, setView] = useState<View>(View.Home);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(() => SECURE_BACKEND && !!session.get());
     const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
     const [lastOrder, setLastOrder] = useState<Order | null>(null);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -184,34 +195,31 @@ const App: React.FC = () => {
 
     useEffect(() => { window.scrollTo({ top: 0 }); }, [view]);
 
+    const loadAdminOrders = useCallback(async () => {
+        if (!SECURE_BACKEND || !session.get()) return;
+        try {
+            dispatch({ type: 'SET_REMOTE_ORDERS', payload: await api.listOrders() });
+        } catch (err) {
+            if (err instanceof AuthError) { setIsAuthenticated(false); setView(View.AdminLogin); }
+            else console.warn('Loading orders failed.', err);
+        }
+    }, []);
+
     const fetchRemoteData = useCallback(async () => {
         try {
-            const response = await fetch(GAS_API_URL, { 
-                method: 'GET',
-                cache: 'no-cache' 
-            });
-            
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            
-            const data = await response.json();
-            if (data.products) {
-                const products = data.products.map((p: any) => ({
-                    ...p,
-                    price: parseFloat(p.price),
-                    id: isNaN(Number(p.id)) ? p.id : Number(p.id)
-                }));
-                const orders = (data.orders || []).map((o: any) => ({
-                    ...o,
-                    orderDate: new Date(o.orderDate)
-                }));
+            const { products, orders } = await api.fetchCatalogue();
+            if (products) {
                 // Only update products and remoteOrders (admin) - leave user local orders alone
                 dispatch({ type: 'SET_REMOTE_DATA', payload: { products, orders } });
+            } else {
+                dispatch({ type: 'SET_LOADING', payload: false });
             }
+            loadAdminOrders();
         } catch (err) {
             console.warn("Sync failed.", err);
             dispatch({ type: 'SET_LOADING', payload: false });
         }
-    }, []);
+    }, [loadAdminOrders]);
 
     useEffect(() => {
         migrateStorageKeys();
@@ -254,18 +262,15 @@ const App: React.FC = () => {
         }
     }, [state.theme]);
 
-    const syncToRemote = async (action: string, data: any) => {
+    const syncToRemote = async (action: 'add' | 'edit' | 'delete' | 'updateOrderStatus', data: Record<string, unknown>) => {
         try {
-            await fetch(GAS_API_URL, {
-                method: 'POST',
-                mode: 'no-cors', 
-                headers: { 'Content-Type': 'text/plain' },
-                body: JSON.stringify({ action, ...data })
-            });
-            setTimeout(() => { fetchRemoteData(); }, 1000);
+            await api.adminWrite(action, data);
         } catch (err) {
+            if (err instanceof AuthError) { setIsAuthenticated(false); setView(View.AdminLogin); alert('Your admin session expired. Please sign in again.'); return; }
             console.error("Remote sync failed:", err);
+            alert('Saving to the server failed. Please try again.');
         }
+        setTimeout(() => { fetchRemoteData(); }, 1000);
     };
 
     const onAddToCart = (product: Product, quantity: number) => dispatch({ type: 'ADD_TO_CART', payload: { product, quantity } });
@@ -281,7 +286,14 @@ const App: React.FC = () => {
         dispatch({ type: 'PLACE_ORDER', payload: order });
         setLastOrder(order);
         dispatch({ type: 'CLEAR_CART' });
-        syncToRemote('addOrder', { order: orderForBackend });
+        api.addOrder(orderForBackend as unknown as Record<string, unknown>)
+            .then(serverId => {
+                if (serverId && serverId !== order.id) {
+                    dispatch({ type: 'RENAME_ORDER', payload: { from: order.id, to: serverId } });
+                    setLastOrder(o => (o && o.id === order.id ? { ...o, id: serverId } : o));
+                }
+            })
+            .catch(err => { console.error('Order submit failed', err); alert('We could not reach the server. Please check your connection and contact us with your order details.'); });
     };
 
     const onUpdateOrderStatus = (orderId: string, status: OrderStatus) => {
@@ -308,6 +320,17 @@ const App: React.FC = () => {
         // Optional: Sync to remote if pages are stored there too
     };
     
+    const refreshOrderStatuses = async () => {
+        if (!SECURE_BACKEND) return;
+        await Promise.all(state.orders.map(async o => {
+            const remote = await api.lookupOrder(o.id, o.customer.phone);
+            if (remote && remote.status !== o.status) dispatch({ type: 'SET_LOCAL_ORDER_STATUS', payload: { orderId: o.id, status: remote.status } });
+        }));
+    };
+
+    const onAdminLogin = () => { setIsAuthenticated(true); setView(View.Admin); loadAdminOrders(); };
+    const onAdminLogout = () => { api.logout(); setIsAuthenticated(false); dispatch({ type: 'SET_REMOTE_ORDERS', payload: [] }); setView(View.AdminLogin); };
+
     const handleProductClick = (product: Product) => {
         setSelectedProduct(product);
         setView(View.ProductDetail);
@@ -351,7 +374,7 @@ const App: React.FC = () => {
                 return <OrderConfirmationView lang={state.language} lastOrder={lastOrder} setView={setView} />;
             case View.OrderHistory:
                 // consumption of strictly local orders
-                return <OrderHistoryView lang={state.language} orders={state.orders} />;
+                return <OrderHistoryView lang={state.language} orders={state.orders} onRefresh={SECURE_BACKEND ? refreshOrderStatuses : undefined} lookupOrder={SECURE_BACKEND ? api.lookupOrder : undefined} />;
             case View.Favorites:
                 return <FavoritesView 
                     lang={state.language} 
@@ -369,13 +392,13 @@ const App: React.FC = () => {
                 />;
             case View.AdminLogin:
                 if (!config.adminEnabled) return <HomeView lang={state.language} products={state.products} onAddToCart={onAddToCart} onProductClick={handleProductClick} />;
-                return <AdminLoginView onLogin={() => { setIsAuthenticated(true); setView(View.Admin); }} />;
+                return <AdminLoginView onLogin={onAdminLogin} />;
             case View.Admin:
                 return config.adminEnabled && isAuthenticated ? (
                     // consumption of strictly remote orders for admin
-                    <AdminView orders={state.remoteOrders} products={state.products} pages={state.pages} updateOrderStatus={onUpdateOrderStatus} addProduct={onAddProduct} updateProduct={onUpdateProduct} deleteProductExplicit={onDeleteProduct} updatePage={onUpdatePage} />
+                    <AdminView orders={state.remoteOrders} products={state.products} pages={state.pages} updateOrderStatus={onUpdateOrderStatus} addProduct={onAddProduct} updateProduct={onUpdateProduct} deleteProductExplicit={onDeleteProduct} updatePage={onUpdatePage} onLogout={onAdminLogout} onRefresh={fetchRemoteData} loadProof={SECURE_BACKEND ? api.getPaymentProof : undefined} />
                 ) : (
-                    <AdminLoginView onLogin={() => { setIsAuthenticated(true); setView(View.Admin); }} />
+                    <AdminLoginView onLogin={onAdminLogin} />
                 );
             default:
                 return <HomeView lang={state.language} products={state.products} onAddToCart={onAddToCart} onProductClick={handleProductClick} />;
