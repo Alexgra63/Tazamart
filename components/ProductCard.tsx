@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Product, Language } from '../types.ts';
+import { Price } from './ui';
 
 interface ProductCardProps {
     product: Product;
@@ -9,44 +9,39 @@ interface ProductCardProps {
     lang: Language;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, onClick, lang }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, onClick }) => {
     return (
-        <div 
-            className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-soft border border-gray-50 dark:border-slate-800 flex flex-col h-full transition-all hover:shadow-premium hover:-translate-y-0.5 active:scale-[0.98] group text-left"
+        <article
+            className="group flex flex-col h-full bg-white dark:bg-slate-900 border border-line rounded-[var(--radius-card)] overflow-hidden text-left transition-shadow hover:shadow-premium cursor-pointer"
             onClick={() => onClick && onClick(product)}
         >
-            <div className="relative overflow-hidden aspect-square">
-                <img 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                    src={product.image} 
-                    alt={product.name} 
+            <div className="relative aspect-[4/3] bg-gray-50 dark:bg-slate-800 overflow-hidden">
+                <img
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    src={product.image}
+                    alt={product.name}
+                    loading="lazy"
                     referrerPolicy="no-referrer"
-                    onError={(e) => { e.currentTarget.src = 'https://placehold.co/400x400?text=No+Image'; }}
+                    onError={(e) => { e.currentTarget.src = 'https://placehold.co/400x300?text=Tazamart'; }}
                 />
-                <div className="absolute top-2 left-2">
-                    <span className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md text-dark dark:text-white text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-tight shadow-sm">
-                        {product.unit}
-                    </span>
-                </div>
-                <button 
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onAddToCart(product);
-                    }}
-                    className="absolute bottom-3 right-3 bg-gradient-to-br from-primary to-primary-dark text-white p-2 rounded-xl shadow-premium hover:shadow-lg transition-all active:scale-90"
-                >
-                    <span className="material-symbols-rounded text-[18px]">add</span>
-                </button>
+                <span className="absolute bottom-2 left-2 rounded-md bg-white/90 dark:bg-slate-900/90 px-2 py-0.5 text-[11px] font-semibold text-ink dark:text-stone-100">
+                    {product.unit}
+                </span>
             </div>
-            <div className="p-3 md:p-5">
-                <h3 className="text-xs md:text-sm font-black text-dark dark:text-white line-clamp-1 group-hover:text-primary transition-colors">
-                    {product.name}
-                </h3>
-                <div className="flex items-center mt-1">
-                    <span className="text-sm md:text-lg font-black text-dark dark:text-white font-mono">Rs. {product.price}</span>
-                    <span className="text-[9px] md:text-[11px] text-gray-400 font-bold ml-1 uppercase tracking-tighter">/ {product.unit}</span>
+            <div className="flex flex-col flex-1 p-3 md:p-4 gap-2">
+                <h3 className="text-sm md:text-base font-semibold text-ink dark:text-white line-clamp-2 leading-snug">{product.name}</h3>
+                <div className="mt-auto flex items-center justify-between gap-2">
+                    <Price amount={product.price} unit={product.unit} className="text-base md:text-lg" />
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}
+                        aria-label={`Add ${product.name} to basket`}
+                        className="shrink-0 h-9 px-3 rounded-[10px] bg-primary-soft text-primary-dark dark:text-primary hover:bg-primary hover:text-white dark:hover:text-stone-950 text-sm font-semibold flex items-center gap-1 transition-colors"
+                    >
+                        <span className="material-symbols-rounded text-[18px]">add</span>
+                        <span className="hidden sm:inline">Add</span>
+                    </button>
                 </div>
             </div>
-        </div>
+        </article>
     );
 };

@@ -2,6 +2,7 @@
 import React, { useState, useReducer, useEffect, useCallback } from 'react';
 import { Header } from './components/Header.tsx';
 import { Footer } from './components/Footer.tsx';
+import { Skeleton } from './components/ui';
 import { BottomNav } from './components/BottomNav.tsx';
 import { HomeView } from './components/HomeView.tsx';
 import { CartView } from './components/CartView.tsx';
@@ -313,9 +314,11 @@ const App: React.FC = () => {
     const renderView = () => {
         if (state.isLoading && view === View.Home && state.products.length === 0) {
             return (
-                <div className="flex flex-col items-center justify-center h-[60vh] dark:text-gray-400">
-                    <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Syncing with Fresh Stock...</p>
+                <div className="px-4 md:px-0 pt-8" aria-busy="true" aria-label="Loading fresh stock">
+                    <Skeleton className="h-56 md:h-72 rounded-3xl" />
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5 mt-8">
+                        {Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="aspect-[4/5]" />)}
+                    </div>
                 </div>
             );
         }
@@ -378,18 +381,20 @@ const App: React.FC = () => {
     };
 
     return (
-        <div className={`flex flex-col min-h-screen transition-colors duration-300 ${state.theme === Theme.Dark ? 'bg-dark' : 'bg-light'}`}>
+        <div className="flex flex-col min-h-screen bg-light dark:bg-dark text-ink dark:text-stone-100">
             <Header 
                 lang={state.language}
                 theme={state.theme}
                 setLanguage={setLanguage}
                 setTheme={setTheme}
                 cartItemCount={state.cart.reduce((c, i) => c + i.quantity, 0)} 
-                setView={setView} 
+                setView={setView}
+                currentView={view}
             />
-            <main className="flex-grow pb-32 md:pb-16 max-w-7xl mx-auto w-full px-0 md:px-8">
+            <main className="flex-grow pb-24 md:pb-0 max-w-7xl mx-auto w-full px-0 md:px-8">
                 {renderView()}
             </main>
+            {view !== View.Admin && <Footer setView={setView} />}
             {view !== View.ProductDetail && (
                 <BottomNav 
                     currentView={view} 
