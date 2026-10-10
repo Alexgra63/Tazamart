@@ -14,7 +14,7 @@ export const Footer: React.FC<FooterProps> = ({ setView }) => {
             <div className="max-w-7xl mx-auto px-8 py-12 grid grid-cols-4 gap-10">
                 <div className="col-span-2">
                     <div className="flex items-center gap-2.5 mb-3">
-                        <img src="/logo.png" alt="" className="h-8 w-8 object-contain" />
+                        <img src="/logo.svg" alt="" className="h-8 w-8 object-contain" />
                         <span className="font-display text-xl font-semibold text-ink dark:text-white">Tazamart</span>
                     </div>
                     <p className="text-sm text-muted dark:text-stone-400 max-w-sm">Taza sabzi and fruit from the Islamabad mandi at market prices, delivered to your door.</p>

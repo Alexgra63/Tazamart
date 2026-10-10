@@ -101,9 +101,9 @@ export const HomeView: React.FC<HomeViewProps> = ({ products, onAddToCart, onPro
                 </div>
                 <ul className="mt-4 grid grid-cols-3 gap-2 md:gap-4 text-xs md:text-sm text-muted dark:text-stone-400">
                     {[['local_shipping','Same-day delivery'],['verified','Hand-picked quality'],['payments','Easypaisa & JazzCash']].map(([icon,label]) => (
-                        <li key={label} className="flex items-center justify-center md:justify-start gap-1.5 rounded-xl border border-line bg-white dark:bg-slate-900 px-2 py-2.5 md:px-4">
+                        <li key={label} className="flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-2 rounded-xl border border-line bg-white dark:bg-slate-900 px-2 py-2.5 md:px-4 text-center md:text-left">
                             <span className="material-symbols-rounded text-[18px] text-primary">{icon}</span>
-                            <span className="font-medium truncate">{label}</span>
+                            <span className="font-medium leading-tight text-[11px] md:text-sm">{label}</span>
                         </li>
                     ))}
                 </ul>

@@ -182,6 +182,8 @@ const App: React.FC = () => {
         document.documentElement.dir = 'ltr';
     }, []);
 
+    useEffect(() => { window.scrollTo({ top: 0 }); }, [view]);
+
     const fetchRemoteData = useCallback(async () => {
         try {
             const response = await fetch(GAS_API_URL, { 

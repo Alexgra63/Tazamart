@@ -24,7 +24,7 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onLogin }) => {
     return (
         <div className="flex items-center justify-center min-h-[70vh] px-4">
             <Card className="w-full max-w-md text-center !p-8 md:!p-10">
-                <img src="/logo.png" alt="Tazamart" className="mx-auto mb-5 w-16 h-16 object-contain" />
+                <img src="/logo.svg" alt="Tazamart" className="mx-auto mb-5 w-16 h-16 object-contain" />
                 <h1 className="font-display text-3xl font-semibold text-ink dark:text-white">Tazamart Admin</h1>
                 <p className="text-sm text-muted dark:text-stone-400 mt-1 mb-8">Restricted area</p>
 

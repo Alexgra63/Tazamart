@@ -48,7 +48,7 @@ export const CartView: React.FC<CartViewProps> = ({ cart, updateQuantity, remove
                             const step = item.unit === 'kg' ? 0.25 : 1;
                             return (
                                 <li key={item.id} className="flex gap-3 md:gap-4 p-3 md:p-4">
-                                    <img src={item.image} alt={item.name} referrerPolicy="no-referrer" className="w-20 h-20 md:w-24 md:h-24 rounded-[10px] object-cover bg-gray-50 dark:bg-slate-800 shrink-0" />
+                                    <img src={item.image} alt={item.name} referrerPolicy="no-referrer" onError={(e) => { e.currentTarget.src = 'https://placehold.co/200x200?text=Tazamart'; }} className="w-20 h-20 md:w-24 md:h-24 rounded-[10px] object-cover bg-gray-50 dark:bg-slate-800 shrink-0" />
                                     <div className="flex-1 min-w-0 flex flex-col">
                                         <div className="flex items-start justify-between gap-2">
                                             <div className="min-w-0">
