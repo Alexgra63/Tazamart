@@ -1,5 +1,6 @@
-
 import React, { useState } from 'react';
+import { config, verifyAdminPassword } from '../lib/config';
+import { Button, Card } from './ui';
 
 interface AdminLoginViewProps {
     onLogin: () => void;
@@ -8,54 +9,50 @@ interface AdminLoginViewProps {
 export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onLogin }) => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [busy, setBusy] = useState(false);
+    const configured = config.adminEnabled && !!config.adminPasswordSha256;
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Updated branding check
-        if (password === 'VegeloAdmin2025!') { 
-            onLogin();
-        } else if (password === 'TazaAdmin2025!') { // Legacy compat
-            onLogin();
-        } else {
-            setError('Unauthorized Access');
-        }
+        setBusy(true);
+        const ok = await verifyAdminPassword(password);
+        setBusy(false);
+        if (ok) onLogin();
+        else setError('Incorrect password');
     };
 
     return (
         <div className="flex items-center justify-center min-h-[70vh] px-4">
-            <div className="bg-white p-12 rounded-[2.5rem] shadow-premium w-full max-w-md border border-gray-100 text-center">
-                <div className="mx-auto mb-8 flex justify-center">
-                    <img src="/logo.png" alt="Vegelo Logo" className="w-20 h-20 object-contain drop-shadow-lg" />
-                </div>
-                <h2 className="text-3xl font-black text-dark mb-2 tracking-tight">Vegelo Admin</h2>
-                <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-10">Restricted Area</p>
-                
-                <form onSubmit={handleSubmit} className="text-left">
-                    <div className="mb-8">
-                        <label className="block text-[10px] font-black uppercase text-gray-400 mb-3 tracking-widest" htmlFor="password">
-                            Enter Secret Key
-                        </label>
-                        <input
-                            type="password"
-                            id="password"
-                            value={password}
-                            onChange={(e) => {
-                                setPassword(e.target.value);
-                                setError('');
-                            }}
-                            className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-transparent focus:bg-white focus:border-primary/20 focus:ring-4 focus:ring-primary/5 outline-none transition-all font-black text-sm"
-                            placeholder="••••••••••••"
-                        />
-                        {error && <p className="text-red-500 text-[10px] font-black uppercase tracking-widest mt-3 animate-pulse">{error}</p>}
-                    </div>
-                    <button
-                        type="submit"
-                        className="w-full bg-gradient-to-r from-primary to-primary-dark text-white font-black py-5 rounded-2xl uppercase text-xs tracking-widest shadow-premium hover:shadow-lg transform active:scale-[0.98] transition-all"
-                    >
-                        Secure Login
-                    </button>
-                </form>
-            </div>
+            <Card className="w-full max-w-md text-center !p-8 md:!p-10">
+                <img src="/logo.png" alt="Tazamart" className="mx-auto mb-5 w-16 h-16 object-contain" />
+                <h1 className="font-display text-3xl font-semibold text-ink dark:text-white">Tazamart Admin</h1>
+                <p className="text-sm text-muted dark:text-stone-400 mt-1 mb-8">Restricted area</p>
+
+                {!configured ? (
+                    <p className="text-sm text-muted dark:text-stone-400 bg-gray-50 dark:bg-slate-800 rounded-[10px] p-4 text-left">
+                        Admin is not configured for this deployment. Set <code>VITE_ENABLE_ADMIN</code> and{' '}
+                        <code>VITE_ADMIN_PASSWORD_SHA256</code> in the environment and redeploy.
+                    </p>
+                ) : (
+                    <form onSubmit={handleSubmit} className="text-left space-y-4">
+                        <div>
+                            <label className="block text-sm font-semibold text-ink dark:text-stone-200 mb-1.5" htmlFor="password">Password</label>
+                            <input
+                                type="password"
+                                id="password"
+                                autoComplete="current-password"
+                                value={password}
+                                onChange={(e) => { setPassword(e.target.value); setError(''); }}
+                                className="w-full h-11 px-4 rounded-[10px] bg-white dark:bg-slate-800 border border-line focus:border-primary focus:ring-4 focus:ring-primary/15 outline-none text-sm"
+                            />
+                            {error && <p role="alert" className="text-red-600 text-sm mt-2">{error}</p>}
+                        </div>
+                        <Button type="submit" fullWidth size="lg" icon="lock" disabled={busy || !password}>
+                            {busy ? 'Checking…' : 'Sign in'}
+                        </Button>
+                    </form>
+                )}
+            </Card>
         </div>
     );
 };

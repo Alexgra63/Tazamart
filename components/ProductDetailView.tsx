@@ -18,7 +18,7 @@ const translations = {
     quantity: "Quantity",
     addToCart: "Add to Basket",
     desc: "Product Description",
-    noDesc: "Fresh premium quality item selected specially for Vegelo customers.",
+    noDesc: "Fresh premium quality item selected specially for Tazamart customers.",
     added: "Added to Basket",
     total: "Subtotal",
     adjustWeight: "Adjust weight",

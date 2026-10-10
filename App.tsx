@@ -16,6 +16,7 @@ import { FavoritesView } from './components/FavoritesView.tsx';
 import { Product, CartItem, Order, OrderStatus, View, Language, Theme, UserProfile, AppPage } from './types.ts';
 import { initialProducts, initialPages } from './data.ts';
 import { PageView } from './components/PageView.tsx';
+import { config, migrateStorageKeys } from './lib/config';
 
 const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbytQbtCT4JNwAFrI_-7aDWoe2Ri1aSHJonO5BOLXRAb0P32DqBeWl9FWpgIuCpe7x0f/exec'; 
 
@@ -144,13 +145,13 @@ const appReducer = (state: AppState, action: Action): AppState => {
             return state;
     }
 
-    localStorage.setItem('vegelo_products_cache', JSON.stringify(newState.products));
-    localStorage.setItem('vegelo_orders', JSON.stringify(newState.orders));
-    localStorage.setItem('vegelo_favorites', JSON.stringify(newState.favorites));
-    localStorage.setItem('vegelo_profile', JSON.stringify(newState.profile));
-    localStorage.setItem('vegelo_lang', newState.language);
-    localStorage.setItem('vegelo_theme', newState.theme);
-    localStorage.setItem('vegelo_pages', JSON.stringify(newState.pages));
+    localStorage.setItem('tazamart_products_cache', JSON.stringify(newState.products));
+    localStorage.setItem('tazamart_orders', JSON.stringify(newState.orders));
+    localStorage.setItem('tazamart_favorites', JSON.stringify(newState.favorites));
+    localStorage.setItem('tazamart_profile', JSON.stringify(newState.profile));
+    localStorage.setItem('tazamart_lang', newState.language);
+    localStorage.setItem('tazamart_theme', newState.theme);
+    localStorage.setItem('tazamart_pages', JSON.stringify(newState.pages));
     return newState;
 };
 
@@ -210,17 +211,18 @@ const App: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        const storedOrders = localStorage.getItem('vegelo_orders');
-        const cachedProducts = localStorage.getItem('vegelo_products_cache');
-        const storedFavs = localStorage.getItem('vegelo_favorites');
-        const storedProfile = localStorage.getItem('vegelo_profile');
-        const storedLang = localStorage.getItem('vegelo_lang') as Language;
-        const storedTheme = localStorage.getItem('vegelo_theme') as Theme;
-        const storedPages = localStorage.getItem('vegelo_pages');
+        migrateStorageKeys();
+        const storedOrders = localStorage.getItem('tazamart_orders');
+        const cachedProducts = localStorage.getItem('tazamart_products_cache');
+        const storedFavs = localStorage.getItem('tazamart_favorites');
+        const storedProfile = localStorage.getItem('tazamart_profile');
+        const storedLang = localStorage.getItem('tazamart_lang') as Language;
+        const storedTheme = localStorage.getItem('tazamart_theme') as Theme;
+        const storedPages = localStorage.getItem('tazamart_pages');
 
         // Check for admin query param
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('admin')) {
+        if (config.adminEnabled && urlParams.has('admin')) {
             setIsAdminUnlocked(true);
             setView(View.AdminLogin);
         }
@@ -361,9 +363,10 @@ const App: React.FC = () => {
                     setView={setView}
                 />;
             case View.AdminLogin:
+                if (!config.adminEnabled) return <HomeView lang={state.language} products={state.products} onAddToCart={onAddToCart} onProductClick={handleProductClick} />;
                 return <AdminLoginView onLogin={() => { setIsAuthenticated(true); setView(View.Admin); }} />;
             case View.Admin:
-                return isAuthenticated ? (
+                return config.adminEnabled && isAuthenticated ? (
                     // consumption of strictly remote orders for admin
                     <AdminView orders={state.remoteOrders} products={state.products} pages={state.pages} updateOrderStatus={onUpdateOrderStatus} addProduct={onAddProduct} updateProduct={onUpdateProduct} deleteProductExplicit={onDeleteProduct} updatePage={onUpdatePage} />
                 ) : (
@@ -383,7 +386,6 @@ const App: React.FC = () => {
                 setTheme={setTheme}
                 cartItemCount={state.cart.reduce((c, i) => c + i.quantity, 0)} 
                 setView={setView} 
-                onUnlockAdmin={() => setIsAdminUnlocked(true)}
             />
             <main className="flex-grow pb-32 md:pb-16 max-w-7xl mx-auto w-full px-0 md:px-8">
                 {renderView()}

@@ -6,7 +6,6 @@ import { ShoppingCartIcon } from './Icons.tsx';
 interface HeaderProps {
     cartItemCount: number;
     setView: (view: View) => void;
-    onUnlockAdmin: () => void;
     lang: Language;
     theme: Theme;
     setLanguage: (lang: Language) => void;
@@ -14,19 +13,9 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ 
-    cartItemCount, setView, onUnlockAdmin, lang, theme, setLanguage, setTheme 
+    cartItemCount, setView, lang, theme, setLanguage, setTheme 
 }) => {
-    const [clickCount, setClickCount] = useState(0);
-
-    const handleLogoClick = () => {
-        const newCount = clickCount + 1;
-        setClickCount(newCount);
-        if (newCount >= 5) {
-            onUnlockAdmin();
-            setClickCount(0);
-        }
-        setView(View.Home);
-    };
+    const handleLogoClick = () => setView(View.Home);
 
     const t = { home: 'Home', orders: 'Orders', liked: 'Liked', account: 'Account' };
 

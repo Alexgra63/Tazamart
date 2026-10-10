@@ -1,3 +1,4 @@
+import { config } from '../lib/config';
 
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import { CartItem, Customer, Order, View, OrderStatus, UserProfile, Language } from '../types';
@@ -128,8 +129,8 @@ export const CheckoutView: React.FC<CheckoutViewProps> = ({ cart, placeOrder, se
                                 <span>Rs. </span>
                                 <span>{total.toLocaleString()}</span>
                             </p>
-                            <p className="text-xl font-black text-primary">0300-1234567</p>
-                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-1">Title: Vegelo Fresh</p>
+                            <p className="text-xl font-black text-primary">{config.paymentNumber}</p>
+                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-1">Title: {config.paymentTitle}</p>
                         </div>
 
                         <div className="relative">
