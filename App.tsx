@@ -17,7 +17,7 @@ import { FavoritesView } from './components/FavoritesView.tsx';
 import { Product, CartItem, Order, OrderStatus, View, Language, Theme, UserProfile, AppPage } from './types.ts';
 import { initialProducts, initialPages } from './data.ts';
 import { PageView } from './components/PageView.tsx';
-import { config, migrateStorageKeys } from './lib/config';
+import { config, migrateStorageKeys, ADMIN_PATH } from './lib/config';
 
 const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbytQbtCT4JNwAFrI_-7aDWoe2Ri1aSHJonO5BOLXRAb0P32DqBeWl9FWpgIuCpe7x0f/exec'; 
 
@@ -223,9 +223,9 @@ const App: React.FC = () => {
         const storedTheme = localStorage.getItem('tazamart_theme') as Theme;
         const storedPages = localStorage.getItem('tazamart_pages');
 
-        // Check for admin query param
-        const urlParams = new URLSearchParams(window.location.search);
-        if (config.adminEnabled && urlParams.has('admin')) {
+        // Admin portal is only reachable at its dedicated path (and only when enabled)
+        const path = window.location.pathname.replace(/\/+$/, '');
+        if (config.adminEnabled && path === ADMIN_PATH) {
             setIsAdminUnlocked(true);
             setView(View.AdminLogin);
         }

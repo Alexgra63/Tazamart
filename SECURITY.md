@@ -5,7 +5,8 @@
 - Admin is now **off by default**. To enable it on a deployment, set these environment variables (Vercel → Settings → Environment Variables) and redeploy:
   - `VITE_ENABLE_ADMIN=true`
   - `VITE_ADMIN_PASSWORD_SHA256=<sha256 hex of your password>`. Generate it with `printf '%s' 'your-password' | sha256sum`.
-- Open `/?admin` to reach the login screen.
+- Open `/admin666` to reach the login screen. `vercel.json` rewrites this path to the SPA. The path is defined in `lib/config.ts` (`ADMIN_PATH`).
+- After 3 failed logins the form locks with an exponential delay (30s, 60s, 120s, … max 15 min), plus a fixed ~0.8s delay on every attempt. This is per-browser only.
 
 ## Known limitations (follow-up required)
 1. **This is still a client-side gate.** The SHA-256 hash ships in the JS bundle. It hides the plaintext password but can be brute-forced offline, so use a long random password.

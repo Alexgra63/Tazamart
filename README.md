@@ -12,7 +12,7 @@ Taza sabzi from the Islamabad mandi. A React 19, Vite 6 and Tailwind CSS v4 stor
 | Var | Purpose |
 | --- | --- |
 | `GEMINI_API_KEY` | Gemini key (optional) |
-| `VITE_ENABLE_ADMIN` | `true` to enable the admin portal at `/?admin` |
+| `VITE_ENABLE_ADMIN` | `true` to enable the admin portal at `/admin666` |
 | `VITE_ADMIN_PASSWORD_SHA256` | SHA-256 hex of the admin password |
 | `VITE_PAYMENT_NUMBER` / `VITE_PAYMENT_TITLE` | Easypaisa/JazzCash number and account title shown at checkout |
 

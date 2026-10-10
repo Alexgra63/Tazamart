@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { config, verifyAdminPassword } from '../lib/config';
+import React, { useEffect, useState } from 'react';
+import { config, verifyAdminPassword, lockoutRemainingMs, recordFailedLogin, resetLoginFailures } from '../lib/config';
 import { Button, Card } from './ui';
 
 interface AdminLoginViewProps {
@@ -10,15 +10,28 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onLogin }) => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [busy, setBusy] = useState(false);
+    const [lockMs, setLockMs] = useState(lockoutRemainingMs());
     const configured = config.adminEnabled && !!config.adminPasswordSha256;
+
+    useEffect(() => {
+        if (lockMs <= 0) return;
+        const t = setInterval(() => setLockMs(lockoutRemainingMs()), 1000);
+        return () => clearInterval(t);
+    }, [lockMs > 0]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (lockoutRemainingMs() > 0) return;
         setBusy(true);
         const ok = await verifyAdminPassword(password);
+        // constant small delay to slow down guessing
+        await new Promise(r => setTimeout(r, 800));
         setBusy(false);
-        if (ok) onLogin();
-        else setError('Incorrect password');
+        if (ok) { resetLoginFailures(); onLogin(); return; }
+        setPassword('');
+        const wait = recordFailedLogin();
+        setLockMs(wait);
+        setError(wait ? 'Too many failed attempts.' : 'Incorrect password');
     };
 
     return (
@@ -47,7 +60,8 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onLogin }) => {
                             />
                             {error && <p role="alert" className="text-red-600 text-sm mt-2">{error}</p>}
                         </div>
-                        <Button type="submit" fullWidth size="lg" icon="lock" disabled={busy || !password}>
+                        {lockMs > 0 && <p role="status" className="text-sm text-amber-700 dark:text-amber-300">Locked. Try again in {Math.ceil(lockMs / 1000)}s.</p>}
+                        <Button type="submit" fullWidth size="lg" icon="lock" disabled={busy || !password || lockMs > 0}>
                             {busy ? 'Checking…' : 'Sign in'}
                         </Button>
                     </form>

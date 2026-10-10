@@ -1,7 +1,7 @@
 /**
  * Build-time configuration (Vite env vars, set them in Vercel → Project → Settings → Environment Variables).
  *
- * VITE_ENABLE_ADMIN           "true" to expose the admin portal at /?admin. Default: disabled.
+ * VITE_ENABLE_ADMIN           "true" to expose the admin portal at ADMIN_PATH. Default: disabled.
  * VITE_ADMIN_PASSWORD_SHA256  hex SHA-256 of the admin password. Without it, admin login always fails.
  *                             Generate: `printf '%s' 'your-password' | sha256sum`
  * VITE_PAYMENT_NUMBER         Easypaisa / JazzCash number shown at checkout.
@@ -11,6 +11,8 @@
  * and the Google Apps Script endpoint currently accepts writes without a token. See SECURITY.md.
  */
 const env = import.meta.env;
+
+export const ADMIN_PATH = '/admin666';
 
 export const config = {
     adminEnabled: env.VITE_ENABLE_ADMIN === 'true',
@@ -41,3 +43,23 @@ export function migrateStorageKeys() {
         }
     } catch { /* storage unavailable */ }
 }
+
+/* ---- Login throttling (per browser) ----
+ * After 3 failed attempts, lock out with an exponential delay (30s, 60s, 120s … capped at 15 min).
+ * Stored in localStorage so a reload doesn't reset it. Client-side only; see SECURITY.md. */
+const LOCK_KEY = 'tazamart_admin_lock';
+type LockState = { fails: number; until: number };
+const readLock = (): LockState => { try { return JSON.parse(localStorage.getItem(LOCK_KEY) || '') as LockState; } catch { return { fails: 0, until: 0 }; } };
+const writeLock = (s: LockState) => { try { localStorage.setItem(LOCK_KEY, JSON.stringify(s)); } catch { /* ignore */ } };
+
+export const lockoutRemainingMs = () => Math.max(0, readLock().until - Date.now());
+
+export function recordFailedLogin(): number {
+    const s = readLock();
+    const fails = (s.fails || 0) + 1;
+    let until = 0;
+    if (fails >= 3) until = Date.now() + Math.min(15 * 60_000, 30_000 * 2 ** (fails - 3));
+    writeLock({ fails, until });
+    return until ? until - Date.now() : 0;
+}
+export const resetLoginFailures = () => writeLock({ fails: 0, until: 0 });
