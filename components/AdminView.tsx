@@ -250,10 +250,10 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
                 {/* ---------------- Products: card list */}
                 {tab === 'products' && (
-                    <div className="space-y-3">
+                    <div className="space-y-3 pb-20 md:pb-0">
                         <div className="flex gap-2">
                             <input type="search" value={productQuery} onChange={e => setProductQuery(e.target.value)} placeholder="Search products" className={inputCls} />
-                            <Button className="hidden md:inline-flex shrink-0 !h-12" icon="add" onClick={() => openProduct(null)}>Add product</Button>
+                            <div className="hidden md:block shrink-0"><Button className="!h-12" icon="add" onClick={() => openProduct(null)}>Add product</Button></div>
                         </div>
                         <ul className="grid md:grid-cols-2 gap-3">
                             {filteredProducts.map(p => (
