@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Product, Language } from '../types';
+import { Badge, Button, Card, IconButton, Price, QuantityStepper } from './ui';
 
 interface ProductDetailViewProps {
     product: Product;
@@ -42,146 +43,79 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
         setTimeout(() => setAddedToast(false), 2000);
     };
 
+    const presets = isWeightBased ? [0.25, 0.5, 1, 2] : [1, 2, 3, 5];
+
     return (
-        <div className="min-h-screen bg-white dark:bg-slate-950 animate-in slide-in-from-right duration-300 pb-20 ltr text-left" dir="ltr">
-            
-            {/* Navigation Buttons - Adjusted for sticky header */}
-            <div className="sticky top-0 z-[60] flex items-center justify-between p-4 pointer-events-none max-w-7xl mx-auto">
-                <button 
-                    onClick={onBack}
-                    className="pointer-events-auto w-10 h-10 md:w-12 md:h-12 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-premium flex items-center justify-center text-dark dark:text-white transition-all active:scale-90 border border-white/20 dark:border-slate-700/50"
-                >
-                    <span className="material-symbols-rounded text-xl md:text-2xl">arrow_back</span>
-                </button>
-                <button 
+        <div className="pb-28 md:pb-12 animate-in fade-in duration-300 text-left" dir="ltr">
+            <div className="flex items-center justify-between px-4 md:px-0 py-4">
+                <Button variant="ghost" size="sm" icon="arrow_back" onClick={onBack}>{t.back}</Button>
+                <IconButton
+                    icon="favorite"
+                    label={isFavorite ? 'Remove from saved' : 'Save'}
                     onClick={() => toggleFavorite(product.id)}
-                    className={`pointer-events-auto w-10 h-10 md:w-12 md:h-12 rounded-2xl shadow-premium flex items-center justify-center backdrop-blur-xl transition-all active:scale-90 border ${isFavorite ? 'bg-red-500 text-white border-red-400' : 'bg-white/90 dark:bg-slate-800/90 text-gray-400 border-white/20 dark:border-slate-700/50'}`}
-                >
-                    <span className="material-symbols-rounded text-xl md:text-2xl" style={{ fontVariationSettings: isFavorite ? "'FILL' 1" : "'FILL' 0" }}>favorite</span>
-                </button>
+                    className={isFavorite ? 'text-red-600 dark:text-red-400' : ''}
+                />
             </div>
 
-            {/* Main Content */}
-            <div className="md:flex md:items-start md:gap-16 max-w-7xl mx-auto px-4 md:px-8 pb-12">
-                {/* Hero Image Section */}
-                <div className="relative w-full md:w-[40%] h-[40vh] sm:h-[50vh] md:h-[400px] overflow-hidden rounded-[2rem] md:rounded-[2.5rem] shadow-soft shrink-0">
-                    <img 
-                        src={product.image} 
-                        alt={product.name} 
-                        referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+            <div className="md:grid md:grid-cols-2 md:gap-12 px-4 md:px-0">
+                <div className="relative aspect-[4/3] md:aspect-square overflow-hidden rounded-2xl md:rounded-3xl bg-gray-50 dark:bg-slate-800 border border-line">
+                    <img src={product.image} alt={product.name} referrerPolicy="no-referrer" className="w-full h-full object-cover"
+                        onError={(e) => { e.currentTarget.src = 'https://placehold.co/600x600?text=Tazamart'; }} />
                 </div>
 
-                {/* Content Details */}
-                <div className="relative px-2 md:px-0 pt-8 md:pt-4 md:flex-1">
-                    <div className="max-w-3xl">
-                        {/* Category & Badge */}
-                        <div className="flex items-center gap-2 mb-4">
-                            <span className="text-[9px] font-black uppercase text-primary bg-primary/10 px-3 py-1 rounded-lg tracking-widest border border-primary/5">
-                                {product.category}
-                            </span>
-                            <span className="text-[9px] font-black uppercase text-gray-400 bg-gray-50 dark:bg-slate-800 px-3 py-1 rounded-lg tracking-widest">
-                                {product.unit} base
-                            </span>
-                        </div>
+                <div className="pt-6 md:pt-2">
+                    <div className="flex items-center gap-2 mb-3">
+                        <Badge tone="green">{product.category}</Badge>
+                        <Badge>Sold per {product.unit}</Badge>
+                    </div>
+                    <h1 className="font-display text-3xl md:text-5xl font-semibold text-ink dark:text-white leading-tight">{product.name}</h1>
+                    <div className="mt-3"><Price amount={product.price} unit={product.unit} className="text-2xl md:text-3xl text-primary-dark dark:text-primary" /></div>
 
-                        {/* Title & Price */}
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-dark dark:text-white tracking-tighter leading-none mb-4 md:mb-6">
-                            {product.name}
-                        </h1>
-                        
-                        <div className="flex items-center gap-3 mb-6 md:mb-8">
-                            <div className="flex items-baseline gap-1">
-                                <span className="text-xs font-black text-primary uppercase">{t.rs}</span>
-                                <span className="text-4xl font-black text-primary tracking-tighter">{product.price}</span>
+                    <Card className="mt-6">
+                        <div className="flex items-center justify-between gap-4">
+                            <div>
+                                <p className="text-sm font-semibold text-ink dark:text-white">{t.quantity}</p>
+                                <p className="text-xs text-muted dark:text-stone-400">{isWeightBased ? t.adjustWeight : t.selectPieces}</p>
                             </div>
-                            <span className="text-gray-400 font-bold text-[11px] tracking-widest uppercase border-gray-100 dark:border-slate-800 border-l pl-3">
-                                {t.per} {product.unit}
-                            </span>
+                            <QuantityStepper value={quantity} step={step} min={minQuantity} onChange={setQuantity} />
                         </div>
-
-                        {/* Quantity Selector */}
-                        <div className="bg-gray-50 dark:bg-slate-900 rounded-[2rem] p-5 md:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 border border-gray-100 dark:border-slate-800">
-                            <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
-                                <span className="font-black text-dark dark:text-white uppercase tracking-widest text-[9px] mb-1 opacity-40">{t.quantity}</span>
-                                <p className="text-[11px] font-bold text-gray-400">{isWeightBased ? t.adjustWeight : t.selectPieces}</p>
-                            </div>
-                            
-                            <div className="flex items-center bg-white dark:bg-slate-800 p-1.5 rounded-2xl shadow-soft border border-gray-100 dark:border-slate-700/50">
-                                <button 
-                                    onClick={() => setQuantity(prev => Math.max(minQuantity, parseFloat((prev - step).toFixed(2))))}
-                                    className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-slate-700 text-gray-400 hover:text-primary dark:text-gray-400 shadow-sm flex items-center justify-center active:scale-90 transition-all disabled:opacity-30"
-                                    disabled={quantity <= minQuantity}
-                                >
-                                    <span className="material-symbols-rounded">remove</span>
+                        <div className="flex flex-wrap gap-2 mt-4">
+                            {presets.map(q => (
+                                <button key={q} onClick={() => setQuantity(q)}
+                                    className={`h-9 px-3 rounded-full text-sm font-semibold border transition-colors ${quantity === q ? 'bg-primary-soft border-primary text-primary-dark dark:text-primary' : 'border-line text-muted dark:text-stone-300 hover:border-primary'}`}>
+                                    {isWeightBased && q < 1 ? `${q * 1000} g` : `${q} ${product.unit}`}
                                 </button>
-                                <span className="text-xl font-black text-dark dark:text-white min-w-[80px] text-center px-2">
-                                    {quantity} <span className="text-[10px] font-black uppercase text-gray-400 tracking-tighter ml-0.5">{product.unit}</span>
-                                </span>
-                                <button 
-                                    onClick={() => setQuantity(prev => parseFloat((prev + step).toFixed(2)))}
-                                    className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-slate-700 text-gray-400 hover:text-primary dark:text-gray-400 shadow-sm flex items-center justify-center active:scale-90 transition-all"
-                                >
-                                    <span className="material-symbols-rounded">add</span>
-                                </button>
-                            </div>
+                            ))}
                         </div>
+                    </Card>
 
-                        {/* Description */}
-                        <div className="space-y-3 mb-20 md:mb-0">
-                            <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest border-b border-gray-50 dark:border-slate-800 pb-2">{t.desc}</h4>
-                            <p className="text-gray-600 dark:text-gray-400 text-base sm:text-lg leading-relaxed font-medium">
-                                {product.description || t.noDesc}
-                            </p>
+                    <div className="hidden md:flex items-center justify-between gap-6 mt-6">
+                        <div>
+                            <p className="text-xs text-muted dark:text-stone-400">{t.total}</p>
+                            <Price amount={product.price * quantity} className="text-2xl" />
                         </div>
+                        <Button size="lg" icon="shopping_basket" onClick={handleAddToCart} className="px-8">{t.addToCart}</Button>
+                    </div>
 
-                        {/* Desktop Add to Cart - Visible only on MD+ */}
-                        <div className="hidden md:flex items-center gap-6 mt-8 bg-gray-50 dark:bg-slate-900 shadow-premium p-5 rounded-[2rem] border border-gray-100 dark:border-slate-800">
-                            <div className="flex-grow text-left">
-                                <p className="text-[9px] font-black uppercase text-gray-400 tracking-widest mb-1">{t.total}</p>
-                                <div className="flex items-baseline gap-1">
-                                    <span className="text-[10px] font-black text-dark dark:text-white">{t.rs}</span>
-                                    <span className="text-3xl font-black text-dark dark:text-white tracking-tighter">{(product.price * quantity).toLocaleString()}</span>
-                                </div>
-                            </div>
-                            <button 
-                                onClick={handleAddToCart}
-                                className="px-12 py-5 bg-gradient-to-r from-primary to-primary-dark text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-premium hover:shadow-lg transition-all active:scale-[0.97] flex items-center gap-3"
-                            >
-                                <span className="material-symbols-rounded text-xl">shopping_basket</span>
-                                {t.addToCart}
-                            </button>
-                        </div>
+                    <div className="mt-8">
+                        <h2 className="text-sm font-semibold text-ink dark:text-white mb-2">{t.desc}</h2>
+                        <p className="text-muted dark:text-stone-300 leading-relaxed">{product.description || t.noDesc}</p>
                     </div>
                 </div>
             </div>
 
-            {/* Fixed Action Footer - Floating for Mobile Only */}
-            <div className="md:hidden fixed bottom-0 left-0 right-0 px-4 pb-6 pt-2 z-50 pointer-events-none">
-                <div className="max-w-3xl mx-auto flex items-center gap-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl p-3 rounded-[2.5rem] shadow-premium border border-white/20 dark:border-slate-800/50 pointer-events-auto">
-                    <div className="pl-4 text-left flex-1">
-                        <p className="text-[9px] font-black uppercase text-gray-400 tracking-widest mb-0.5">{t.total}</p>
-                        <div className="flex items-baseline gap-1">
-                            <span className="text-[10px] font-black text-dark dark:text-white">{t.rs}</span>
-                            <span className="text-2xl font-black text-dark dark:text-white tracking-tighter">{(product.price * quantity).toLocaleString()}</span>
-                        </div>
-                    </div>
-                    <button 
-                        onClick={handleAddToCart}
-                        className="flex-[1.5] bg-gradient-to-r from-primary to-primary-dark text-white py-4 px-6 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-premium hover:shadow-lg transition-all active:scale-[0.97] flex items-center justify-center gap-2"
-                    >
-                        <span className="material-symbols-rounded text-lg">shopping_basket</span>
-                        {t.addToCart}
-                    </button>
+            {/* Mobile sticky add bar */}
+            <div className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-line px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-center gap-4 no-print">
+                <div className="shrink-0">
+                    <p className="text-xs text-muted dark:text-stone-400">{t.total}</p>
+                    <Price amount={product.price * quantity} className="text-lg" />
                 </div>
+                <Button size="lg" fullWidth icon="shopping_basket" onClick={handleAddToCart}>{t.addToCart}</Button>
             </div>
 
-            {/* Notification Toast */}
             {addedToast && (
-                <div className="fixed top-[72px] left-1/2 -translate-x-1/2 bg-dark dark:bg-white text-white dark:text-dark px-6 py-3 rounded-2xl font-black uppercase text-[9px] tracking-widest shadow-premium z-[100] animate-in slide-in-from-top-4 flex items-center gap-2">
-                    <span className="material-symbols-rounded text-primary text-lg">check_circle</span>
+                <div role="status" className="fixed top-20 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2 rounded-full bg-ink dark:bg-white text-white dark:text-stone-950 px-5 py-2.5 text-sm font-semibold shadow-premium animate-in fade-in slide-in-from-top-2">
+                    <span className="material-symbols-rounded text-primary text-[20px]">check_circle</span>
                     {t.added}
                 </div>
             )}
