@@ -1,5 +1,7 @@
 # Vegelo
 
+Live: https://vegelo.vercel.app · Repo: https://github.com/Alexgra63/Vegelo
+
 Taza sabzi from the Islamabad mandi. A React 19, Vite 6 and Tailwind CSS v4 storefront backed by a Google Apps Script / Sheets API.
 
 ## Run locally
