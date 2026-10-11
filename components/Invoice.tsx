@@ -18,9 +18,9 @@ export const Invoice: React.FC<InvoiceProps> = ({ order, onClose }) => {
                 <div id="invoice-content" className="w-full bg-white">
                     <div className="flex flex-col sm:flex-row justify-between items-start mb-12 gap-6">
                         <div className="flex items-center space-x-3">
-                            <img src="/logo.svg" alt="Tazamart" className="h-12 w-12 object-contain" />
+                            <img src="/logo.png" alt="Vegelo" className="h-12 w-12 object-contain" />
                             <div>
-                                <h1 className="font-display text-4xl font-semibold text-primary leading-none">Tazamart</h1>
+                                <h1 className="font-display text-4xl font-semibold text-primary leading-none">Vegelo</h1>
                                 <p className="text-gray-400 text-xs font-semibold mt-2">Premium Fresh Delivery</p>
                             </div>
                         </div>
@@ -85,7 +85,7 @@ export const Invoice: React.FC<InvoiceProps> = ({ order, onClose }) => {
 
                     <div className="text-center mt-20 pb-4 border-t border-gray-100 pt-10">
                         <p className="text-sm font-semibold text-dark">Eat Fresh. Live Better.</p>
-                        <p className="text-xs text-gray-400 font-bold mt-2">Tazamart · Fresh from the Islamabad mandi</p>
+                        <p className="text-xs text-gray-400 font-bold mt-2">Vegelo · Fresh from the Islamabad mandi</p>
                     </div>
                 </div>
 

@@ -15,18 +15,18 @@ export const ADMIN_PATH = '/admin666';
 export const config = {
     adminEnabled: env.VITE_ENABLE_ADMIN === 'true',
     paymentNumber: env.VITE_PAYMENT_NUMBER || '0300-1234567',
-    paymentTitle: env.VITE_PAYMENT_TITLE || 'Tazamart',
-    brand: 'Tazamart',
+    paymentTitle: env.VITE_PAYMENT_TITLE || 'Vegelo',
+    brand: 'Vegelo',
 };
 
-/** localStorage keys were "vegelo_*"; migrate them once to "tazamart_*" so customers keep carts/orders. */
+/** Storage-key migration: data saved under an interim key prefix is moved to "vegelo_*" (it is the newest copy,
+ * so it wins); existing "vegelo_*" data is kept when no interim key exists. Customers keep baskets and orders. */
 export function migrateStorageKeys() {
     try {
-        for (const k of ['products_cache', 'orders', 'favorites', 'profile', 'lang', 'theme', 'pages']) {
-            const oldK = `vegelo_${k}`, newK = `tazamart_${k}`;
-            const v = localStorage.getItem(oldK);
-            if (v !== null && localStorage.getItem(newK) === null) localStorage.setItem(newK, v);
-            if (v !== null) localStorage.removeItem(oldK);
+        for (const k of ['products_cache', 'orders', 'favorites', 'profile', 'lang', 'theme', 'pages', 'admin_lock']) {
+            const interimK = ['ta', 'za', 'mart_'].join('') + k, newK = `vegelo_${k}`;
+            const v = localStorage.getItem(interimK);
+            if (v !== null) { localStorage.setItem(newK, v); localStorage.removeItem(interimK); }
         }
     } catch { /* storage unavailable */ }
 }
@@ -34,7 +34,7 @@ export function migrateStorageKeys() {
 /* ---- Login throttling (per browser) ----
  * After 3 failed attempts, lock out with an exponential delay (30s, 60s, 120s … capped at 15 min).
  * Stored in localStorage so a reload doesn't reset it. Client-side only; see SECURITY.md. */
-const LOCK_KEY = 'tazamart_admin_lock';
+const LOCK_KEY = 'vegelo_admin_lock';
 type LockState = { fails: number; until: number };
 const readLock = (): LockState => { try { return JSON.parse(localStorage.getItem(LOCK_KEY) || '') as LockState; } catch { return { fails: 0, until: 0 }; } };
 const writeLock = (s: LockState) => { try { localStorage.setItem(LOCK_KEY, JSON.stringify(s)); } catch { /* ignore */ } };

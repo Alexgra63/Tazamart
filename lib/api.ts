@@ -14,7 +14,7 @@ export const GAS_API_URL = (import.meta.env.VITE_GAS_API_URL as string | undefin
 
 export const SECURE_BACKEND = import.meta.env.VITE_BACKEND_AUTH === 'true';
 
-const TOKEN_KEY = 'tazamart_admin_session';
+const TOKEN_KEY = 'vegelo_admin_session';
 
 type Session = { token: string; expiresAt: number };
 

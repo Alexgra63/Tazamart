@@ -1,4 +1,4 @@
-# Tazamart
+# Vegelo
 
 Taza sabzi from the Islamabad mandi. A React 19, Vite 6 and Tailwind CSS v4 storefront backed by a Google Apps Script / Sheets API.
 

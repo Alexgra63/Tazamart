@@ -23,10 +23,10 @@ export const Header: React.FC<HeaderProps> = ({ cartItemCount, currentView, setV
     return (
         <header className="sticky top-0 z-50 bg-light/85 dark:bg-dark/85 backdrop-blur-lg border-b border-line no-print">
             <div className="max-w-7xl mx-auto h-16 px-4 md:px-8 flex items-center justify-between gap-4" dir="ltr">
-                <button onClick={() => setView(View.Home)} className="flex items-center gap-2.5 select-none" aria-label="Tazamart home">
-                    <img src="/logo.svg" alt="" className="h-9 w-9 object-contain" />
+                <button onClick={() => setView(View.Home)} className="flex items-center gap-2.5 select-none" aria-label="Vegelo home">
+                    <img src="/logo.png" alt="" className="h-9 w-9 object-contain" />
                     <span className="leading-tight text-left">
-                        <span className="block font-display text-xl md:text-2xl font-semibold text-ink dark:text-white">Tazamart</span>
+                        <span className="block font-display text-xl md:text-2xl font-semibold text-ink dark:text-white">Vegelo</span>
                         <span className="hidden sm:flex items-center gap-1 text-[11px] font-medium text-muted dark:text-stone-400">
                             <span className="material-symbols-rounded text-[14px] text-primary">location_on</span>
                             Islamabad · same-day delivery

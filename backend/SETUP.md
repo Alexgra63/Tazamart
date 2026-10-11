@@ -1,4 +1,4 @@
-# Tazamart backend: secure Apps Script setup
+# Vegelo backend: secure Apps Script setup
 
 `backend/Code.gs` replaces the current Google Apps Script web app. It does the following:
 
@@ -56,12 +56,12 @@ The web app runs **as you**, so it can read and write the sheet even when nobody
 1. Open the Sheet → **Share** (top right).
 2. Under **General access**, change "Anyone with the link" to **Restricted**.
 3. Under **People with access**, remove everyone except the owner, unless someone really needs it.
-4. Do the same for the Drive folders "Tazamart payment proofs" (must be **Restricted**) and the old image folder if there is one.
+4. Do the same for the Drive folders "Vegelo payment proofs" (must be **Restricted**) and the old image folder if there is one.
    - Product images are shared individually by link, so the catalogue still displays.
 5. Optional: **File → Settings**. Also check that nothing under **File → Share → Publish to web** is published. If it is, **Stop publishing**.
 
 ## 7. Switch the frontend to the secure backend
-In **Vercel → tazamart → Settings → Environment Variables** (Production and Preview):
+In **Vercel → vegelo → Settings → Environment Variables** (Production and Preview):
 
 | Var | Value |
 |---|---|
