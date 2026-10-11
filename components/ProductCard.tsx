@@ -22,7 +22,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart, 
                     alt={product.name}
                     loading="lazy"
                     referrerPolicy="no-referrer"
-                    onError={(e) => { e.currentTarget.src = 'https://placehold.co/400x300?text=Tazamart'; }}
+                    onError={(e) => { e.currentTarget.src = 'https://placehold.co/400x300?text=Vegelo'; }}
                 />
                 <span className="absolute bottom-2 left-2 rounded-md bg-white/90 dark:bg-slate-900/90 px-2 py-0.5 text-[11px] font-semibold text-ink dark:text-stone-100">
                     {product.unit}

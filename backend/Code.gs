@@ -1,5 +1,5 @@
 /**
- * Tazamart backend (Google Apps Script web app), hardened version.
+ * Vegelo backend (Google Apps Script web app), hardened version.
  *
  * Deploy as: Web app · Execute as "Me" · Who has access "Anyone".
  * See backend/SETUP.md for the full setup guide.
@@ -197,7 +197,7 @@ function upsertProduct_(p, isEdit) {
     var existing = rows_(sh).filter(function (r) { return String(r.id) === String(p.id); })[0];
     var image = existing ? existing.image : '';
     var data = p.imageBase64 || (String(p.image || '').indexOf('data:') === 0 ? p.image : null);
-    if (data) image = saveImage_(data, 'IMAGE_FOLDER_ID', 'Tazamart product images', true, 'product-' + p.id);
+    if (data) image = saveImage_(data, 'IMAGE_FOLDER_ID', 'Vegelo product images', true, 'product-' + p.id);
     else if (p.image && String(p.image).indexOf('http') === 0) image = p.image;
     var row = {
       id: String(p.id || Date.now()), name: clip_(p.name, 120), price: Number(p.price) || 0, image: image,
@@ -241,7 +241,7 @@ function addOrder_(o) {
   var proofId = '';
   var proof = o.paymentProofBase64 || o.paymentProof;
   if (proof && String(proof).indexOf('data:') === 0) {
-    proofId = saveImage_(proof, 'PROOF_FOLDER_ID', 'Tazamart payment proofs', false, orderId, true);
+    proofId = saveImage_(proof, 'PROOF_FOLDER_ID', 'Vegelo payment proofs', false, orderId, true);
   }
   var sh = sheet_('Orders', ORDER_HEADERS);
   writeRow_(sh, ORDER_HEADERS, {

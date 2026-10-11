@@ -5,7 +5,7 @@
 /* Class-based dark mode (toggled on <html>) */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* ---- Tazamart design tokens ("Fresh Mandi") ---- */
+/* ---- Vegelo design tokens ("Fresh Mandi") ---- */
 @theme {
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Fraunces", Georgia, serif;

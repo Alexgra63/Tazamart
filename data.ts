@@ -98,14 +98,14 @@ export const initialPages: AppPage[] = [
         id: 'p1',
         slug: 'about-us',
         title: 'About Us',
-        content: '# About Tazamart\n\nWelcome to **Tazamart**, your premium destination for the freshest delivery of fruits and vegetables. \n\n## Our Mission\nOur mission is simple: to connect local farmers with families who value quality and freshness. We believe that everyone deserves access to healthy, nutritious food without the hassle of market trips.\n\n### Why Choose Us?\n* **Direct from Farms:** We source directly to ensure peak freshness.\n* **Quality Guaranteed:** Every item is hand-picked and inspected.\n* **Fast Delivery:** From our hub to your door in record time.\n\nFounded in 2024, Tazamart has grown into a trusted name for thousands of households. Join our community today!',
+        content: '# About Vegelo\n\nWelcome to **Vegelo**, your premium destination for the freshest delivery of fruits and vegetables. \n\n## Our Mission\nOur mission is simple: to connect local farmers with families who value quality and freshness. We believe that everyone deserves access to healthy, nutritious food without the hassle of market trips.\n\n### Why Choose Us?\n* **Direct from Farms:** We source directly to ensure peak freshness.\n* **Quality Guaranteed:** Every item is hand-picked and inspected.\n* **Fast Delivery:** From our hub to your door in record time.\n\nFounded in 2024, Vegelo has grown into a trusted name for thousands of households. Join our community today!',
         lastUpdated: new Date()
     },
     {
         id: 'p2',
         slug: 'terms-and-conditions',
         title: 'Terms and Conditions',
-        content: '# Terms and Conditions\n\nBy using Tazamart, you agree to the following terms:\n\n## 1. Ordering\nAll orders are subject to availability. We reserve the right to cancel orders in case of stock shortages.\n\n## 2. Payment\nPayments must be made via **Easypaisa** or **JazzCash** as specified during checkout. Proof of payment (screenshot) is mandatory.\n\n## 3. Privacy\nYour data is used strictly for delivery and order fulfillment. We never share your personal information with third parties.\n\n## 4. Updates\nWe may update these terms from time to time. Your continued use of the app constitutes acceptance of new terms.',
+        content: '# Terms and Conditions\n\nBy using Vegelo, you agree to the following terms:\n\n## 1. Ordering\nAll orders are subject to availability. We reserve the right to cancel orders in case of stock shortages.\n\n## 2. Payment\nPayments must be made via **Easypaisa** or **JazzCash** as specified during checkout. Proof of payment (screenshot) is mandatory.\n\n## 3. Privacy\nYour data is used strictly for delivery and order fulfillment. We never share your personal information with third parties.\n\n## 4. Updates\nWe may update these terms from time to time. Your continued use of the app constitutes acceptance of new terms.',
         lastUpdated: new Date()
     },
     {
@@ -119,7 +119,7 @@ export const initialPages: AppPage[] = [
         id: 'p4',
         slug: 'contact-us',
         title: 'Contact Us',
-        content: '# Contact Tazamart\n\nWe are here to help you. Reach out to us via any of the following channels:\n\n## Customer Support\n* **Phone:** 0300-1234567\n* **WhatsApp:** 0300-1234567\n\n## Office Hours\n* **Monday - Saturday:** 9:00 AM - 10:00 PM\n* **Sunday:** 10:00 AM - 6:00 PM\n\n## Location\nMain Branch: Tazamart Hub, Fresh Street, Sector 7, Islamabad.',
+        content: '# Contact Vegelo\n\nWe are here to help you. Reach out to us via any of the following channels:\n\n## Customer Support\n* **Phone:** 0300-1234567\n* **WhatsApp:** 0300-1234567\n\n## Office Hours\n* **Monday - Saturday:** 9:00 AM - 10:00 PM\n* **Sunday:** 10:00 AM - 6:00 PM\n\n## Location\nMain Branch: Vegelo Hub, Fresh Street, Sector 7, Islamabad.',
         lastUpdated: new Date()
     }
 ];

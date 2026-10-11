@@ -175,7 +175,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 <div className="flex items-center justify-between gap-2 px-4 md:px-0 pt-3">
                     <div className="min-w-0">
                         <h1 className="font-display text-2xl md:text-3xl font-semibold text-ink dark:text-white">Admin</h1>
-                        <p className="text-xs text-muted dark:text-stone-400">Tazamart portal</p>
+                        <p className="text-xs text-muted dark:text-stone-400">Vegelo portal</p>
                     </div>
                     <div className="flex items-center gap-1">
                         {onRefresh && <IconButton icon="refresh" label="Refresh" onClick={() => { onRefresh(); flash('Refreshing…'); }} />}

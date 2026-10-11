@@ -19,7 +19,7 @@ const translations = {
     quantity: "Quantity",
     addToCart: "Add to Basket",
     desc: "Product Description",
-    noDesc: "Fresh premium quality item selected specially for Tazamart customers.",
+    noDesc: "Fresh premium quality item selected specially for Vegelo customers.",
     added: "Added to Basket",
     total: "Subtotal",
     adjustWeight: "Adjust weight",
@@ -60,7 +60,7 @@ export const ProductDetailView: React.FC<ProductDetailViewProps> = ({
             <div className="md:grid md:grid-cols-2 md:gap-12 px-4 md:px-0">
                 <div className="relative aspect-[4/3] md:aspect-square overflow-hidden rounded-2xl md:rounded-3xl bg-gray-50 dark:bg-slate-800 border border-line">
                     <img src={product.image} alt={product.name} referrerPolicy="no-referrer" className="w-full h-full object-cover"
-                        onError={(e) => { e.currentTarget.src = 'https://placehold.co/600x600?text=Tazamart'; }} />
+                        onError={(e) => { e.currentTarget.src = 'https://placehold.co/600x600?text=Vegelo'; }} />
                 </div>
 
                 <div className="pt-6 md:pt-2">

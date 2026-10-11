@@ -157,13 +157,13 @@ const appReducer = (state: AppState, action: Action): AppState => {
             return state;
     }
 
-    localStorage.setItem('tazamart_products_cache', JSON.stringify(newState.products));
-    localStorage.setItem('tazamart_orders', JSON.stringify(newState.orders));
-    localStorage.setItem('tazamart_favorites', JSON.stringify(newState.favorites));
-    localStorage.setItem('tazamart_profile', JSON.stringify(newState.profile));
-    localStorage.setItem('tazamart_lang', newState.language);
-    localStorage.setItem('tazamart_theme', newState.theme);
-    localStorage.setItem('tazamart_pages', JSON.stringify(newState.pages));
+    localStorage.setItem('vegelo_products_cache', JSON.stringify(newState.products));
+    localStorage.setItem('vegelo_orders', JSON.stringify(newState.orders));
+    localStorage.setItem('vegelo_favorites', JSON.stringify(newState.favorites));
+    localStorage.setItem('vegelo_profile', JSON.stringify(newState.profile));
+    localStorage.setItem('vegelo_lang', newState.language);
+    localStorage.setItem('vegelo_theme', newState.theme);
+    localStorage.setItem('vegelo_pages', JSON.stringify(newState.pages));
     return newState;
 };
 
@@ -223,13 +223,13 @@ const App: React.FC = () => {
 
     useEffect(() => {
         migrateStorageKeys();
-        const storedOrders = localStorage.getItem('tazamart_orders');
-        const cachedProducts = localStorage.getItem('tazamart_products_cache');
-        const storedFavs = localStorage.getItem('tazamart_favorites');
-        const storedProfile = localStorage.getItem('tazamart_profile');
-        const storedLang = localStorage.getItem('tazamart_lang') as Language;
-        const storedTheme = localStorage.getItem('tazamart_theme') as Theme;
-        const storedPages = localStorage.getItem('tazamart_pages');
+        const storedOrders = localStorage.getItem('vegelo_orders');
+        const cachedProducts = localStorage.getItem('vegelo_products_cache');
+        const storedFavs = localStorage.getItem('vegelo_favorites');
+        const storedProfile = localStorage.getItem('vegelo_profile');
+        const storedLang = localStorage.getItem('vegelo_lang') as Language;
+        const storedTheme = localStorage.getItem('vegelo_theme') as Theme;
+        const storedPages = localStorage.getItem('vegelo_pages');
 
         // Admin portal is only reachable at its dedicated path (and only when enabled)
         const path = window.location.pathname.replace(/\/+$/, '');
@@ -331,6 +331,14 @@ const App: React.FC = () => {
     const onAdminLogin = () => { setIsAuthenticated(true); setView(View.Admin); loadAdminOrders(); };
     const onAdminLogout = () => { api.logout(); setIsAuthenticated(false); dispatch({ type: 'SET_REMOTE_ORDERS', payload: [] }); setView(View.AdminLogin); };
 
+    const clearLocalData = () => {
+        try {
+            Object.keys(localStorage).filter(k => k.startsWith('vegelo_') && k !== 'vegelo_products_cache' && k !== 'vegelo_theme').forEach(k => localStorage.removeItem(k));
+        } catch { /* ignore */ }
+        dispatch({ type: 'SET_INITIAL_STATE', payload: { orders: [], favorites: [], cart: [], profile: { name: '', address: '', phone: '' } } });
+        setView(View.Home);
+    };
+
     const handleProductClick = (product: Product) => {
         setSelectedProduct(product);
         setView(View.ProductDetail);
@@ -384,11 +392,17 @@ const App: React.FC = () => {
                     setView={setView}
                 />;
             case View.Profile:
-                return <ProfileView 
-                    profile={state.profile} 
-                    updateProfile={updateProfile} 
+                return <ProfileView
+                    profile={state.profile}
+                    updateProfile={updateProfile}
                     lang={state.language}
                     setView={setView}
+                    theme={state.theme}
+                    setTheme={setTheme}
+                    setLanguage={setLanguage}
+                    ordersCount={state.orders.length}
+                    favoritesCount={state.favorites.length}
+                    onClearData={clearLocalData}
                 />;
             case View.AdminLogin:
                 if (!config.adminEnabled) return <HomeView lang={state.language} products={state.products} onAddToCart={onAddToCart} onProductClick={handleProductClick} />;
