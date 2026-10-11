@@ -2,6 +2,7 @@
 import React, { useState, useReducer, useEffect, useCallback } from 'react';
 import { Header } from './components/Header.tsx';
 import { Footer } from './components/Footer.tsx';
+import { Skeleton } from './components/ui';
 import { BottomNav } from './components/BottomNav.tsx';
 import { HomeView } from './components/HomeView.tsx';
 import { CartView } from './components/CartView.tsx';
@@ -16,8 +17,9 @@ import { FavoritesView } from './components/FavoritesView.tsx';
 import { Product, CartItem, Order, OrderStatus, View, Language, Theme, UserProfile, AppPage } from './types.ts';
 import { initialProducts, initialPages } from './data.ts';
 import { PageView } from './components/PageView.tsx';
+import { config, migrateStorageKeys, ADMIN_PATH } from './lib/config';
+import { api, session, SECURE_BACKEND, AuthError } from './lib/api';
 
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbytQbtCT4JNwAFrI_-7aDWoe2Ri1aSHJonO5BOLXRAb0P32DqBeWl9FWpgIuCpe7x0f/exec'; 
 
 type AppState = {
     products: Product[];
@@ -47,7 +49,10 @@ type Action =
     | { type: 'CLEAR_CART' }
     | { type: 'UPDATE_ORDER_STATUS'; payload: { orderId: string; status: OrderStatus } }
     | { type: 'UPDATE_PAGE'; payload: AppPage }
-    | { type: 'SET_LOADING'; payload: boolean };
+    | { type: 'SET_LOADING'; payload: boolean }
+    | { type: 'SET_REMOTE_ORDERS'; payload: Order[] }
+    | { type: 'RENAME_ORDER'; payload: { from: string; to: string } }
+    | { type: 'SET_LOCAL_ORDER_STATUS'; payload: { orderId: string; status: OrderStatus } };
 
 const appReducer = (state: AppState, action: Action): AppState => {
     let newState: AppState = { ...state };
@@ -57,6 +62,14 @@ const appReducer = (state: AppState, action: Action): AppState => {
         case 'SET_REMOTE_DATA':
             // Update products and admin-only remote orders
             newState = { ...state, products: action.payload.products, remoteOrders: action.payload.orders, isLoading: false };
+            break;
+        case 'SET_REMOTE_ORDERS':
+            return { ...state, remoteOrders: action.payload };
+        case 'RENAME_ORDER':
+            newState = { ...state, orders: state.orders.map(o => o.id === action.payload.from ? { ...o, id: action.payload.to } : o) };
+            break;
+        case 'SET_LOCAL_ORDER_STATUS':
+            newState = { ...state, orders: state.orders.map(o => o.id === action.payload.orderId ? { ...o, status: action.payload.status } : o) };
             break;
         case 'SET_INITIAL_STATE':
             newState = { ...state, ...action.payload };
@@ -144,13 +157,13 @@ const appReducer = (state: AppState, action: Action): AppState => {
             return state;
     }
 
-    localStorage.setItem('vegelo_products_cache', JSON.stringify(newState.products));
-    localStorage.setItem('vegelo_orders', JSON.stringify(newState.orders));
-    localStorage.setItem('vegelo_favorites', JSON.stringify(newState.favorites));
-    localStorage.setItem('vegelo_profile', JSON.stringify(newState.profile));
-    localStorage.setItem('vegelo_lang', newState.language);
-    localStorage.setItem('vegelo_theme', newState.theme);
-    localStorage.setItem('vegelo_pages', JSON.stringify(newState.pages));
+    localStorage.setItem('tazamart_products_cache', JSON.stringify(newState.products));
+    localStorage.setItem('tazamart_orders', JSON.stringify(newState.orders));
+    localStorage.setItem('tazamart_favorites', JSON.stringify(newState.favorites));
+    localStorage.setItem('tazamart_profile', JSON.stringify(newState.profile));
+    localStorage.setItem('tazamart_lang', newState.language);
+    localStorage.setItem('tazamart_theme', newState.theme);
+    localStorage.setItem('tazamart_pages', JSON.stringify(newState.pages));
     return newState;
 };
 
@@ -169,7 +182,7 @@ const App: React.FC = () => {
     });
 
     const [view, setView] = useState<View>(View.Home);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(() => SECURE_BACKEND && !!session.get());
     const [isAdminUnlocked, setIsAdminUnlocked] = useState(false);
     const [lastOrder, setLastOrder] = useState<Order | null>(null);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -180,47 +193,47 @@ const App: React.FC = () => {
         document.documentElement.dir = 'ltr';
     }, []);
 
+    useEffect(() => { window.scrollTo({ top: 0 }); }, [view]);
+
+    const loadAdminOrders = useCallback(async () => {
+        if (!SECURE_BACKEND || !session.get()) return;
+        try {
+            dispatch({ type: 'SET_REMOTE_ORDERS', payload: await api.listOrders() });
+        } catch (err) {
+            if (err instanceof AuthError) { setIsAuthenticated(false); setView(View.AdminLogin); }
+            else console.warn('Loading orders failed.', err);
+        }
+    }, []);
+
     const fetchRemoteData = useCallback(async () => {
         try {
-            const response = await fetch(GAS_API_URL, { 
-                method: 'GET',
-                cache: 'no-cache' 
-            });
-            
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            
-            const data = await response.json();
-            if (data.products) {
-                const products = data.products.map((p: any) => ({
-                    ...p,
-                    price: parseFloat(p.price),
-                    id: isNaN(Number(p.id)) ? p.id : Number(p.id)
-                }));
-                const orders = (data.orders || []).map((o: any) => ({
-                    ...o,
-                    orderDate: new Date(o.orderDate)
-                }));
+            const { products, orders } = await api.fetchCatalogue();
+            if (products) {
                 // Only update products and remoteOrders (admin) - leave user local orders alone
                 dispatch({ type: 'SET_REMOTE_DATA', payload: { products, orders } });
+            } else {
+                dispatch({ type: 'SET_LOADING', payload: false });
             }
+            loadAdminOrders();
         } catch (err) {
             console.warn("Sync failed.", err);
             dispatch({ type: 'SET_LOADING', payload: false });
         }
-    }, []);
+    }, [loadAdminOrders]);
 
     useEffect(() => {
-        const storedOrders = localStorage.getItem('vegelo_orders');
-        const cachedProducts = localStorage.getItem('vegelo_products_cache');
-        const storedFavs = localStorage.getItem('vegelo_favorites');
-        const storedProfile = localStorage.getItem('vegelo_profile');
-        const storedLang = localStorage.getItem('vegelo_lang') as Language;
-        const storedTheme = localStorage.getItem('vegelo_theme') as Theme;
-        const storedPages = localStorage.getItem('vegelo_pages');
+        migrateStorageKeys();
+        const storedOrders = localStorage.getItem('tazamart_orders');
+        const cachedProducts = localStorage.getItem('tazamart_products_cache');
+        const storedFavs = localStorage.getItem('tazamart_favorites');
+        const storedProfile = localStorage.getItem('tazamart_profile');
+        const storedLang = localStorage.getItem('tazamart_lang') as Language;
+        const storedTheme = localStorage.getItem('tazamart_theme') as Theme;
+        const storedPages = localStorage.getItem('tazamart_pages');
 
-        // Check for admin query param
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('admin')) {
+        // Admin portal is only reachable at its dedicated path (and only when enabled)
+        const path = window.location.pathname.replace(/\/+$/, '');
+        if (config.adminEnabled && path === ADMIN_PATH) {
             setIsAdminUnlocked(true);
             setView(View.AdminLogin);
         }
@@ -249,18 +262,15 @@ const App: React.FC = () => {
         }
     }, [state.theme]);
 
-    const syncToRemote = async (action: string, data: any) => {
+    const syncToRemote = async (action: 'add' | 'edit' | 'delete' | 'updateOrderStatus', data: Record<string, unknown>) => {
         try {
-            await fetch(GAS_API_URL, {
-                method: 'POST',
-                mode: 'no-cors', 
-                headers: { 'Content-Type': 'text/plain' },
-                body: JSON.stringify({ action, ...data })
-            });
-            setTimeout(() => { fetchRemoteData(); }, 1000);
+            await api.adminWrite(action, data);
         } catch (err) {
+            if (err instanceof AuthError) { setIsAuthenticated(false); setView(View.AdminLogin); alert('Your admin session expired. Please sign in again.'); return; }
             console.error("Remote sync failed:", err);
+            alert('Saving to the server failed. Please try again.');
         }
+        setTimeout(() => { fetchRemoteData(); }, 1000);
     };
 
     const onAddToCart = (product: Product, quantity: number) => dispatch({ type: 'ADD_TO_CART', payload: { product, quantity } });
@@ -276,7 +286,14 @@ const App: React.FC = () => {
         dispatch({ type: 'PLACE_ORDER', payload: order });
         setLastOrder(order);
         dispatch({ type: 'CLEAR_CART' });
-        syncToRemote('addOrder', { order: orderForBackend });
+        api.addOrder(orderForBackend as unknown as Record<string, unknown>)
+            .then(serverId => {
+                if (serverId && serverId !== order.id) {
+                    dispatch({ type: 'RENAME_ORDER', payload: { from: order.id, to: serverId } });
+                    setLastOrder(o => (o && o.id === order.id ? { ...o, id: serverId } : o));
+                }
+            })
+            .catch(err => { console.error('Order submit failed', err); alert('We could not reach the server. Please check your connection and contact us with your order details.'); });
     };
 
     const onUpdateOrderStatus = (orderId: string, status: OrderStatus) => {
@@ -303,6 +320,17 @@ const App: React.FC = () => {
         // Optional: Sync to remote if pages are stored there too
     };
     
+    const refreshOrderStatuses = async () => {
+        if (!SECURE_BACKEND) return;
+        await Promise.all(state.orders.map(async o => {
+            const remote = await api.lookupOrder(o.id, o.customer.phone);
+            if (remote && remote.status !== o.status) dispatch({ type: 'SET_LOCAL_ORDER_STATUS', payload: { orderId: o.id, status: remote.status } });
+        }));
+    };
+
+    const onAdminLogin = () => { setIsAuthenticated(true); setView(View.Admin); loadAdminOrders(); };
+    const onAdminLogout = () => { api.logout(); setIsAuthenticated(false); dispatch({ type: 'SET_REMOTE_ORDERS', payload: [] }); setView(View.AdminLogin); };
+
     const handleProductClick = (product: Product) => {
         setSelectedProduct(product);
         setView(View.ProductDetail);
@@ -311,9 +339,11 @@ const App: React.FC = () => {
     const renderView = () => {
         if (state.isLoading && view === View.Home && state.products.length === 0) {
             return (
-                <div className="flex flex-col items-center justify-center h-[60vh] dark:text-gray-400">
-                    <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Syncing with Fresh Stock...</p>
+                <div className="px-4 md:px-0 pt-8" aria-busy="true" aria-label="Loading fresh stock">
+                    <Skeleton className="h-56 md:h-72 rounded-3xl" />
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5 mt-8">
+                        {Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="aspect-[4/5]" />)}
+                    </div>
                 </div>
             );
         }
@@ -344,7 +374,7 @@ const App: React.FC = () => {
                 return <OrderConfirmationView lang={state.language} lastOrder={lastOrder} setView={setView} />;
             case View.OrderHistory:
                 // consumption of strictly local orders
-                return <OrderHistoryView lang={state.language} orders={state.orders} />;
+                return <OrderHistoryView lang={state.language} orders={state.orders} onRefresh={SECURE_BACKEND ? refreshOrderStatuses : undefined} lookupOrder={SECURE_BACKEND ? api.lookupOrder : undefined} />;
             case View.Favorites:
                 return <FavoritesView 
                     lang={state.language} 
@@ -361,13 +391,14 @@ const App: React.FC = () => {
                     setView={setView}
                 />;
             case View.AdminLogin:
-                return <AdminLoginView onLogin={() => { setIsAuthenticated(true); setView(View.Admin); }} />;
+                if (!config.adminEnabled) return <HomeView lang={state.language} products={state.products} onAddToCart={onAddToCart} onProductClick={handleProductClick} />;
+                return <AdminLoginView onLogin={onAdminLogin} />;
             case View.Admin:
-                return isAuthenticated ? (
+                return config.adminEnabled && isAuthenticated ? (
                     // consumption of strictly remote orders for admin
-                    <AdminView orders={state.remoteOrders} products={state.products} pages={state.pages} updateOrderStatus={onUpdateOrderStatus} addProduct={onAddProduct} updateProduct={onUpdateProduct} deleteProductExplicit={onDeleteProduct} updatePage={onUpdatePage} />
+                    <AdminView orders={state.remoteOrders} products={state.products} pages={state.pages} updateOrderStatus={onUpdateOrderStatus} addProduct={onAddProduct} updateProduct={onUpdateProduct} deleteProductExplicit={onDeleteProduct} updatePage={onUpdatePage} onLogout={onAdminLogout} onRefresh={fetchRemoteData} loadProof={SECURE_BACKEND ? api.getPaymentProof : undefined} />
                 ) : (
-                    <AdminLoginView onLogin={() => { setIsAuthenticated(true); setView(View.Admin); }} />
+                    <AdminLoginView onLogin={onAdminLogin} />
                 );
             default:
                 return <HomeView lang={state.language} products={state.products} onAddToCart={onAddToCart} onProductClick={handleProductClick} />;
@@ -375,19 +406,20 @@ const App: React.FC = () => {
     };
 
     return (
-        <div className={`flex flex-col min-h-screen transition-colors duration-300 ${state.theme === Theme.Dark ? 'bg-dark' : 'bg-light'}`}>
+        <div className="flex flex-col min-h-screen bg-light dark:bg-dark text-ink dark:text-stone-100">
             <Header 
                 lang={state.language}
                 theme={state.theme}
                 setLanguage={setLanguage}
                 setTheme={setTheme}
                 cartItemCount={state.cart.reduce((c, i) => c + i.quantity, 0)} 
-                setView={setView} 
-                onUnlockAdmin={() => setIsAdminUnlocked(true)}
+                setView={setView}
+                currentView={view}
             />
-            <main className="flex-grow pb-32 md:pb-16 max-w-7xl mx-auto w-full px-0 md:px-8">
+            <main className="flex-grow pb-24 md:pb-0 max-w-7xl mx-auto w-full px-0 md:px-8">
                 {renderView()}
             </main>
+            {view !== View.Admin && <Footer setView={setView} />}
             {view !== View.ProductDetail && (
                 <BottomNav 
                     currentView={view} 

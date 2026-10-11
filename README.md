@@ -1,20 +1,23 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Tazamart
 
-# Run and deploy your AI Studio app
+Taza sabzi from the Islamabad mandi. A React 19, Vite 6 and Tailwind CSS v4 storefront backed by a Google Apps Script / Sheets API.
 
-This contains everything you need to run your app locally.
+## Run locally
+1. `npm install`
+2. Optionally create `.env.local` (see below)
+3. `npm run dev`, then open http://localhost:3000
+4. `npm run build` writes a production build to `dist/`
 
-View your app in AI Studio: https://ai.studio/apps/bbd87537-326a-46f1-99ab-7d239f1f8677
+## Environment variables
+| Var | Purpose |
+| --- | --- |
+| `GEMINI_API_KEY` | Gemini key (optional) |
+| `VITE_ENABLE_ADMIN` | `true` to enable the admin portal at `/admin666` |
+| `VITE_BACKEND_AUTH` | `true` to use the secure backend. The admin login works only in this mode. |
+| `VITE_GAS_API_URL` | Apps Script `/exec` URL |
+| `VITE_PAYMENT_NUMBER` / `VITE_PAYMENT_TITLE` | Easypaisa/JazzCash number and account title shown at checkout |
 
-## Run Locally
+See [SECURITY.md](SECURITY.md) for the admin and backend caveats.
 
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Design system
+Design tokens (colors, fonts, radii, shadows) live in `index.css` under `@theme`. Reusable primitives are in `components/ui/`.
