@@ -38,7 +38,7 @@ Go to **Project Settings** (gear icon) → **Script Properties** → **Add scrip
 
 | Property | Value |
 |---|---|
-| `ADMIN_PASSWORD_SHA256` | The SHA-256 hex of your admin password. **This is the same value already set in Vercel as `VITE_ADMIN_PASSWORD_SHA256`.** To make a new one on your own computer: `printf '%s' 'YOUR-PASSWORD' \| sha256sum`. Never type the plain password into the script. |
+| `ADMIN_PASSWORD_SHA256` | The SHA-256 hex of your admin password. To make one on your own computer: `printf '%s' 'YOUR-PASSWORD' \| sha256sum`. Never type the plain password into the script. |
 | `SESSION_SECRET` | A long random string. Easiest way: in the editor, choose the function **`generateSessionSecret`** and click **Run**. It sets the property for you. |
 | `SPREADSHEET_ID` | *(only if the script isn't bound to the sheet)* |
 | `IMAGE_FOLDER_ID` / `PROOF_FOLDER_ID` | *(optional)* Drive folder IDs. If you leave them out, folders are created automatically the first time they're needed. |
@@ -68,7 +68,6 @@ In **Vercel → tazamart → Settings → Environment Variables** (Production an
 | `VITE_BACKEND_AUTH` | `true` |
 | `VITE_GAS_API_URL` | *(only if the `/exec` URL changed)* |
 | `VITE_ENABLE_ADMIN` | `true` (already set) |
-| `VITE_ADMIN_PASSWORD_SHA256` | Can be **deleted** once `VITE_BACKEND_AUTH=true`. The login is then checked only on the server. |
 
 Then **redeploy** (Deployments → ⋯ → Redeploy).
 

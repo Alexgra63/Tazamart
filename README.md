@@ -13,7 +13,8 @@ Taza sabzi from the Islamabad mandi. A React 19, Vite 6 and Tailwind CSS v4 stor
 | --- | --- |
 | `GEMINI_API_KEY` | Gemini key (optional) |
 | `VITE_ENABLE_ADMIN` | `true` to enable the admin portal at `/admin666` |
-| `VITE_ADMIN_PASSWORD_SHA256` | SHA-256 hex of the admin password |
+| `VITE_BACKEND_AUTH` | `true` to use the secure backend. The admin login works only in this mode. |
+| `VITE_GAS_API_URL` | Apps Script `/exec` URL |
 | `VITE_PAYMENT_NUMBER` / `VITE_PAYMENT_TITLE` | Easypaisa/JazzCash number and account title shown at checkout |
 
 See [SECURITY.md](SECURITY.md) for the admin and backend caveats.

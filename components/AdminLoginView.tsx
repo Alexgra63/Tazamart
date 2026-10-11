@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { config, verifyAdminPassword, lockoutRemainingMs, recordFailedLogin, resetLoginFailures } from '../lib/config';
+import { config, lockoutRemainingMs, recordFailedLogin, resetLoginFailures } from '../lib/config';
 import { Button, Card } from './ui';
 import { api, SECURE_BACKEND } from '../lib/api';
 
@@ -12,7 +12,7 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onLogin }) => {
     const [error, setError] = useState('');
     const [busy, setBusy] = useState(false);
     const [lockMs, setLockMs] = useState(lockoutRemainingMs());
-    const configured = config.adminEnabled && (SECURE_BACKEND || !!config.adminPasswordSha256);
+    const configured = config.adminEnabled && SECURE_BACKEND;
 
     useEffect(() => {
         if (lockMs <= 0) return;
@@ -25,16 +25,10 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onLogin }) => {
         if (lockoutRemainingMs() > 0) return;
         setBusy(true);
         let ok = false;
-        if (SECURE_BACKEND) {
-            const r = await api.login(password);
-            ok = r.ok;
-            if (!r.ok && r.error === 'locked') { setBusy(false); setPassword(''); setError(`Too many failed attempts. Try again in ${Math.ceil((r.retryAfterSeconds || 900) / 60)} min.`); return; }
-            if (!r.ok && r.error !== 'invalid_credentials') { setBusy(false); setError('Could not reach the server. Try again.'); return; }
-        } else {
-            ok = await verifyAdminPassword(password);
-            // constant small delay to slow down guessing
-            await new Promise(r => setTimeout(r, 800));
-        }
+        const r = await api.login(password);
+        ok = r.ok;
+        if (!r.ok && r.error === 'locked') { setBusy(false); setPassword(''); setError(`Too many failed attempts. Try again in ${Math.ceil((r.retryAfterSeconds || 900) / 60)} min.`); return; }
+        if (!r.ok && r.error !== 'invalid_credentials') { setBusy(false); setError('Could not reach the server. Try again.'); return; }
         setBusy(false);
         if (ok) { resetLoginFailures(); onLogin(); return; }
         setPassword('');
@@ -53,7 +47,7 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({ onLogin }) => {
                 {!configured ? (
                     <p className="text-sm text-muted dark:text-stone-400 bg-gray-50 dark:bg-slate-800 rounded-[10px] p-4 text-left">
                         Admin is not configured for this deployment. Set <code>VITE_ENABLE_ADMIN</code> and{' '}
-                        <code>VITE_ADMIN_PASSWORD_SHA256</code> (or <code>VITE_BACKEND_AUTH</code>) in the environment and redeploy.
+                        <code>VITE_BACKEND_AUTH=true</code> in the environment and redeploy.
                     </p>
                 ) : (
                     <form onSubmit={handleSubmit} className="text-left space-y-4">

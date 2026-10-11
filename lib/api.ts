@@ -3,15 +3,14 @@
  *
  * Two modes:
  *  - legacy (default): the original unauthenticated script. GET returns products and orders, and
- *    POST writes are fire-and-forget (no-cors). Admin login is checked in the browser against
- *    VITE_ADMIN_PASSWORD_SHA256.
+ *    POST writes are fire-and-forget (no-cors). Admin login is unavailable in this mode.
  *  - secure (VITE_BACKEND_AUTH=true): the hardened script in backend/Code.gs. Admin logs in on the
  *    server, gets a short-lived signed session token, and every admin call sends it.
  */
 import { Order, Product } from '../types';
 
 export const GAS_API_URL = (import.meta.env.VITE_GAS_API_URL as string | undefined) ||
-    'https://script.google.com/macros/s/AKfycbytQbtCT4JNwAFrI_-7aDWoe2Ri1aSHJonO5BOLXRAb0P32DqBeWl9FWpgIuCpe7x0f/exec';
+    'https://script.google.com/macros/s/AKfycbzvvBAQPgKeaGB3WnZXxzvIGtxVu4nz9-wHIVCpMqQdzFDN2ISH-FVKUYaSb5oAYC0lFg/exec';
 
 export const SECURE_BACKEND = import.meta.env.VITE_BACKEND_AUTH === 'true';
 

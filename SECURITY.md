@@ -1,17 +1,15 @@
 # Security notes
 
 ## Admin portal
-- The hidden "tap the logo 5 times" unlock and the hardcoded admin passwords have been **removed** from the client.
-- Admin is now **off by default**. To enable it on a deployment, set these environment variables (Vercel → Settings → Environment Variables) and redeploy:
-  - `VITE_ENABLE_ADMIN=true`
-  - `VITE_ADMIN_PASSWORD_SHA256=<sha256 hex of your password>`. Generate it with `printf '%s' 'your-password' | sha256sum`.
-- Open `/admin666` to reach the login screen. `vercel.json` rewrites this path to the SPA. The path is defined in `lib/config.ts` (`ADMIN_PATH`).
-- After 3 failed logins the form locks with an exponential delay (30s, 60s, 120s, … max 15 min), plus a fixed ~0.8s delay on every attempt. This is per-browser only.
+- The admin login is at `/admin666`. It only appears when `VITE_ENABLE_ADMIN=true` **and** `VITE_BACKEND_AUTH=true`.
+- **The password is checked only on the server** by the Apps Script backend (`backend/Code.gs`), against `ADMIN_PASSWORD_SHA256` in Script Properties. No password or password hash ships in the frontend bundle.
+- A successful login returns an HMAC-signed session token that expires after 8 hours. It is kept in `sessionStorage` and sent with every admin request.
+- The server locks all logins for 15 minutes after 5 failed attempts within 15 minutes. The browser also adds its own per-browser lockout and delay on top of that.
+- To sign every admin out at once, rotate `SESSION_SECRET` in Script Properties.
 
-## Known limitations (follow-up required)
-1. **This is still a client-side gate.** The SHA-256 hash ships in the JS bundle. It hides the plaintext password but can be brute-forced offline, so use a long random password.
-2. **The Google Apps Script backend (`GAS_API_URL` in `App.tsx`) accepts `add`/`edit`/`delete`/`updateOrderStatus` POSTs without authentication**, and its GET returns all orders, including customer names, phones and addresses. Anyone who reads the bundle can call it directly. A real fix needs changes in the Apps Script project, which is not in this repo:
-   - require a secret token or a signed admin session on write actions and on the orders listing;
-   - return only the product catalogue to unauthenticated GET requests;
-   - better still, move admin to a server-side auth provider (e.g. Supabase Auth or a Vercel function holding the secret).
-3. The old passwords (`VegeloAdmin2025!` / `TazaAdmin2025!`) are in git history and the public deployed bundle. **Treat them as compromised** and don't reuse them.
+## Backend
+See `backend/SETUP.md`. The public GET returns only the catalogue. Orders, payment proofs and all writes need an admin token. Customers can look up their own order with the order ID plus their phone number.
+
+## History
+- The old hardcoded passwords (`VegeloAdmin2025!` / `TazaAdmin2025!`) are still in git history. Treat them as compromised.
+- The old Apps Script deployment (`AKfycbyt…`) accepted unauthenticated writes. Archive or disable it under Apps Script → Deploy → Manage deployments.

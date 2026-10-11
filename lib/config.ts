@@ -2,13 +2,11 @@
  * Build-time configuration (Vite env vars, set them in Vercel → Project → Settings → Environment Variables).
  *
  * VITE_ENABLE_ADMIN           "true" to expose the admin portal at ADMIN_PATH. Default: disabled.
- * VITE_ADMIN_PASSWORD_SHA256  hex SHA-256 of the admin password. Without it, admin login always fails.
- *                             Generate: `printf '%s' 'your-password' | sha256sum`
+ * VITE_BACKEND_AUTH           "true" to use the secure Apps Script backend. Admin login works ONLY in this mode.
  * VITE_PAYMENT_NUMBER         Easypaisa / JazzCash number shown at checkout.
  * VITE_PAYMENT_TITLE          Account title shown at checkout.
  *
- * NOTE: this is a client-side gate only. Anything shipped in the bundle can be read by a determined user,
- * and the Google Apps Script endpoint currently accepts writes without a token. See SECURITY.md.
+ * The admin password is verified only by the backend (backend/Code.gs). No password or hash ships in the bundle.
  */
 const env = import.meta.env;
 
@@ -16,21 +14,10 @@ export const ADMIN_PATH = '/admin666';
 
 export const config = {
     adminEnabled: env.VITE_ENABLE_ADMIN === 'true',
-    adminPasswordSha256: (env.VITE_ADMIN_PASSWORD_SHA256 || '').trim().toLowerCase(),
     paymentNumber: env.VITE_PAYMENT_NUMBER || '0300-1234567',
     paymentTitle: env.VITE_PAYMENT_TITLE || 'Tazamart',
     brand: 'Tazamart',
 };
-
-export async function sha256Hex(input: string): Promise<string> {
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-export async function verifyAdminPassword(password: string): Promise<boolean> {
-    if (!config.adminEnabled || !config.adminPasswordSha256) return false;
-    return (await sha256Hex(password)) === config.adminPasswordSha256;
-}
 
 /** localStorage keys were "vegelo_*"; migrate them once to "tazamart_*" so customers keep carts/orders. */
 export function migrateStorageKeys() {
